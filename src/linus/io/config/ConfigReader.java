@@ -5,7 +5,7 @@ import java.io.Closeable;
 /**
  *
  *This Interface is the root of all ConfigReaders. It contains the
- *typically abstract raeding Methods withs speciality for {@link Config}s.
+ *typically abstract raeding Methods with speciality for {@link Config}s.
  *It also is an extension of {@link Closeable}, so the readers can be closed.
  *
  * @version 1.0

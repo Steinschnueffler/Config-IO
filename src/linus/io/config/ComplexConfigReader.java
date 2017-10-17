@@ -68,10 +68,6 @@ public class ComplexConfigReader implements ConfigReader{
 		}
 	}
 
-	/**
-	 * returns the next Config. If there doesn't exists a next one, it will return null.
-	 * @return the next Config
-	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public <E extends ConfigBase> E next(){
@@ -112,10 +108,6 @@ public class ComplexConfigReader implements ConfigReader{
 		return cfg;
 	}
 
-	/**
-	 * returns if the reader has a next Config to read
-	 * @return true if the Reader has a next Config
-	 */
 	@Override
 	public boolean hasNext(){
 		return buffer != null;

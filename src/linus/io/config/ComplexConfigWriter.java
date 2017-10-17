@@ -31,9 +31,11 @@ public class ComplexConfigWriter implements ConfigWriter{
 	}
 
 	/**
+	 *Creates a new ConfigWriter of the given File. The used {@link ConfigIOChars} will
+	 *be the given
 	 *
-	 * @param f
-	 * @param chars
+	 * @param f the File
+	 * @param chars the ConfigIOChars
 	 * @throws FileNotFoundException if the File doesn't exists
 	 */
 	public ComplexConfigWriter(File f, ConfigIOChars chars) throws FileNotFoundException{
@@ -50,14 +52,32 @@ public class ComplexConfigWriter implements ConfigWriter{
 		this(new File(pathName));
 	}
 
+	/**
+	 * Creates a new ConfigWriter to the File of the abstract given path Name.
+	 * The used {@link ConfigIOChars} will be the given
+	 *
+	 * @param pathName
+	 * @throws FileNotFoundException if the File doesn't exists
+	 */
 	public ComplexConfigWriter(String pathName, ConfigIOChars chars) throws FileNotFoundException{
 		this(new File(pathName), chars);
 	}
 
+	/**
+	 * Creates a new ConfigWriter to the given {@link OutputStream}.
+	 *
+	 * @param out the OutputStream
+	 */
 	public ComplexConfigWriter(OutputStream out){
 		this(out, ConfigIOChars.getDefault());
 	}
 
+	/**
+	 * Creates a new ConfigWriter to the given {@link OutputStream}.
+	 * The used {@link ConfigIOChars} will be the given
+	 *
+	 * @param out the OutputStream
+	 */
 	public ComplexConfigWriter(OutputStream out, ConfigIOChars chars){
 		writer = new PrintWriter(out);
 		useConfigIOChars(chars);
@@ -85,11 +105,21 @@ public class ComplexConfigWriter implements ConfigWriter{
 		writer.println();
 	}
 
+	/**
+	 * Sets the used {@link ConfigIOChars} to the given.
+	 *
+	 * @param chars the used ConfigIOChars
+	 */
 	public void useConfigIOChars(ConfigIOChars chars){
 		this.chars = chars;
 		writer.println("%ConfigIOChars : " +chars.getClass().getName());
 	}
 
+	/**
+	 *Returns the actually used {@link ConfigIOChars}
+	 *
+	 * @return the used CofigIOChars
+	 */
 	public ConfigIOChars getConfigIOChars(){
 		return chars;
 	}
