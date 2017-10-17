@@ -3,8 +3,8 @@ package linus.io.config;
 
 /**
  *This abstract class is the root of all Configs and it or
- *any extend of it can be written by {@link ComplexConfigWriter} and
- *readed by {@link ComplexConfigReader} <br>
+ *any extend of it can be written by {@link ConfigWriter}s and
+ *readed by {@link ConfigReader}s <br>
  *It should be used to make own Configs with own way of writing
  *and reading. The Classes wich extends from this and should be readed by
  *ConfigReader <b>MUST</b> be default Constructable because oft the use of
