@@ -7,6 +7,7 @@ public class SingleBooleanConfig extends SingleConfig<Boolean>{
 
 	public SingleBooleanConfig(String name, boolean value) {
 		super(name);
+		this.value = value;
 	}
 
 	@Override
