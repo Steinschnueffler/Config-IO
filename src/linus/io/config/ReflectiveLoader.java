@@ -1,5 +1,11 @@
 package linus.io.config;
 
+import java.io.File;
+import java.io.FileDescriptor;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+
 import linus.io.config.configs.*;
 
 class ReflectiveLoader {
@@ -50,5 +56,29 @@ class ReflectiveLoader {
 			vals[i - 1] = readed[i].substring(readed[i].indexOf(MultipleConfig.VALUE_START) + 1, readed[i].length()).trim();
 		}
 		return new MultipleStringConfig(name, vals);
+	}
+
+	public static ConfigReader loadConfigReader(String classPath, String pathName) throws FileNotFoundException, ReflectiveOperationException{
+		return loadConfigReader(classPath, new File(pathName));
+	}
+
+	public static ConfigReader loadConfigReader(String classPath, File source) throws FileNotFoundException, ReflectiveOperationException{
+		return loadConfigReader(classPath, new FileInputStream(source));
+	}
+
+	public static ConfigReader loadConfigReader(String classPath, FileDescriptor fd) throws ReflectiveOperationException{
+		return loadConfigReader(classPath, new FileInputStream(fd));
+	}
+
+	public static ConfigReader loadConfigReader(String classPath, InputStream source) throws ReflectiveOperationException{
+		if(classPath.startsWith("linus.io.config")){
+			if(classPath.equals("linus.io.config.SimpleConfigReader"))
+				return new SimpleConfigReader(source);
+			if(classPath.equals("linus.io.config.ComplexConfigReader"))
+				return new ComplexConfigReader(source);
+		}
+
+		Class<?> clazz = Class.forName(classPath);
+		return (ConfigReader) clazz.newInstance();
 	}
 }

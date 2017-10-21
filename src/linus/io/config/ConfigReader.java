@@ -21,7 +21,6 @@ import linus.io.config.configs.ConfigBase;
  */
 public abstract interface ConfigReader extends Closeable{
 
-
 	/**
 	 * Reads the next {@link Config} and returns it with
 	 * automatically class cast. If there doesn't

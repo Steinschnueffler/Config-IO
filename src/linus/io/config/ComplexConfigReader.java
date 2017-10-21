@@ -30,6 +30,9 @@ public class ComplexConfigReader implements ConfigReader{
 	private ConfigIOChars chars = ConfigIOChars.getDefault();
 	private Config<?> buffer;
 
+	private ConfigReader alternateReader;
+	private boolean useAlternateReader = false;
+
 	/**
 	 * Creates a new ConfigReader of the abstract given pathName
 	 * @param pathName
@@ -74,6 +77,7 @@ public class ComplexConfigReader implements ConfigReader{
 	@SuppressWarnings("unchecked")
 	@Override
 	public <E extends ConfigBase> E next(){
+		if(useAlternateReader) return alternateReader.next();
 		E next = (E) buffer;
 		try {
 			buffer = nextConfig();
