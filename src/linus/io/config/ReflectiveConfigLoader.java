@@ -8,9 +8,9 @@ import java.io.InputStream;
 
 import linus.io.config.configs.*;
 
-class ReflectiveLoader {
+public class ReflectiveConfigLoader {
 
-	private ReflectiveLoader() {}
+	private ReflectiveConfigLoader() {}
 
 	public static ConfigIOChars loadConfigIOChars(String classPath) throws ReflectiveOperationException{
 		Class<?> clazz = Class.forName(classPath);
