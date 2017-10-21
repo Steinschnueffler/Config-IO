@@ -111,7 +111,7 @@ public class ComplexConfigReader implements ConfigReader{
 
 		String classPath = nextConfig.substring(nextConfig.indexOf(chars.getClassStart() + 1));
 		String[] vals = lines.toArray(new String[lines.size()]);
-		return ReflectiveLoader.loadConfigComplex(classPath, vals);
+		return ReflectiveConfigLoader.loadConfigComplex(classPath, vals);
 	}
 
 	@Override
@@ -122,7 +122,7 @@ public class ComplexConfigReader implements ConfigReader{
 	private void systemChange(String str){
 		if(str.startsWith("ConfigIOChars : ")){
 			try {
-				chars = ReflectiveLoader.loadConfigIOChars(str.substring(str.indexOf(":")).trim());
+				chars = ReflectiveConfigLoader.loadConfigIOChars(str.substring(str.indexOf(":")).trim());
 			} catch (ReflectiveOperationException e) {
 				chars = ConfigIOChars.getDefault();
 			}
