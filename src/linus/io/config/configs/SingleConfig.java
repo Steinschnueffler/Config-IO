@@ -3,18 +3,10 @@ package linus.io.config.configs;
 import linus.io.config.ConfigType;
 
 public abstract class SingleConfig<E> extends Config<E>{
-
-	protected String name = "";
-
 	public SingleConfig() {}
 
 	public SingleConfig(String name) {
-		this.name = name;
-	}
-
-	@Override
-	public String getName() {
-		return name;
+		super(name);
 	}
 
 	@Override

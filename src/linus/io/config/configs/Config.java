@@ -1,7 +1,5 @@
 package linus.io.config.configs;
 
-import linus.io.config.ComplexConfigReader;
-import linus.io.config.ComplexConfigWriter;
 import linus.io.config.ConfigReader;
 import linus.io.config.ConfigType;
 import linus.io.config.ConfigWriter;
@@ -29,10 +27,31 @@ import linus.io.config.ConfigWriter;
 public abstract class Config<E> extends ConfigBase implements Cloneable, Comparable<Config<?>>{
 
 	/**
+	 * Creates a standart abstract Config
+	 */
+	public Config() {}
+
+	/**
 	 * This char is the standart Separator for Name and Value. It is used
 	 * by all Standart Config Implementations.
 	 */
 	public static final char SEPARATOR = '=';
+
+	/**
+	 * The Name value of a Config. If a Config is Constucted with a default Constructor
+	 * it will be a String with a length of 0. Calling the {@link #read(String[])} method
+	 * should change the value.
+	 */
+	protected String name = "";
+
+	/**
+	 * Constructs a Config like the default Constructor, it only sets the Value of {@link #name}
+	 * to the given String.
+	 * @param name the Name of the Config
+	 */
+	public Config(String name){
+		this.name = name;
+	}
 
 	/**
 	 *This method is for use after reading the class to get the Value.
@@ -54,7 +73,7 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	public abstract String[] write();
 
 	/**
-	 * This method is used by {@link ComplexConfigReader} to read this Config.
+	 * This method is used by {@link ConfigReader} to read this Config.
 	 *Each String in the given Array represents a line in the File. Using this
 	 *method should be equal as initializing this class with a Constructor.
 	 *
@@ -64,12 +83,14 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 
 	/**
 	 * This class is used for getting the name of the Config and by
-	 * {@link ComplexConfigWriter} to write it to a file. This method should never return null,
+	 * {@link ConfigWriter} to write it to a file. This method should never return null,
 	 * so the name should be in the Array of the read and write method and, if it existst,
 	 * in a Constructor. Note that there still must be a empty Constructor.
 	 * @return the Name of the Config
 	 */
-	public abstract String getName();
+	public String getName(){
+		return name;
+	}
 
 	/**
 	 *Returns the ConfigType of a Config. This can be used
@@ -91,12 +112,56 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 		return getName() + " = " +getValue().toString();
 	}
 
+	/**
+	 * Clones the Config. This means that it gives back a brand new Config, but with the
+	 * class, the Name and the Value of the old one.
+	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public Config<E> clone() throws CloneNotSupportedException{
 		return (Config<E>) super.clone();
 	}
 
+	/**
+	 * Testes if a Object equals this Config. First it tests if super.equals return true and
+	 * if this is the case returns it.
+	 * If not, it compares the generic Class, the Name and the Value. If all of them are
+	 * equal it will return true.
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if(super.equals(obj)) return true;
+		Config<?> cfg;
+		try{
+			cfg = (Config<?>) obj;
+		}catch(Exception e){
+			return false;
+		}
+		if(!getValue().getClass().equals(cfg.getValue().getClass())) return false;
+		if(!getName().equals(cfg.getName())) return false;
+		if(!getValue().equals(cfg.getValue())) return false;
+		return true;
+	}
+
+	/**
+	 * Because of the Overriding of {@link #equals(Object)} this Method is also Overriden
+	 * to have a safer handle hat HashContainers. It simply returns super.hashCode * 13. If this
+	 * would be higer than Integer.MAX_VALUE it returns super.hashCode / 13.
+	 */
+	@Override
+	public int hashCode() {
+		long l = super.hashCode() * 13l;
+		if(l < Integer.MAX_VALUE)
+			return super.hashCode() * 13;
+		else
+			return super.hashCode() / 13;
+	}
+
+	/**
+	 * Compares the Config to any other Config. First it Sorts after the {@link ConfigType},
+	 * then after the Class of the Value (alphabetic) and then after the Name. If all this
+	 * is equal it trys to compare the Value. if even this is equal it returns 0.
+	 */
 	@Override
 	public int compareTo(Config<?> o) {
 
