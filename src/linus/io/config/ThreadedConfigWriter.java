@@ -2,41 +2,52 @@ package linus.io.config;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
+
+import linus.io.config.configs.Config;
 
 public class ThreadedConfigWriter implements ConfigWriter{
 
 	private ConfigWriter writer;
-	private ArrayList<Config<?>> cfgs = new ArrayList<>();
-	private WriterThread thread = new WriterThread();
+	private ArrayList<WriterLines> lines = new ArrayList<>();
+	private boolean stayAlive = true;
+	private WritingThread thread = new WritingThread();
 
 	public ThreadedConfigWriter(ConfigWriter writer) {
+		if(writer instanceof ThreadedConfigWriter)
+			throw new InvalidConfigWriterException("ThraededConfigWriter cannot be constructed with another ThreadedConfigWriter");
 		this.writer = writer;
 	}
 
-	public ThreadedConfigWriter(ConfigWriter writer, Config<?>... cfgs) {
+	public ThreadedConfigWriter(ConfigWriter writer, boolean autoStart) {
 		this(writer);
-		writeAll(cfgs);
+		if(autoStart) start();
 	}
 
-	public ConfigWriter getWriter(){
-		return writer;
-	}
-
-	public void start(){
+	public synchronized void start(){
 		thread.start();
 	}
 
+	public synchronized void stop(){
+		stayAlive = false;
+	}
+
 	public boolean isWriting(){
+		return lines.size() > 0;
+	}
+
+	public boolean isAlive(){
 		return thread.isAlive();
 	}
 
-	public void join() throws InterruptedException{
-		thread.join();
+	public synchronized void join() throws InterruptedException{
+		while(isWriting()){
+			wait();
+		}
 	}
 
 	@Override
 	public void close() throws IOException {
+		stayAlive = false;
 		try {
 			join();
 		} catch (InterruptedException e) {
@@ -46,40 +57,58 @@ public class ThreadedConfigWriter implements ConfigWriter{
 	}
 
 	@Override
-	@Deprecated
 	public void writeInfo(String info) {
-		writer.writeInfo(info);
+		lines.add(new WriterLines(info));
 	}
 
 	@Override
-	@Deprecated
 	public void writeConfig(Config<?> cfg) {
-		writer.writeConfig(cfg);
-	}
-
-	@Override
-	@Deprecated
-	public void writeln() {
-		writer.writeln();
-	}
-
-	public boolean hasUnwritten(){
-		return cfgs.size() > 0;
+		lines.add(new WriterLines(cfg));
 	}
 
 	public void writeAll(Config<?>... cfgs){
-		this.cfgs.addAll(Arrays.asList(cfgs));
+		for(int i = 0; i < cfgs.length; i++){
+			writeConfig(cfgs[i]);
+		}
 	}
 
-	private class WriterThread extends Thread{
+	@Override
+	public void writeln() {
+		lines.add(new WriterLines(true));
+	}
+
+	private class WriterLines{
+
+		private String info = null;
+		private boolean writeln = false;
+		private Config<?> cfg = null;
+
+		public WriterLines(String info) {
+			this.info = info;
+		}
+
+		public WriterLines(boolean writeln) {
+			this.writeln = writeln;
+		}
+
+		public WriterLines(Config<?> cfg) {
+			this.cfg = cfg;
+		}
+	}
+
+	private class WritingThread extends Thread{
 
 		@Override
 		public void run() {
-			for(Config<?> cfg : cfgs)
-				writeConfig(cfg);
-			cfgs.clear();
+			while (stayAlive) {
+				for(int i = 0; i < lines.size(); i++){
+					WriterLines wt = lines.get(i);
+					if(wt.cfg != null) writer.writeConfig(wt.cfg);
+					if(wt.info != null) writer.writeInfo(wt.info);
+					if(wt.writeln == true) writer.writeln();
+				}
+			}
 		}
 
 	}
-
 }

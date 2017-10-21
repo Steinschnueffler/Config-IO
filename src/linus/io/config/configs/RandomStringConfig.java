@@ -1,11 +1,11 @@
-package linus.io.config;
+package linus.io.config.configs;
 
 import java.util.Random;
 
-public class RandomConfig extends MultipleConfig{
-	public RandomConfig() {}
+public class RandomStringConfig extends MultipleStringConfig{
+	public RandomStringConfig() {}
 
-	public RandomConfig(String name, String... values){
+	public RandomStringConfig(String name, String... values){
 		super(name, values);
 	}
 

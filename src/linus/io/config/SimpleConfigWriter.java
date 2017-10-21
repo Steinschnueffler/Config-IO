@@ -8,6 +8,11 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.URI;
 
+import linus.io.config.configs.Config;
+import linus.io.config.configs.MultipleConfig;
+import linus.io.config.configs.MultipleStringConfig;
+import linus.io.config.configs.SingleConfig;
+
 public class SimpleConfigWriter implements ConfigWriter{
 
 	private final PrintWriter writer;
@@ -32,13 +37,13 @@ public class SimpleConfigWriter implements ConfigWriter{
 		writer = new PrintWriter(out);
 	}
 
-	public void write(SingleConfig sc){
+	public void write(SingleConfig<?> sc){
 		String str = sc.write()[0];
 		if(str.startsWith("#")) throw new InvalidConfigException("Line starts with #");
 		writer.println(str);
 	}
 
-	public void write(MultipleConfig mc){
+	public void write(MultipleStringConfig mc){
 		for(String s : mc.write()){
 			if(s.startsWith("#")) throw new InvalidConfigException("Line starts with #");
 			writer.println(s);
@@ -64,8 +69,8 @@ public class SimpleConfigWriter implements ConfigWriter{
 	@Override
 	public void writeConfig(Config<?> cfg) {
 		if(cfg instanceof SingleConfig)
-			write((SingleConfig) cfg);
+			write((SingleConfig<?>) cfg);
 		else if(cfg instanceof MultipleConfig)
-			write((MultipleConfig) cfg);
+			write((MultipleStringConfig) cfg);
 	}
 }

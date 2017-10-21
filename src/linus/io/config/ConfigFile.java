@@ -12,6 +12,7 @@ import java.net.URI;
  * @author Linus Dierheiemer
  * @since java 1.5
  * @version 1.0
+ *
  */
 public class ConfigFile extends File{
 	private static final long serialVersionUID = 1L;
@@ -47,16 +48,30 @@ public class ConfigFile extends File{
 	 * at the beginn of the file.
 	 *
 	 * @return a new ConfigWriter
-	 * @throws FileNotFoundException
+	 * @throws FileNotFoundException if the File doesn't exists
 	 */
 	public ComplexConfigWriter getComplexWriter() throws FileNotFoundException{
 		return new ComplexConfigWriter(this);
 	}
 
+
+	/**
+	 * this method returns a new {@link SimpleConfigReader} with the position
+	 * at the beginn of the file.
+	 * @return a new ConfigReader
+	 * @throws FileNotFoundException if the File doesn't exists
+	 */
 	public SimpleConfigReader getSimpleReader() throws FileNotFoundException{
 		return new SimpleConfigReader(this);
 	}
 
+	/**
+	 * this method returns a new {@link SimpleConfigWriter} with the position
+	 * at the beginn of the file.
+	 *
+	 * @return a new ConfigWriter
+	 * @throws FileNotFoundException if the File doesn't exists
+	 */
 	public SimpleConfigWriter getSimpleWriter() throws FileNotFoundException{
 		return new SimpleConfigWriter(this);
 	}

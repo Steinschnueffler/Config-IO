@@ -2,6 +2,9 @@ package linus.io.config;
 
 import java.io.Closeable;
 
+import linus.io.config.configs.Config;
+import linus.io.config.configs.ConfigBase;
+
 /**
  *
  *This Interface is the root of all ConfigReaders. It contains the

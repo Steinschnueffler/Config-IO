@@ -1,4 +1,4 @@
-package linus.io.config;
+package linus.io.config.configs;
 
 /**
  * used to give back by Reader, So even only Config can be the return type;

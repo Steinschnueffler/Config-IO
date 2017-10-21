@@ -8,6 +8,11 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import linus.io.config.configs.Config;
+import linus.io.config.configs.ConfigBase;
+import linus.io.config.configs.MultipleStringConfig;
+import linus.io.config.configs.SingleStringConfig;
+
 public class SimpleConfigReader implements ConfigReader{
 
 	private final Scanner reader;
@@ -55,7 +60,7 @@ public class SimpleConfigReader implements ConfigReader{
 		String singleValue = nextLine.substring(nextLine.indexOf("=") + 1, nextLine.length()).trim();
 		lineBuffer = reader.nextLine();
 		if(singleValue.length() != 0){
-			return new SingleConfig(name, singleValue);
+			return new SingleStringConfig(name, singleValue);
 		}
 		ArrayList<String> values = new ArrayList<>();
 		while(lineBuffer.trim().startsWith("-")){
@@ -63,7 +68,7 @@ public class SimpleConfigReader implements ConfigReader{
 			while(lineBuffer.startsWith("#") || nextLine.trim().length() == 0)
 				lineBuffer = reader.nextLine();
 		}
-		return new MultipleConfig(singleValue, values.toArray(new String[values.size()]));
+		return new MultipleStringConfig(singleValue, values.toArray(new String[values.size()]));
 	}
 
 	@Override

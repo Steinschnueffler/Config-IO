@@ -6,6 +6,8 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 
+import linus.io.config.configs.Config;
+
 /**
  *This class can write {@link Config}s in a {@link ComplexConfigReader} and user readable form.
  *

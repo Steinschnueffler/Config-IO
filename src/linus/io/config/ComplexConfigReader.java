@@ -8,6 +8,9 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import linus.io.config.configs.Config;
+import linus.io.config.configs.ConfigBase;
+
 /**
  *
  *This class can read {@link Config}s and interprete them into the right Form.
@@ -102,10 +105,9 @@ public class ComplexConfigReader implements ConfigReader{
 			nextConfigElement = reader.nextLine();
 		}
 
-		Class<?> clazz = Class.forName(nextConfig.substring(1));
-		Config<?> cfg = (Config<?>) clazz.newInstance();
-		cfg.read(lines.toArray(new String[lines.size()]));
-		return cfg;
+		String classPath = nextConfig.substring(nextConfig.indexOf(chars.getClassStart() + 1));
+		String[] vals = lines.toArray(new String[lines.size()]);
+		return ReflectiveLoader.loadConfigComplex(classPath, vals);
 	}
 
 	@Override
@@ -115,22 +117,10 @@ public class ComplexConfigReader implements ConfigReader{
 
 	private void systemChange(String str){
 		if(str.startsWith("ConfigIOChars : ")){
-			String value = str.substring(str.indexOf(":") + 1).trim();
-			Class<?> clazz;
 			try {
-				clazz = Class.forName(value);
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-				return;
-			}
-			try {
-				chars = (ConfigIOChars) clazz.newInstance();
-			} catch (InstantiationException e) {
-				e.printStackTrace();
-				return;
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-				return;
+				chars = ReflectiveLoader.loadConfigIOChars(str.substring(str.indexOf(":")).trim());
+			} catch (ReflectiveOperationException e) {
+				chars = ConfigIOChars.getDefault();
 			}
 		}
 	}

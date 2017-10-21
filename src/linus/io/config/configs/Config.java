@@ -1,5 +1,10 @@
-package linus.io.config;
+package linus.io.config.configs;
 
+import linus.io.config.ComplexConfigReader;
+import linus.io.config.ComplexConfigWriter;
+import linus.io.config.ConfigReader;
+import linus.io.config.ConfigType;
+import linus.io.config.ConfigWriter;
 
 /**
  *This abstract class is the root of all Configs and it or
@@ -22,6 +27,12 @@ package linus.io.config;
  *
  */
 public abstract class Config<E> extends ConfigBase implements Cloneable{
+
+	/**
+	 * This char is the standart Separator for Name and Value. It is used
+	 * by all Standart Config Implementations.
+	 */
+	public static final char SEPARATOR = '=';
 
 	/**
 	 *This method is for use after reading the class to get the Value.
@@ -49,7 +60,7 @@ public abstract class Config<E> extends ConfigBase implements Cloneable{
 	 *
 	 * @param lines - the readed lines
 	 */
-	public abstract void read(String[] lines);
+	public abstract Config<E> read(String[] lines);
 
 	/**
 	 * This class is used for getting the name of the Config and by
@@ -59,6 +70,14 @@ public abstract class Config<E> extends ConfigBase implements Cloneable{
 	 * @return the Name of the Config
 	 */
 	public abstract String getName();
+
+	/**
+	 *Returns the ConfigType of a Config. This can be used
+	 *to sort or handle right with them. Usually its Single or Multiple
+	 *
+	 * @return the ConfigType of a Config
+	 */
+	public abstract ConfigType getConfigType();
 
 	/**
 	 * This method is the standart implementation of toString by Config.
