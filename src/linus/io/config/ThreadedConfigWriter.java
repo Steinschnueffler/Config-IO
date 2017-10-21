@@ -9,7 +9,8 @@ import linus.io.config.configs.Config;
 public class ThreadedConfigWriter implements ConfigWriter{
 
 	private ConfigWriter writer;
-	private ArrayList<WriterLines> lines = new ArrayList<>();
+	private volatile ArrayList<WriterLines> lines = new ArrayList<>();
+	private ArrayList<WriterLines> actualWriting = new ArrayList<>();
 	private boolean stayAlive = true;
 	private WritingThread thread = new WritingThread();
 
@@ -37,7 +38,9 @@ public class ThreadedConfigWriter implements ConfigWriter{
 	}
 
 	public boolean isWriting(){
-		return lines.size() > 0;
+		synchronized (lines) {
+			return lines.size() > 0 || actualWriting.size() > 0;
+		}
 	}
 
 	public boolean isAlive(){
@@ -45,9 +48,7 @@ public class ThreadedConfigWriter implements ConfigWriter{
 	}
 
 	public synchronized void join() throws InterruptedException{
-		while(isWriting()){
-			wait();
-		}
+		while(isWriting()){}
 	}
 
 	@Override
@@ -103,15 +104,18 @@ public class ThreadedConfigWriter implements ConfigWriter{
 
 	private class WritingThread extends Thread{
 
+		@SuppressWarnings("unchecked")
 		@Override
 		public void run() {
 			while (stayAlive) {
-				for(int i = 0; i < lines.size(); i++){
-					WriterLines wt = lines.get(i);
+				actualWriting = (ArrayList<WriterLines>) lines.clone();
+				lines.clear();
+				for(WriterLines wt : actualWriting){
 					if(wt.cfg != null) writer.writeConfig(wt.cfg);
 					if(wt.info != null) writer.writeInfo(wt.info);
 					if(wt.writeln == true) writer.writeln();
 				}
+				actualWriting.clear();
 			}
 		}
 
