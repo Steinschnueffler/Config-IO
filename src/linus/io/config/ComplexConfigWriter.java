@@ -21,6 +21,7 @@ public class ComplexConfigWriter implements ConfigWriter{
 
 	private final PrintWriter writer;
 	private ConfigIOChars chars;
+	private OutputStream source;
 
 	/**
 	 * Creates a new ConfigWriter of the given File
@@ -82,6 +83,7 @@ public class ComplexConfigWriter implements ConfigWriter{
 	 */
 	public ComplexConfigWriter(OutputStream out, ConfigIOChars chars){
 		writer = new PrintWriter(out);
+		source = out;
 		useConfigIOChars(chars);
 	}
 
@@ -130,6 +132,11 @@ public class ComplexConfigWriter implements ConfigWriter{
 	public void close(){
 		writer.flush();
 		writer.close();
+	}
+
+	@Override
+	public OutputStream getSource() {
+		return source;
 	}
 
 }

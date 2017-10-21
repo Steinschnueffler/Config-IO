@@ -18,6 +18,7 @@ public class SimpleConfigReader implements ConfigReader{
 	private final Scanner reader;
 	private Config<?> buffer;
 	private String lineBuffer;
+	private InputStream source;
 
 	public SimpleConfigReader(String pathName) throws FileNotFoundException {
 		this(new File(pathName));
@@ -33,6 +34,7 @@ public class SimpleConfigReader implements ConfigReader{
 
 	public SimpleConfigReader(InputStream in) {
 		reader = new Scanner(in);
+		source = in;
 		buffer = nextConfig();
 	}
 
@@ -79,6 +81,11 @@ public class SimpleConfigReader implements ConfigReader{
 	@Override
 	public void close(){
 		reader.close();
+	}
+
+	@Override
+	public InputStream getSource() {
+		return source;
 	}
 
 }

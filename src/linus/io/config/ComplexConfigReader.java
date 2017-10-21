@@ -32,9 +32,6 @@ public class ComplexConfigReader implements ConfigReader{
 
 	private InputStream source;
 
-	private ConfigReader alternateReader;
-	private boolean useAlternateReader = false;
-
 	/**
 	 * Creates a new ConfigReader of the abstract given pathName
 	 * @param pathName
@@ -80,7 +77,6 @@ public class ComplexConfigReader implements ConfigReader{
 	@SuppressWarnings("unchecked")
 	@Override
 	public <E extends ConfigBase> E next(){
-		if(useAlternateReader) return alternateReader.next();
 		E next = (E) buffer;
 		try {
 			buffer = nextConfig();
@@ -130,21 +126,6 @@ public class ComplexConfigReader implements ConfigReader{
 				chars = ConfigIOChars.getDefault();
 			}
 		}
-		if(str.startsWith("PreferedReader :")){
-			String classPath = str.substring(str.indexOf(":")).trim();
-			if(classPath.equals(getClass().getName())){
-				useAlternateReader = false;
-				alternateReader = null;
-			}else{
-				useAlternateReader = true;
-				try {
-					alternateReader = ReflectiveConfigLoader.loadConfigReader(classPath, source);
-				} catch (ReflectiveOperationException e) {
-					useAlternateReader = false;
-					alternateReader = null;
-				}
-			}
-		}
 	}
 
 	/**
@@ -159,5 +140,10 @@ public class ComplexConfigReader implements ConfigReader{
 	@Override
 	public void close(){
 		reader.close();
+	}
+
+	@Override
+	public InputStream getSource() {
+		return source;
 	}
 }

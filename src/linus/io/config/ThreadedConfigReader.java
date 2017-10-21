@@ -1,6 +1,7 @@
 package linus.io.config;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 import linus.io.config.configs.Config;
@@ -13,7 +14,14 @@ public class ThreadedConfigReader implements ConfigReader{
 	private ReadingThread thread = new ReadingThread();
 
 	public ThreadedConfigReader(ConfigReader reader) {
+		if(reader instanceof ThreadedConfigReader)
+			throw new InvalidConfigReaderException("ThreadedConfigReader cannot be constructed with another ThreadedConfigReader");
 		this.reader = reader;
+	}
+
+	public ThreadedConfigReader(ConfigReader reader, boolean autoStart) {
+		this(reader);
+		if(autoStart) start();
 	}
 
 	public ConfigReader getReader(){
@@ -66,6 +74,11 @@ public class ThreadedConfigReader implements ConfigReader{
 				cfgs.add(next());
 		}
 
+	}
+
+	@Override
+	public InputStream getSource() {
+		return reader.getSource();
 	}
 
 }

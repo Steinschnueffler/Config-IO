@@ -16,6 +16,7 @@ import linus.io.config.configs.SingleConfig;
 public class SimpleConfigWriter implements ConfigWriter{
 
 	private final PrintWriter writer;
+	private OutputStream source;
 
 	public SimpleConfigWriter(String pathName) throws FileNotFoundException {
 		this(new File(pathName));
@@ -35,6 +36,7 @@ public class SimpleConfigWriter implements ConfigWriter{
 
 	public SimpleConfigWriter(OutputStream out) {
 		writer = new PrintWriter(out);
+		source = out;
 	}
 
 	public void write(SingleConfig<?> sc){
@@ -72,5 +74,10 @@ public class SimpleConfigWriter implements ConfigWriter{
 			write((SingleConfig<?>) cfg);
 		else if(cfg instanceof MultipleConfig)
 			write((MultipleStringConfig) cfg);
+	}
+
+	@Override
+	public OutputStream getSource() {
+		return source;
 	}
 }

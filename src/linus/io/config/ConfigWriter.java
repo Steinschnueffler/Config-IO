@@ -1,6 +1,7 @@
 package linus.io.config;
 
 import java.io.Closeable;
+import java.io.OutputStream;
 
 import linus.io.config.configs.Config;
 
@@ -41,4 +42,6 @@ public abstract interface ConfigWriter extends Closeable{
 	 * Writes a new Line to the given File.
 	 */
 	public abstract void writeln();
+
+	public abstract OutputStream getSource();
 }

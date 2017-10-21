@@ -1,6 +1,7 @@
 package linus.io.config;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 
 import linus.io.config.configs.Config;
@@ -21,6 +22,10 @@ public class ThreadedConfigWriter implements ConfigWriter{
 	public ThreadedConfigWriter(ConfigWriter writer, boolean autoStart) {
 		this(writer);
 		if(autoStart) start();
+	}
+
+	public ConfigWriter getWriter(){
+		return writer;
 	}
 
 	public synchronized void start(){
@@ -110,5 +115,10 @@ public class ThreadedConfigWriter implements ConfigWriter{
 			}
 		}
 
+	}
+
+	@Override
+	public OutputStream getSource() {
+		return writer.getSource();
 	}
 }

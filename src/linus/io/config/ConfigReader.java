@@ -1,6 +1,7 @@
 package linus.io.config;
 
 import java.io.Closeable;
+import java.io.InputStream;
 
 import linus.io.config.configs.Config;
 import linus.io.config.configs.ConfigBase;
@@ -38,4 +39,5 @@ public abstract interface ConfigReader extends Closeable{
 	 */
 	public abstract boolean hasNext();
 
+	public abstract InputStream getSource();
 }
