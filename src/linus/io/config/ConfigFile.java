@@ -3,6 +3,7 @@ package linus.io.config;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URI;
+import java.util.Scanner;
 
 /**
  *
@@ -74,6 +75,17 @@ public class ConfigFile extends File{
 	 */
 	public SimpleConfigWriter getSimpleWriter() throws FileNotFoundException{
 		return new SimpleConfigWriter(this);
+	}
+
+	public ConfigReader getFittingReader() throws FileNotFoundException, ReflectiveOperationException{
+		Scanner s = new Scanner(this);
+		boolean hasNext = s.hasNext();
+		String line = s.nextLine();
+		s.close();
+		if(!hasNext) return getComplexReader();
+		if(!line.startsWith("%PreferedReader :")) return getComplexReader();
+		String readerClass = line.substring(line.indexOf(":")).trim();
+		return ReflectiveConfigLoader.loadConfigReader(readerClass, this);
 	}
 
 }
