@@ -30,6 +30,8 @@ public class ComplexConfigReader implements ConfigReader{
 	private ConfigIOChars chars = ConfigIOChars.getDefault();
 	private Config<?> buffer;
 
+	private InputStream source;
+
 	private ConfigReader alternateReader;
 	private boolean useAlternateReader = false;
 
@@ -65,6 +67,7 @@ public class ComplexConfigReader implements ConfigReader{
 	 */
 	public ComplexConfigReader(InputStream in) {
 		reader = new Scanner(in);
+		source = in;
 		try {
 			buffer = nextConfig();
 		} catch (ReaderFinishedException e) {
@@ -120,11 +123,26 @@ public class ComplexConfigReader implements ConfigReader{
 	}
 
 	private void systemChange(String str){
-		if(str.startsWith("ConfigIOChars : ")){
+		if(str.startsWith("ConfigIOChars :")){
 			try {
 				chars = ReflectiveConfigLoader.loadConfigIOChars(str.substring(str.indexOf(":")).trim());
 			} catch (ReflectiveOperationException e) {
 				chars = ConfigIOChars.getDefault();
+			}
+		}
+		if(str.startsWith("PreferedReader :")){
+			String classPath = str.substring(str.indexOf(":")).trim();
+			if(classPath.equals(getClass().getName())){
+				useAlternateReader = false;
+				alternateReader = null;
+			}else{
+				useAlternateReader = true;
+				try {
+					alternateReader = ReflectiveConfigLoader.loadConfigReader(classPath, source);
+				} catch (ReflectiveOperationException e) {
+					useAlternateReader = false;
+					alternateReader = null;
+				}
 			}
 		}
 	}
