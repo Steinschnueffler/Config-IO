@@ -1,5 +1,7 @@
 package linus.io.config;
 
+import linus.io.config.configs.SingleStringConfig;
+
 public abstract class SingleConfig<E> extends Config<E>{
 	public SingleConfig() {}
 
@@ -44,5 +46,11 @@ public abstract class SingleConfig<E> extends Config<E>{
 	@Override
 	protected void setValue(E value) {
 		this.value = value;
+	}
+
+	@Override
+	public SingleStringConfig toStringConfig() {
+		String str = getValue() == null ? null : getValue().toString();
+		return new SingleStringConfig(getName(), str);
 	}
 }

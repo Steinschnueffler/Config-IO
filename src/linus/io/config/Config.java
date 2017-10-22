@@ -1,5 +1,8 @@
 package linus.io.config;
 
+import linus.io.config.configs.MultipleStringConfig;
+import linus.io.config.configs.SingleStringConfig;
+
 /**
  *This abstract class is the root of all Configs and it or
  *any extend of it can be written by {@link ConfigWriter}s and
@@ -246,4 +249,14 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 		}
 		return this;
 	}
+
+	/**
+	 * Gives back a Config which has the same name and the value as String, so
+	 * it can be used universally. At {@link SingleConfig} it is normally
+	 * {@link SingleStringConfig} and at {@link MultipleConfig} it is usually
+	 * {@link MultipleStringConfig}. In the standart implementation by these two,
+	 * converting to String works easally over the toString() method.
+	 * @return a String Config with the same name and Value as String
+	 */
+	public abstract Config<? extends Object> toStringConfig();
 }

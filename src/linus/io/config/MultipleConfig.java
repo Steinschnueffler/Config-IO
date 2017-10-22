@@ -3,6 +3,8 @@ package linus.io.config;
 import java.util.Arrays;
 import java.util.Iterator;
 
+import linus.io.config.configs.MultipleStringConfig;
+
 public abstract class MultipleConfig<E> extends Config<E[]> implements Iterable<E>{
 	public MultipleConfig() {}
 
@@ -69,6 +71,15 @@ public abstract class MultipleConfig<E> extends Config<E[]> implements Iterable<
 	@Override
 	protected void setValue(E[] value) {
 		this.value = value;
+	}
+
+	@Override
+	public MultipleStringConfig toStringConfig() {
+		String[] vals = new String[value.length];
+		for(int i = 0; i < vals.length; i++){
+			vals[i] = getValue() == null ? null : getValue().toString();
+		}
+		return new MultipleStringConfig(getName(), vals);
 	}
 
 }
