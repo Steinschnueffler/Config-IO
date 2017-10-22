@@ -1,5 +1,6 @@
 package linus.io.config;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
@@ -31,18 +32,10 @@ public class SerializingConfigWriter implements ConfigWriter{
 	@Override
 	public void writeConfig(Config<?> cfg) {
 		try {
-			writeSerializable(cfg.toSerializableConfig());
+			writer.println(getSerializedString(cfg));
 		} catch (IOException e) {
 			this.e = e;
 		}
-	}
-
-	private void writeSerializable(SerializableConfigData<?> data) throws IOException{
-		ObjectOutputStream oos = new ObjectOutputStream(writer);
-		oos.writeObject(data);
-		oos.flush();
-		oos.close();
-		writeln();
 	}
 
 	@Override
@@ -59,6 +52,17 @@ public class SerializingConfigWriter implements ConfigWriter{
 		Exception temp = e;
 		e = null;
 		return temp;
+	}
+
+	private String getSerializedString(Object obj) throws IOException{
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		ObjectOutputStream oos = new ObjectOutputStream(baos);
+		oos.writeObject(obj);
+		oos.flush();
+		oos.close();
+		baos.flush();
+		baos.close();
+		return new String(baos.toByteArray());
 	}
 
 }
