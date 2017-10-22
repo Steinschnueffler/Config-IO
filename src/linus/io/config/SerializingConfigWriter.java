@@ -32,7 +32,7 @@ public class SerializingConfigWriter implements ConfigWriter{
 	@Override
 	public void writeConfig(Config<?> cfg) {
 		try {
-			writer.println(getSerializedString(cfg));
+			writer.println(getSerializedString(cfg.toSerializableConfig()));
 		} catch (IOException e) {
 			this.e = e;
 		}
