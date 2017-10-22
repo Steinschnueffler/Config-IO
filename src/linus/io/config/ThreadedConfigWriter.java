@@ -8,7 +8,6 @@ public class ThreadedConfigWriter implements ConfigWriter{
 
 	private ConfigWriter writer;
 	private volatile ArrayList<WriterLines> lines = new ArrayList<>();
-	private ArrayList<WriterLines> actualWriting = new ArrayList<>();
 	private boolean stayAlive = true;
 	private WritingThread thread = new WritingThread();
 
@@ -37,7 +36,7 @@ public class ThreadedConfigWriter implements ConfigWriter{
 
 	public boolean isWriting(){
 		synchronized (lines) {
-			return lines.size() > 0 || actualWriting.size() > 0;
+			return lines.size() > 0;
 		}
 	}
 
@@ -102,18 +101,16 @@ public class ThreadedConfigWriter implements ConfigWriter{
 
 	private class WritingThread extends Thread{
 
-		@SuppressWarnings("unchecked")
 		@Override
 		public void run() {
 			while (stayAlive) {
-				actualWriting = (ArrayList<WriterLines>) lines.clone();
-				lines.clear();
-				for(WriterLines wt : actualWriting){
+				synchronized (lines) {
+					if(lines.size() == 0) continue;
+					WriterLines wt = lines.get(0);
 					if(wt.cfg != null) writer.writeConfig(wt.cfg);
 					if(wt.info != null) writer.writeInfo(wt.info);
 					if(wt.writeln == true) writer.writeln();
 				}
-				actualWriting.clear();
 			}
 		}
 
