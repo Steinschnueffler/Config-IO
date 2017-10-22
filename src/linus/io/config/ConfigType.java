@@ -1,7 +1,5 @@
 package linus.io.config;
 
-import linus.io.config.configs.Config;
-
 /**
  * This Enum contains the Info of a {@link Config} is Single or Multiple.
  *

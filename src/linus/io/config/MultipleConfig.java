@@ -1,18 +1,19 @@
-package linus.io.config.configs;
-
+package linus.io.config;
 
 import java.util.Arrays;
 import java.util.Iterator;
-
-import linus.io.config.ConfigType;
 
 public abstract class MultipleConfig<E> extends Config<E[]> implements Iterable<E>{
 	public MultipleConfig() {}
 
 	public static final char VALUE_START = '-';
 
-	public MultipleConfig(String name){
+	protected E[] value = null;
+
+	@SafeVarargs
+	public MultipleConfig(String name, E... value){
 		super(name);
+		setValue(value);
 	}
 
 	@Override
@@ -58,6 +59,16 @@ public abstract class MultipleConfig<E> extends Config<E[]> implements Iterable<
 	@Override
 	public MultipleConfig<E> clone() throws CloneNotSupportedException {
 		return (MultipleConfig<E>) super.clone();
+	}
+
+	@Override
+	public E[] getValue() {
+		return value;
+	}
+
+	@Override
+	protected void setValue(E[] value) {
+		this.value = value;
 	}
 
 }

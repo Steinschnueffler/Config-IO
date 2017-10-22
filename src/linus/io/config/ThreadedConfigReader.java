@@ -4,9 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
-import linus.io.config.configs.Config;
-import linus.io.config.configs.ConfigBase;
-
 public class ThreadedConfigReader implements ConfigReader{
 
 	private ConfigReader reader;

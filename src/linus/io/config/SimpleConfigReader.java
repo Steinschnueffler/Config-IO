@@ -8,8 +8,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import linus.io.config.configs.Config;
-import linus.io.config.configs.ConfigBase;
 import linus.io.config.configs.MultipleStringConfig;
 import linus.io.config.configs.SingleStringConfig;
 

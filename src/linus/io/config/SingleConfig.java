@@ -1,6 +1,4 @@
-package linus.io.config.configs;
-
-import linus.io.config.ConfigType;
+package linus.io.config;
 
 public abstract class SingleConfig<E> extends Config<E>{
 	public SingleConfig() {}

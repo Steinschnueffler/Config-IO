@@ -1,5 +1,8 @@
 package linus.io.config.configs;
 
+import linus.io.config.Config;
+import linus.io.config.SingleConfig;
+
 public class SingleStringConfig extends SingleConfig<String>{
 	public SingleStringConfig() {}
 

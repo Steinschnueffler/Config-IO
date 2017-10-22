@@ -3,8 +3,6 @@ package linus.io.config;
 import java.io.Closeable;
 import java.io.OutputStream;
 
-import linus.io.config.configs.Config;
-
 /**
 *
 *This Interface is the root of all ConfigWriters. It contains the

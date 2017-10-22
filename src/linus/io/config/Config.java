@@ -1,9 +1,4 @@
-package linus.io.config.configs;
-
-import linus.io.config.ConfigReader;
-import linus.io.config.ConfigType;
-import linus.io.config.ConfigWriter;
-import linus.io.config.SerializingConfigWriter;
+package linus.io.config;
 
 /**
  *This abstract class is the root of all Configs and it or
@@ -43,7 +38,7 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 * it will be a String with a length of 0. Calling the {@link #read(String[])} method
 	 * should change the value.
 	 */
-	protected String name = "";
+	protected String name = "unknown_name";
 
 	/**
 	 * Constructs a Config like the default Constructor, it only sets the Value of {@link #name}
@@ -220,17 +215,25 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 
 	/**
 	 * returns a {@link SerializableConfigData} of the Config with the same values.
-	 * This is used by {@link SerializingConfigWriter} to write the COnfig compact.
+	 * This is used by {@link SerializingConfigWriter} to write the Config compact.
+	 * It can be converted back to a Config by {@link #read(SerializableConfigData)}
 	 * @return
 	 */
 	public SerializableConfigData<E> toSerializableConfig(){
 		return new SerializableConfigData<E>(getName(), getValue(), getClass().getName());
 	}
 
+	/**
+	 * This method should stay protected. It is used by {@link #read(SerializableConfigData)} to
+	 * change the value.
+	 * @param value
+	 */
 	protected abstract void setValue(E value);
 
 	/**
-	 * Reads a Config from a {@link SerializableConfigData}.
+	 * Reads a Config from a {@link SerializableConfigData}. This should change the Value and the Name
+	 * and the Value of this Config. Calling this metod should be equal as calling this class
+	 * with the Constructor {@code Config(SerializableConfigData data)}.
 	 * @param data
 	 */
 	@SuppressWarnings("unchecked")

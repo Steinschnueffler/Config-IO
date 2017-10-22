@@ -6,10 +6,6 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.util.Scanner;
 
-import linus.io.config.configs.Config;
-import linus.io.config.configs.ConfigBase;
-import linus.io.config.configs.SerializableConfigData;
-
 public class SerializingConfigReader implements ConfigReader{
 
 	private Scanner reader;

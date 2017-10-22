@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
-import linus.io.config.configs.Config;
-
 public class ThreadedConfigWriter implements ConfigWriter{
 
 	private ConfigWriter writer;

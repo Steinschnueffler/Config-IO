@@ -8,10 +8,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.URI;
 
-import linus.io.config.configs.Config;
-import linus.io.config.configs.MultipleConfig;
 import linus.io.config.configs.MultipleStringConfig;
-import linus.io.config.configs.SingleConfig;
 
 public class SimpleConfigWriter implements ConfigWriter{
 

@@ -1,5 +1,8 @@
 package linus.io.config.configs;
 
+import linus.io.config.Config;
+import linus.io.config.MultipleConfig;
+
 public class MultipleCharConfig extends MultipleConfig<Character>{
 	public MultipleCharConfig() {}
 

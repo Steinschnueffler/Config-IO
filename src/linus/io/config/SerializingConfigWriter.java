@@ -5,9 +5,6 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
-import linus.io.config.configs.Config;
-import linus.io.config.configs.SerializableConfigData;
-
 public class SerializingConfigWriter implements ConfigWriter{
 
 	private PrintStream writer;

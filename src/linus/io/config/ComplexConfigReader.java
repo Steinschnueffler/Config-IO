@@ -8,9 +8,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import linus.io.config.configs.Config;
-import linus.io.config.configs.ConfigBase;
-
 /**
  *
  *This class can read {@link Config}s and interprete them into the right Form.

@@ -1,4 +1,4 @@
-package linus.io.config.configs;
+package linus.io.config;
 
 import java.io.Serializable;
 
