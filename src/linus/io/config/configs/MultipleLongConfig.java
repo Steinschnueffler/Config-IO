@@ -6,49 +6,43 @@ import linus.io.config.MultipleConfig;
 public class MultipleLongConfig extends MultipleConfig<Long>{
 	public MultipleLongConfig() {}
 
-	private long[] values = new long[0];
-	private Long[] complex = new Long[0];
+	private long[] primitive = new long[0];
 
 	public MultipleLongConfig(String name, long... values) {
 		super(name);
-		this.values = values;
-		for(int i = 0; i < complex.length; i++){
-			complex[i] = Long.valueOf(values[i]);
+		this.primitive = values;
+		for(int i = 0; i < values.length; i++){
+			this.value[i] = Long.valueOf(values[i]);
 		}
 	}
 
-	@Override
-	public Long[] getValue() {
-		return complex;
-	}
-
 	public long[] getPrimitiveValue(){
-		return values;
+		return primitive;
 	}
 
 	@Override
 	public Config<Long[]> read(String[] lines) {
 		if(lines.length == 0){
 			name = "";
-			values = new long[0];
-			complex = new Long[0];
+			primitive = new long[0];
+			value = new Long[0];
 			return this;
 		}
 		name = lines[0].substring(0, lines[0].indexOf(SEPARATOR)).trim();
-		values = new long[lines.length - 1];
-		complex = new Long[lines.length - 1];
+		primitive = new long[lines.length - 1];
+		value = new Long[lines.length - 1];
 		for(int i = 1; i < lines.length; i++){
-			values[i - 1] = Long.parseLong(lines[i].substring(lines[i].indexOf(VALUE_START) + 1, lines[i].length()).trim());
-			complex[i - 1] = Long.valueOf(values[i - 1]);
+			primitive[i - 1] = Long.parseLong(lines[i].substring(lines[i].indexOf(VALUE_START) + 1, lines[i].length()).trim());
+			value[i - 1] = Long.valueOf(primitive[i - 1]);
 		}
 		return this;
 	}
 
 	@Override
 	protected void setValue(Long[] value) {
-		this.complex = value;
+		super.setValue(value);
 		for(int i = 0; i < value.length; i++){
-			this.values[i] = value[i].longValue();
+			this.primitive[i] = value[i].longValue();
 		}
 	}
 
