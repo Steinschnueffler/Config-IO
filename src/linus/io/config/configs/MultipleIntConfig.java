@@ -11,6 +11,7 @@ public class MultipleIntConfig extends MultipleConfig<Integer>{
 	public MultipleIntConfig(String name, int... values){
 		super(name);
 		this.primitive = values;
+		this.value = new Integer[values.length];
 		for(int i = 0; i < values.length; i++){
 			this.value[i] = Integer.valueOf(values[i]);
 		}

@@ -11,6 +11,11 @@ import java.util.Scanner;
 
 import linus.io.config.configs.*;
 
+/**
+ *
+ * @author Linus Dierheimer
+ *
+ */
 public class SimpleConfigReader implements ConfigReader{
 
 	private final Scanner reader;
@@ -37,6 +42,8 @@ public class SimpleConfigReader implements ConfigReader{
 	public SimpleConfigReader(InputStream in) {
 		reader = new Scanner(in);
 		source = in;
+		if(reader.hasNextLine())
+			lineBuffer = reader.nextLine();
 		buffer = nextConfig();
 	}
 
@@ -52,7 +59,7 @@ public class SimpleConfigReader implements ConfigReader{
 		}
 
 		//wenn nach dem = was steht -> Single Config
-		if(line.substring(line.indexOf(Config.SEPARATOR)).trim().length() != 0){
+		if(line.substring(line.indexOf(Config.SEPARATOR) + 1).trim().length() != 0){
 			if(reader.hasNextLine())
 				lineBuffer = reader.nextLine();
 			else
@@ -72,11 +79,10 @@ public class SimpleConfigReader implements ConfigReader{
 
 		//wenn ja dann alle dazugehöhrigen Zeilen lesen
 		String data = reader.nextLine();
-		while(!data.contains("" +Config.SEPARATOR) || data.startsWith("#")){
+		while(!data.contains("" +Config.SEPARATOR) || data.startsWith("#") || data.trim().length() == 0){
 			//testen auf lehre oder command Zeile
-			if(data.trim().length() == 0 || data.startsWith("#")) continue;
-			//ansonsten der Liste hinzufügen
-			lines.add(data);
+			if(!(data.trim().length() == 0 || data.trim().startsWith("#")))
+				lines.add(data);
 			//nächstes Element
 			if(!reader.hasNextLine()){
 				lineBuffer = null;
@@ -100,14 +106,16 @@ public class SimpleConfigReader implements ConfigReader{
 			return new SingleIntConfig(name, Integer.parseInt(value));
 		}catch(Exception e){}
 		try{
-			return new SingleBooleanConfig(name, Boolean.parseBoolean(value));
-		}catch(Exception e){}
-		try{
 			return new SingleDoubleConfig(name, Double.parseDouble(value));
 		}catch(Exception e){}
 		try{
 			return new SingleLongConfig(name, Long.parseLong(value));
 		}catch (Exception e) {}
+
+		if(value.equalsIgnoreCase("false"))
+			return new SingleBooleanConfig(name, false);
+		if(value.equalsIgnoreCase("true"))
+			return new SingleBooleanConfig(name, true);
 
 		//ansonsten char bzw String Config zurückgeben
 		if(value.length() == 1) return new SingleCharConfig(name, value.charAt(0));
@@ -122,7 +130,7 @@ public class SimpleConfigReader implements ConfigReader{
 		try{
 			int[] data = new int[lines.length - 1];
 			for(int i = 0; i < data.length; i++){
-				String str = lines[i + 1].substring(lines[i + 1].indexOf(MultipleConfig.VALUE_START)).trim();
+				String str = lines[i + 1].substring(lines[i + 1].indexOf(MultipleConfig.VALUE_START) + 1).trim();
 				data[i] = Integer.parseInt(str);
 			}
 			return new MultipleIntConfig(name, data);
@@ -130,15 +138,19 @@ public class SimpleConfigReader implements ConfigReader{
 		try{
 			boolean[] data = new boolean[lines.length - 1];
 			for(int i = 0; i < data.length; i++){
-				String str = lines[i + 1].substring(lines[i + 1].indexOf(MultipleConfig.VALUE_START)).trim();
-				data[i] = Boolean.parseBoolean(str);
+				String str = lines[i + 1].substring(lines[i + 1].indexOf(MultipleConfig.VALUE_START) + 1).trim();
+				if(str.equalsIgnoreCase("false"))
+					data[i] = false;
+				else if(str.equalsIgnoreCase("true"))
+					data[i] = true;
+				else throw new Exception();
 			}
 			return new MultipleBooleanConfig(name, data);
 		}catch(Exception e){}
 		try{
 			double[] data = new double[lines.length - 1];
 			for(int i = 0; i < data.length; i++){
-				String str = lines[i + 1].substring(lines[i + 1].indexOf(MultipleConfig.VALUE_START)).trim();
+				String str = lines[i + 1].substring(lines[i + 1].indexOf(MultipleConfig.VALUE_START) + 1).trim();
 				data[i] = Double.parseDouble(str);
 			}
 			return new MultipleDoubleConfig(name, data);
@@ -146,7 +158,7 @@ public class SimpleConfigReader implements ConfigReader{
 		try{
 			long[] data = new long[lines.length - 1];
 			for(int i = 0; i < data.length; i++){
-				String str = lines[i + 1].substring(lines[i + 1].indexOf(MultipleConfig.VALUE_START)).trim();
+				String str = lines[i + 1].substring(lines[i + 1].indexOf(MultipleConfig.VALUE_START) + 1).trim();
 				data[i] = Long.parseLong(str);
 			}
 			return new MultipleLongConfig(name, data);
@@ -154,13 +166,14 @@ public class SimpleConfigReader implements ConfigReader{
 		try{
 			char[] data = new char[lines.length - 1];
 			for(int i = 0; i < data.length; i++){
-				if(lines[i + 1].trim().length() > 1) throw new Exception();
+				String str = lines[i + 1].substring(lines[i + 1].indexOf(MultipleConfig.VALUE_START) + 1).trim();
+				if(str.length() > 1) throw new Exception();
 				data[i] = lines[i + 1].charAt(0);
 			}
 		}catch(Exception e){}
 		String[] data = new String[lines.length - 1];
 		for(int i = 0; i < data.length; i++){
-			data[i] = lines[i + 1].substring(lines[i + 1].indexOf(MultipleConfig.VALUE_START)).trim();
+			data[i] = lines[i + 1].substring(lines[i + 1].indexOf(MultipleConfig.VALUE_START) + 1).trim();
 		}
 		return new MultipleStringConfig(name, data);
 	}

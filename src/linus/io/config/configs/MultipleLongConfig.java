@@ -11,6 +11,7 @@ public class MultipleLongConfig extends MultipleConfig<Long>{
 	public MultipleLongConfig(String name, long... values) {
 		super(name);
 		this.primitive = values;
+		this.value = new Long[values.length];
 		for(int i = 0; i < values.length; i++){
 			this.value[i] = Long.valueOf(values[i]);
 		}

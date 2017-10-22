@@ -11,6 +11,7 @@ public class MultipleBooleanConfig extends MultipleConfig<Boolean>{
 	public MultipleBooleanConfig(String name, boolean... values){
 		super(name);
 		this.primitive = values;
+		this.value = new Boolean[values.length];
 		for(int i = 0; i < values.length; i++){
 			value[i] = Boolean.valueOf(values[i]);
 		}

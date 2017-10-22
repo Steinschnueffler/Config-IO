@@ -11,6 +11,7 @@ public class MultipleDoubleConfig extends MultipleConfig<Double>{
 	public MultipleDoubleConfig(String name, double... values){
 		super(name);
 		this.primitive = values;
+		this.value = new Double[values.length];
 		for(int i = 0; i < values.length; i++){
 			value[i] = Double.valueOf(values[i]);
 		}

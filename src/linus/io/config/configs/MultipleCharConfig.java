@@ -11,6 +11,7 @@ public class MultipleCharConfig extends MultipleConfig<Character>{
 	public MultipleCharConfig(String name, char... values) {
 		super(name);
 		this.primitive= values;
+		this.value = new Character[values.length];
 		for(int i = 0; i < values.length; i++){
 			this.value[i] = Character.valueOf(values[i]);
 		}
