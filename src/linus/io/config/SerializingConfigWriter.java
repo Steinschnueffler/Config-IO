@@ -1,10 +1,15 @@
 package linus.io.config;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileDescriptor;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.net.URI;
 
 public class SerializingConfigWriter implements ConfigWriter{
 
@@ -12,6 +17,22 @@ public class SerializingConfigWriter implements ConfigWriter{
 	private OutputStream source;
 
 	private Exception e = null;
+
+	public SerializingConfigWriter(String pathName) throws FileNotFoundException {
+		this(new File(pathName));
+	}
+
+	public SerializingConfigWriter(URI uri) throws FileNotFoundException {
+		this(new File(uri));
+	}
+
+	public SerializingConfigWriter(FileDescriptor fd) {
+		this(new FileOutputStream(fd));
+	}
+
+	public SerializingConfigWriter(File f) throws FileNotFoundException {
+		this(new FileOutputStream(f));
+	}
 
 	public SerializingConfigWriter(OutputStream os) {
 		source = os;

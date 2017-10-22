@@ -1,9 +1,14 @@
 package linus.io.config;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileDescriptor;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
+import java.net.URI;
 import java.util.Scanner;
 
 public class SerializingConfigReader implements ConfigReader{
@@ -11,6 +16,28 @@ public class SerializingConfigReader implements ConfigReader{
 	private Scanner reader;
 	private InputStream source;
 	private Config<?> buffer;
+
+	public SerializingConfigReader(String pathName) throws FileNotFoundException {
+		this(new File(pathName));
+	}
+
+	public SerializingConfigReader(FileDescriptor fd) {
+		this(new FileInputStream(fd));
+	}
+
+	public SerializingConfigReader(URI uri) throws FileNotFoundException {
+		this(new File(uri));
+	}
+
+	public SerializingConfigReader(File f) throws FileNotFoundException {
+		this(new FileInputStream(f));
+	}
+
+	public SerializingConfigReader(InputStream in) {
+		reader = new Scanner(in);
+		source = in;
+		buffer = nextConfig();
+	}
 
 	@Override
 	public void close() throws IOException {

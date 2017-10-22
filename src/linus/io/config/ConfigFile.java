@@ -77,6 +77,14 @@ public class ConfigFile extends File{
 		return new SimpleConfigWriter(this);
 	}
 
+	public SerializingConfigWriter getSerializingWriter() throws FileNotFoundException{
+		return new SerializingConfigWriter(this);
+	}
+
+	public SerializingConfigReader getSerializingReader() throws FileNotFoundException{
+		return new SerializingConfigReader(this);
+	}
+
 	public ConfigReader getFittingReader() throws FileNotFoundException, ReflectiveOperationException{
 		Scanner s = new Scanner(this);
 		boolean hasNext = s.hasNext();
