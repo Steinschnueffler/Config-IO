@@ -41,4 +41,12 @@ public class MultipleBooleanConfig extends MultipleConfig<Boolean>{
 		return this;
 	}
 
+	@Override
+	protected void setValue(Boolean[] value) {
+		this.complex = value;
+		for(int i = 0; i < values.length; i++){
+			this.values[i] = value[i].booleanValue();
+		}
+	}
+
 }

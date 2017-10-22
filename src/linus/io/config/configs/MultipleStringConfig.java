@@ -30,4 +30,9 @@ public class MultipleStringConfig extends MultipleConfig<String>{
 		return this;
 	}
 
+	@Override
+	protected void setValue(String[] value) {
+		this.values = value;
+	}
+
 }

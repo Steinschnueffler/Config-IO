@@ -41,4 +41,12 @@ public class MultipleCharConfig extends MultipleConfig<Character>{
 		return this;
 	}
 
+	@Override
+	protected void setValue(Character[] value) {
+		this.complex = value;
+		for(int i = 0; i < value.length; i++){
+			this.value[i] = value[i].charValue();
+		}
+	}
+
 }

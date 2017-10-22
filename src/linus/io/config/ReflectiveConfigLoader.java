@@ -81,4 +81,11 @@ public class ReflectiveConfigLoader {
 		Class<?> clazz = Class.forName(classPath);
 		return (ConfigReader) clazz.newInstance();
 	}
+
+	@SuppressWarnings("unchecked")
+	public static <E extends ConfigBase> Config<E> loadFromData(SerializableConfigData<?> data) throws ReflectiveOperationException{
+		Class<?> clazz = Class.forName(data.classPath);
+		Config<?> cfg = (Config<?>) clazz.newInstance();
+		return (Config<E>) cfg.read(data);
+	}
 }

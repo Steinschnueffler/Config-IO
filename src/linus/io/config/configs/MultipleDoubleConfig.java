@@ -41,4 +41,12 @@ public class MultipleDoubleConfig extends MultipleConfig<Double>{
 		return this;
 	}
 
+	@Override
+	protected void setValue(Double[] value) {
+		this.complex = value;
+		for(int i = 0; i < value.length; i++){
+			this.values[i] = value[i].doubleValue();
+		}
+	}
+
 }

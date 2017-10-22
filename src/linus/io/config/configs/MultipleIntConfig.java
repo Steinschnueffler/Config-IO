@@ -41,4 +41,12 @@ public class MultipleIntConfig extends MultipleConfig<Integer>{
 		return this;
 	}
 
+	@Override
+	protected void setValue(Integer[] value) {
+		this.complex = value;
+		for(int i = 0; i < value.length; i++){
+			this.values[i] = value[i].intValue();
+		}
+	}
+
 }

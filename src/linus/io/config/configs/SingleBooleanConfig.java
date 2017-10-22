@@ -27,4 +27,9 @@ public class SingleBooleanConfig extends SingleConfig<Boolean>{
 		return this;
 	}
 
+	@Override
+	protected void setValue(Boolean value) {
+		this.value = value;
+	}
+
 }

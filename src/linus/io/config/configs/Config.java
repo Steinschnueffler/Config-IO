@@ -3,6 +3,7 @@ package linus.io.config.configs;
 import linus.io.config.ConfigReader;
 import linus.io.config.ConfigType;
 import linus.io.config.ConfigWriter;
+import linus.io.config.SerializingConfigWriter;
 
 /**
  *This abstract class is the root of all Configs and it or
@@ -215,5 +216,31 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 		}catch(Exception e){}
 
 		return compareString(o1.toString(), o2.toString());
+	}
+
+	/**
+	 * returns a {@link SerializableConfigData} of the Config with the same values.
+	 * This is used by {@link SerializingConfigWriter} to write the COnfig compact.
+	 * @return
+	 */
+	public SerializableConfigData<E> toSerializableConfig(){
+		return new SerializableConfigData<E>(getName(), getValue(), getClass().getName());
+	}
+
+	protected abstract void setValue(E value);
+
+	/**
+	 * Reads a Config from a {@link SerializableConfigData}.
+	 * @param data
+	 */
+	@SuppressWarnings("unchecked")
+	public Config<E> read(SerializableConfigData<?> data) throws IllegalArgumentException{
+		name = data.name;
+		try{
+			setValue((E) data.value);
+		}catch(Exception e){
+			throw new IllegalArgumentException();
+		}
+		return this;
 	}
 }

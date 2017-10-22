@@ -26,4 +26,9 @@ public class SingleIntConfig extends SingleConfig<Integer>{
 		return value;
 	}
 
+	@Override
+	protected void setValue(Integer value) {
+		this.value = value;
+	}
+
 }

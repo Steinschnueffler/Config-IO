@@ -25,4 +25,9 @@ public class SingleCharConfig extends SingleConfig<Character>{
 		return this;
 	}
 
+	@Override
+	protected void setValue(Character value) {
+		this.value = value;
+	}
+
 }

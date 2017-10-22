@@ -41,4 +41,12 @@ public class MultipleLongConfig extends MultipleConfig<Long>{
 		return this;
 	}
 
+	@Override
+	protected void setValue(Long[] value) {
+		this.complex = value;
+		for(int i = 0; i < value.length; i++){
+			this.values[i] = value[i].longValue();
+		}
+	}
+
 }

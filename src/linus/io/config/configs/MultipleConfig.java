@@ -11,10 +11,8 @@ public abstract class MultipleConfig<E> extends Config<E[]> implements Iterable<
 
 	public static final char VALUE_START = '-';
 
-	protected String name = "";
-
 	public MultipleConfig(String name){
-		this.name = name;
+		super(name);
 	}
 
 	@Override
@@ -30,11 +28,6 @@ public abstract class MultipleConfig<E> extends Config<E[]> implements Iterable<
 			lines[i + 1] = " " +VALUE_START +" " +getValue()[i];
 		}
 		return lines;
-	}
-
-	@Override
-	public String getName() {
-		return name;
 	}
 
 	@Override

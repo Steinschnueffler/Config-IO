@@ -26,4 +26,9 @@ public class SingleDoubleConfig extends SingleConfig<Double>{
 		return this;
 	}
 
+	@Override
+	protected void setValue(Double value) {
+		this.value = value;
+	}
+
 }

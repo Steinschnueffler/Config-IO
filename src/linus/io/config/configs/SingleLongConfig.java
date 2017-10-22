@@ -26,4 +26,9 @@ public class SingleLongConfig extends SingleConfig<Long>{
 		return this;
 	}
 
+	@Override
+	protected void setValue(Long value) {
+		this.value = value;
+	}
+
 }

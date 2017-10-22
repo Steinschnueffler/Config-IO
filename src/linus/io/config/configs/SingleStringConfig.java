@@ -21,4 +21,9 @@ public class SingleStringConfig extends SingleConfig<String>{
 	public String getValue() {
 		return value;
 	}
+
+	@Override
+	protected void setValue(String value) {
+		this.value = value;
+	}
 }
