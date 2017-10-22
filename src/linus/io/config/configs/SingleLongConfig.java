@@ -4,22 +4,16 @@ import linus.io.config.Config;
 import linus.io.config.SingleConfig;
 
 public class SingleLongConfig extends SingleConfig<Long>{
-	public SingleLongConfig() {}
-
-	private long value = 0l;
-
-	public SingleLongConfig(String name, long value) {
-		super(name);
-		this.value = value;
+	public SingleLongConfig() {
+		setValue(0l);
 	}
 
-	@Override
-	public Long getValue() {
-		return value;
+	public SingleLongConfig(String name, long value) {
+		super(name, value);
 	}
 
 	public long getPrimitiveValue(){
-		return value;
+		return value == null ? 0l : value;
 	}
 
 	@Override
@@ -27,11 +21,6 @@ public class SingleLongConfig extends SingleConfig<Long>{
 		name = lines[0].substring(0, lines[0].indexOf(SEPARATOR)).trim();
 		value = Long.parseLong(lines[0].substring(lines[0].indexOf(SEPARATOR) + 1, lines[0].length()).trim());
 		return this;
-	}
-
-	@Override
-	protected void setValue(Long value) {
-		this.value = value;
 	}
 
 }

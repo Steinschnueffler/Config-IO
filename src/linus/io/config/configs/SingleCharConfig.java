@@ -4,21 +4,16 @@ import linus.io.config.Config;
 import linus.io.config.SingleConfig;
 
 public class SingleCharConfig extends SingleConfig<Character>{
-
-	private char value = ' ';
-
-	public SingleCharConfig(String name, char value) {
-		super(name);
-		this.value = value;
+	public SingleCharConfig() {
+		setValue(' ');
 	}
 
-	@Override
-	public Character getValue() {
-		return value;
+	public SingleCharConfig(String name, char value) {
+		super(name, value);
 	}
 
 	public char getPrimitiveValue(){
-		return value;
+		return value == null ? ' ' : value;
 	}
 
 	@Override
@@ -26,11 +21,6 @@ public class SingleCharConfig extends SingleConfig<Character>{
 		name = lines[0].substring(0, lines[0].indexOf(SEPARATOR)).trim();
 		value = lines[0].substring(lines[0].indexOf(SEPARATOR) + 1, lines[0].length()).charAt(0);
 		return this;
-	}
-
-	@Override
-	protected void setValue(Character value) {
-		this.value = value;
 	}
 
 }

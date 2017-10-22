@@ -6,20 +6,12 @@ import linus.io.config.SingleConfig;
 public class SingleBooleanConfig extends SingleConfig<Boolean>{
 	public SingleBooleanConfig() {}
 
-	private boolean value;
-
 	public SingleBooleanConfig(String name, boolean value) {
-		super(name);
-		this.value = value;
-	}
-
-	@Override
-	public Boolean getValue() {
-		return value;
+		super(name, value);
 	}
 
 	public boolean getPrimitiveValue(){
-		return value;
+		return value == null ? false : value;
 	}
 
 	@Override
@@ -28,11 +20,6 @@ public class SingleBooleanConfig extends SingleConfig<Boolean>{
 		String val = lines[0].substring(lines[0].indexOf(SEPARATOR) + 1, lines[0].length());
 		value = Boolean.parseBoolean(val);
 		return this;
-	}
-
-	@Override
-	protected void setValue(Boolean value) {
-		this.value = value;
 	}
 
 }

@@ -4,22 +4,16 @@ import linus.io.config.Config;
 import linus.io.config.SingleConfig;
 
 public class SingleDoubleConfig extends SingleConfig<Double>{
-	public SingleDoubleConfig() {}
-
-	private double value = 0.0;
-
-	public SingleDoubleConfig(String name, double value) {
-		super(name);
-		this.value = value;
+	public SingleDoubleConfig() {
+		setValue(0.0);
 	}
 
-	@Override
-	public Double getValue() {
-		return value;
+	public SingleDoubleConfig(String name, double value) {
+		super(name, value);
 	}
 
 	public double getPrimitiveValue(){
-		return value;
+		return value == null ? 0.0 : value;
 	}
 
 	@Override

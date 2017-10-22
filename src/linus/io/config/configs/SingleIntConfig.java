@@ -4,18 +4,12 @@ import linus.io.config.Config;
 import linus.io.config.SingleConfig;
 
 public class SingleIntConfig extends SingleConfig<Integer>{
-	public SingleIntConfig() {}
-
-	private int value = 0;
-
-	public SingleIntConfig(String name, int value) {
-		super(name);
-		this.value = value;
+	public SingleIntConfig() {
+		setValue(0);
 	}
 
-	@Override
-	public Integer getValue() {
-		return value;
+	public SingleIntConfig(String name, int value) {
+		super(name, value);
 	}
 
 	@Override
@@ -26,12 +20,7 @@ public class SingleIntConfig extends SingleConfig<Integer>{
 	}
 
 	public int getPrimitiveValue(){
-		return value;
-	}
-
-	@Override
-	protected void setValue(Integer value) {
-		this.value = value;
+		return value == null ? 0 : value;
 	}
 
 }
