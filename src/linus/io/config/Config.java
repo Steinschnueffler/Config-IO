@@ -256,7 +256,7 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 * {@link SingleStringConfig} and at {@link MultipleConfig} it is usually
 	 * {@link MultipleStringConfig}. In the standart implementation by these two,
 	 * converting to String works easally over the toString() method.
-	 * @return a String Config with the same name and Value as String
+	 * @return a String Config with the same name and the Value as a String
 	 */
 	public abstract Config<? extends Object> toStringConfig();
 }
