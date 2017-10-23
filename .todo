@@ -1,9 +1,8 @@
-add Comments
+﻿add Comments
 fix Serialization
 final simpleWrite methode
 java doc
 java 9 update
   jig saw project!!
   komatibilität für alte Versionen?
- Auslagerung der Type erkennung in static Config methoden
  Remove ReflectiveLoader, auslagerung in metoden
