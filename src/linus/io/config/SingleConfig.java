@@ -23,14 +23,8 @@ public abstract class SingleConfig<E> extends Config<E>{
 
 	@Override
 	public String[] write() {
-		String[] arr = {
-				name+
-				" "+
-				SEPARATOR+
-				" "+
-				getValue().toString()
-			};
-			return arr;
+		String[] arr = {writeSimple()};
+		return arr;
 	}
 
 	@Override
@@ -52,5 +46,14 @@ public abstract class SingleConfig<E> extends Config<E>{
 	public SingleStringConfig toStringConfig() {
 		String str = getValue() == null ? null : getValue().toString();
 		return new SingleStringConfig(getName(), str);
+	}
+
+	public final String writeSimple(){
+		return
+			name+
+			" "+
+			SEPARATOR+
+			" "+
+			getValue().toString();
 	}
 }

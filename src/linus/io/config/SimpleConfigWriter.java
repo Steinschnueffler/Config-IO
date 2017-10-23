@@ -51,10 +51,21 @@ public class SimpleConfigWriter implements ConfigWriter{
 	}
 
 	@Override
+	@Deprecated
 	public void writeConfig(Config<?> cfg) {
-		if(!(cfg instanceof SingleConfig || cfg instanceof MultipleConfig))
-			throw new InvalidConfigException("Config isn't a subclass of SingleConfig or MultipleConfig");
-		for(String s : cfg.write())
+		if(cfg instanceof SingleConfig<?>)
+			writeConfig((SingleConfig<?>) cfg);
+		else if(cfg instanceof MultipleConfig<?>)
+			writeConfig((MultipleConfig<?>) cfg);
+		else throw new InvalidConfigException("Config must be a super Type of MultipleConfig<?> or SingleConfig<?>");
+	}
+
+	public void writeConfig(SingleConfig<?> sc){
+		writer.println(sc.writeSimple());
+	}
+
+	public void writeConfig(MultipleConfig<?> mc){
+		for(String s : mc.writeSimple())
 			writer.println(s);
 	}
 

@@ -25,12 +25,7 @@ public abstract class MultipleConfig<E> extends Config<E[]> implements Iterable<
 
 	@Override
 	public String[] write() {
-		String[] lines = new String[getValue().length + 1];
-		lines[0] = name +" " +SEPARATOR;
-		for(int i = 0; i < getValue().length; i++){
-			lines[i + 1] = " " +VALUE_START +" " +getValue()[i];
-		}
-		return lines;
+		return writeSimple();
 	}
 
 	@Override
@@ -80,6 +75,15 @@ public abstract class MultipleConfig<E> extends Config<E[]> implements Iterable<
 			vals[i] = getValue() == null ? null : getValue().toString();
 		}
 		return new MultipleStringConfig(getName(), vals);
+	}
+
+	public final String[] writeSimple(){
+		String[] lines = new String[getValue().length + 1];
+		lines[0] = name +" " +SEPARATOR;
+		for(int i = 0; i < getValue().length; i++){
+			lines[i + 1] = " " +VALUE_START +" " +getValue()[i];
+		}
+		return lines;
 	}
 
 }

@@ -1,19 +1,21 @@
 package linus.io.config;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
-public class ThreadedConfigReader implements ConfigReader{
+public class ThreadedConfigReader implements Closeable{
 
 	private ConfigReader reader;
+	private ConfigReader originReader;
 	private ArrayList<Config<?>> cfgs = new ArrayList<>();
-	private ReadingThread thread = new ReadingThread();
+	private ReadingThread thread;
 
 	public ThreadedConfigReader(ConfigReader reader) {
 		if(reader instanceof ThreadedConfigReader)
 			throw new InvalidConfigReaderException("ThreadedConfigReader cannot be constructed with another ThreadedConfigReader");
-		this.reader = reader;
+		this.originReader = reader;
 	}
 
 	public ThreadedConfigReader(ConfigReader reader, boolean autoStart) {
@@ -22,19 +24,21 @@ public class ThreadedConfigReader implements ConfigReader{
 	}
 
 	public ConfigReader getReader(){
-		return reader;
+		return originReader;
 	}
 
 	public void start(){
+		reader = originReader;
+		thread = new ReadingThread();
 		thread.start();
 	}
 
 	public boolean isReading(){
-		return thread.isAlive();
+		return thread != null ? thread.isAlive() : false;
 	}
 
 	public void join() throws InterruptedException{
-		thread.join();
+		if(thread != null) thread.join();
 	}
 
 	@Override
@@ -44,19 +48,9 @@ public class ThreadedConfigReader implements ConfigReader{
 		} catch (InterruptedException e) {
 			throw new IOException(e);
 		}
+		thread = null;
 		reader.close();
-	}
-
-	@Override
-	@Deprecated
-	public <E extends ConfigBase> E next() {
-		return reader.next();
-	}
-
-	@Override
-	@Deprecated
-	public boolean hasNext() {
-		return reader.hasNext();
+		reader = null;
 	}
 
 	public Config<?>[] getAll(){
@@ -67,13 +61,12 @@ public class ThreadedConfigReader implements ConfigReader{
 
 		@Override
 		public void run() {
-			while(hasNext())
-				cfgs.add(next());
+			while(reader.hasNext())
+				cfgs.add(reader.next());
 		}
 
 	}
 
-	@Override
 	public InputStream getSource() {
 		return reader.getSource();
 	}

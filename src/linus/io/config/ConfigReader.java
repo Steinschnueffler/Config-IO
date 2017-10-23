@@ -17,7 +17,7 @@ import java.io.InputStream;
  * @author Linus Dierheimer
  *
  */
-public abstract interface ConfigReader extends Closeable{
+public abstract interface ConfigReader extends Closeable, Cloneable{
 
 	/**
 	 * Reads the next {@link Config} and returns it with
