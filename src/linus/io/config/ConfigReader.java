@@ -1,6 +1,9 @@
 package linus.io.config;
 
 import java.io.Closeable;
+import java.io.File;
+import java.io.FileDescriptor;
+import java.io.FileInputStream;
 import java.io.InputStream;
 
 /**
@@ -17,7 +20,7 @@ import java.io.InputStream;
  * @author Linus Dierheimer
  *
  */
-public abstract interface ConfigReader extends Closeable, Cloneable{
+public abstract interface ConfigReader extends Closeable{
 
 	/**
 	 * Reads the next {@link Config} and returns it with
@@ -36,5 +39,12 @@ public abstract interface ConfigReader extends Closeable, Cloneable{
 	 */
 	public abstract boolean hasNext();
 
+	/**
+	 * Returns the source of the Reader as {@link InputStream}. Usually its the InputStream
+	 * with that the Reader was constructed or a {@link FileInputStream} of the {@link File} or
+	 * {@link FileDescriptor} on that the Reader reads.
+	 *
+	 * @return the source of the Reader
+	 */
 	public abstract InputStream getSource();
 }

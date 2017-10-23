@@ -1,5 +1,10 @@
 package linus.io.config;
 
+import linus.io.config.configs.SingleBooleanConfig;
+import linus.io.config.configs.SingleCharConfig;
+import linus.io.config.configs.SingleDoubleConfig;
+import linus.io.config.configs.SingleIntConfig;
+import linus.io.config.configs.SingleLongConfig;
 import linus.io.config.configs.SingleStringConfig;
 
 public abstract class SingleConfig<E> extends Config<E>{
@@ -55,5 +60,32 @@ public abstract class SingleConfig<E> extends Config<E>{
 			SEPARATOR+
 			" "+
 			getValue().toString();
+	}
+
+	//static
+
+	public static SingleConfig<?> getSingleConfig(String line){
+		String name = line.substring(0, line.indexOf(Config.SEPARATOR)).trim();
+		String value = line.substring(line.indexOf(Config.SEPARATOR) +1, line.length()).trim();
+
+		//testen was es am ehesten für eine Config ist
+		try{
+			return new SingleIntConfig(name, Integer.parseInt(value));
+		}catch(Exception e){}
+		try{
+			return new SingleDoubleConfig(name, Double.parseDouble(value));
+		}catch(Exception e){}
+		try{
+			return new SingleLongConfig(name, Long.parseLong(value));
+		}catch (Exception e) {}
+
+		if(value.equalsIgnoreCase("false"))
+			return new SingleBooleanConfig(name, false);
+		if(value.equalsIgnoreCase("true"))
+			return new SingleBooleanConfig(name, true);
+
+		//ansonsten char bzw String Config zurückgeben
+		if(value.length() == 1) return new SingleCharConfig(name, value.charAt(0));
+		return new SingleStringConfig(name, value);
 	}
 }

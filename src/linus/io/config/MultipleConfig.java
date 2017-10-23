@@ -3,6 +3,10 @@ package linus.io.config;
 import java.util.Arrays;
 import java.util.Iterator;
 
+import linus.io.config.configs.MultipleBooleanConfig;
+import linus.io.config.configs.MultipleDoubleConfig;
+import linus.io.config.configs.MultipleIntConfig;
+import linus.io.config.configs.MultipleLongConfig;
 import linus.io.config.configs.MultipleStringConfig;
 
 public abstract class MultipleConfig<E> extends Config<E[]> implements Iterable<E>{
@@ -84,6 +88,64 @@ public abstract class MultipleConfig<E> extends Config<E[]> implements Iterable<
 			lines[i + 1] = " " +VALUE_START +" " +getValue()[i];
 		}
 		return lines;
+	}
+
+	//static
+
+	public static MultipleConfig<?> getMultipleConfig(String[] lines){
+		String name = lines[0].substring(0, lines[0].indexOf(Config.SEPARATOR)).trim();
+		if(lines.length == 1) return new MultipleStringConfig(name, new String[0]);
+
+		//testen was es am ehesten für eine Config ist
+		try{
+			int[] data = new int[lines.length - 1];
+			for(int i = 0; i < data.length; i++){
+				String str = lines[i + 1].substring(lines[i + 1].indexOf(MultipleConfig.VALUE_START) + 1).trim();
+				data[i] = Integer.parseInt(str);
+			}
+			return new MultipleIntConfig(name, data);
+		}catch(Exception e){}
+		try{
+			boolean[] data = new boolean[lines.length - 1];
+			for(int i = 0; i < data.length; i++){
+				String str = lines[i + 1].substring(lines[i + 1].indexOf(MultipleConfig.VALUE_START) + 1).trim();
+				if(str.equalsIgnoreCase("false"))
+					data[i] = false;
+				else if(str.equalsIgnoreCase("true"))
+					data[i] = true;
+				else throw new Exception();
+			}
+			return new MultipleBooleanConfig(name, data);
+		}catch(Exception e){}
+		try{
+			double[] data = new double[lines.length - 1];
+			for(int i = 0; i < data.length; i++){
+				String str = lines[i + 1].substring(lines[i + 1].indexOf(MultipleConfig.VALUE_START) + 1).trim();
+				data[i] = Double.parseDouble(str);
+			}
+			return new MultipleDoubleConfig(name, data);
+		}catch(Exception e){}
+		try{
+			long[] data = new long[lines.length - 1];
+			for(int i = 0; i < data.length; i++){
+				String str = lines[i + 1].substring(lines[i + 1].indexOf(MultipleConfig.VALUE_START) + 1).trim();
+				data[i] = Long.parseLong(str);
+			}
+			return new MultipleLongConfig(name, data);
+		}catch (Exception e) {}
+		try{
+			char[] data = new char[lines.length - 1];
+			for(int i = 0; i < data.length; i++){
+				String str = lines[i + 1].substring(lines[i + 1].indexOf(MultipleConfig.VALUE_START) + 1).trim();
+				if(str.length() > 1) throw new Exception();
+				data[i] = lines[i + 1].charAt(0);
+			}
+		}catch(Exception e){}
+		String[] data = new String[lines.length - 1];
+		for(int i = 0; i < data.length; i++){
+			data[i] = lines[i + 1].substring(lines[i + 1].indexOf(MultipleConfig.VALUE_START) + 1).trim();
+		}
+		return new MultipleStringConfig(name, data);
 	}
 
 }
