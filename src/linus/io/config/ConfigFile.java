@@ -1,7 +1,9 @@
 package linus.io.config;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.net.URI;
 import java.util.Scanner;
 
@@ -93,7 +95,21 @@ public class ConfigFile extends File{
 		if(!hasNext) return getComplexReader();
 		if(!line.startsWith("%PreferedReader :")) return getComplexReader();
 		String readerClass = line.substring(line.indexOf(":")).trim();
-		return ReflectiveConfigLoader.loadConfigReader(readerClass, this);
+		return loadConfigReader(readerClass, new FileInputStream(this));
+	}
+
+	private ConfigReader loadConfigReader(String classPath, InputStream source) throws ReflectiveOperationException{
+		if(classPath.startsWith("linus.io.config")){
+			if(classPath.equals("linus.io.config.SimpleConfigReader"))
+				return new SimpleConfigReader(source);
+			if(classPath.equals("linus.io.config.ComplexConfigReader"))
+				return new ComplexConfigReader(source);
+			if(classPath.equals("linus.io.config.SerializingConfigReader"))
+				return new SerializingConfigReader(source);
+		}
+
+		Class<?> clazz = Class.forName(classPath);
+		return (ConfigReader) clazz.newInstance();
 	}
 
 }

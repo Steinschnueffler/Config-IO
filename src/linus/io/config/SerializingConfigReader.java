@@ -63,7 +63,9 @@ public class SerializingConfigReader implements ConfigReader{
 			return null;
 		}
 		try {
-			return ReflectiveConfigLoader.loadFromData(data);
+			Class<?> clazz = Class.forName(data.classPath);
+			Config<?> cfg = (Config<?>) clazz.newInstance();
+			return cfg.read(data);
 		} catch (ReflectiveOperationException e) {
 			e.printStackTrace();
 		}

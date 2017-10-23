@@ -25,4 +25,13 @@ public class MultipleStringConfig extends MultipleConfig<String>{
 		return this;
 	}
 
+	@Override
+	public MultipleStringConfig toStringConfig() {
+		try {
+			return (MultipleStringConfig) clone();
+		} catch (CloneNotSupportedException e) {
+			return new MultipleStringConfig(getName(), getValue());
+		}
+	}
+
 }

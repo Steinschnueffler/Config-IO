@@ -19,4 +19,13 @@ public class SingleStringConfig extends SingleConfig<String>{
 		value = lines[0].substring(lines[0].indexOf(SEPARATOR) + 1, lines[0].length()).trim();
 		return this;
 	}
+
+	@Override
+	public SingleStringConfig toStringConfig() {
+		try {
+			return (SingleStringConfig) clone();
+		} catch (CloneNotSupportedException e) {
+			return new SingleStringConfig(getName(), getValue());
+		}
+	}
 }
