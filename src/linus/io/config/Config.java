@@ -243,4 +243,26 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 * @return a String Config with the same name and the Value as a String
 	 */
 	public abstract Config<? extends Object> toStringConfig();
+
+	/**
+	 *This method executes the given {@link ConfigWriter} to write itself.
+	 *Calling this is equal to <code>writer.writeConfig(thisConfig)</code>.
+	 *
+	 * @throws NullPointerException if writer is null
+	 * @param writer - the writer that should write this Config
+	 */
+	public void writeTo(ConfigWriter writer){
+		writer.writeConfig(this);
+	}
+
+	/**
+	 * This method behaves as {@link #writeTo(ConfigWriter)}, only with the
+	 * different that the given writer is a {@link ThreadedConfigWriter}.
+	 *
+	 * @throws NullPointerException if writer is null
+	 * @param writer - the writer that should write this Config
+	 */
+	public void writeTo(ThreadedConfigWriter writer){
+		writer.writeConfig(this);
+	}
 }
