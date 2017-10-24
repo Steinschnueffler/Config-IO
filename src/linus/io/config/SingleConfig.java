@@ -18,7 +18,7 @@ public abstract class SingleConfig<E> extends Config<E>{
 
 	public SingleConfig(String name, E value){
 		super(name);
-		setValue(value);
+		this.value = value;
 	}
 
 	@Override
@@ -41,12 +41,6 @@ public abstract class SingleConfig<E> extends Config<E>{
 	public E getValue() {
 		return value;
 	}
-
-	@Override
-	protected void setValue(E value) {
-		this.value = value;
-	}
-
 	@Override
 	public SingleStringConfig toStringConfig() {
 		String str = getValue() == null ? null : getValue().toString();
@@ -60,6 +54,13 @@ public abstract class SingleConfig<E> extends Config<E>{
 			SEPARATOR+
 			" "+
 			getValue().toString();
+	}
+
+	@Override
+	public Config<E> read(SerializableConfigData<E> data) {
+		this.name = data.name;
+		this.value = data.value;
+		return this;
 	}
 
 	//static

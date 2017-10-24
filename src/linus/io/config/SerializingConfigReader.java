@@ -52,10 +52,11 @@ public class SerializingConfigReader implements ConfigReader{
 		return (E) cfg;
 	}
 
+	@SuppressWarnings("unchecked")
 	private Config<?> nextConfig(){
-		SerializableConfigData<?> data;
+		SerializableConfigData<Object> data;
 		try {
-			data = nextData();
+			data = (SerializableConfigData<Object>) nextData();
 		} catch (IOException | ReflectiveOperationException e) {
 			e.printStackTrace();
 			return null;
@@ -64,7 +65,7 @@ public class SerializingConfigReader implements ConfigReader{
 		}
 		try {
 			Class<?> clazz = Class.forName(data.classPath);
-			Config<?> cfg = (Config<?>) clazz.newInstance();
+			Config<Object> cfg = (Config<Object>) clazz.newInstance();
 			return cfg.read(data);
 		} catch (ReflectiveOperationException e) {
 			e.printStackTrace();

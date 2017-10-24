@@ -4,9 +4,7 @@ import linus.io.config.Config;
 import linus.io.config.SingleConfig;
 
 public class SingleDoubleConfig extends SingleConfig<Double>{
-	public SingleDoubleConfig() {
-		setValue(0.0);
-	}
+	public SingleDoubleConfig() {}
 
 	public SingleDoubleConfig(String name, double value) {
 		super(name, value);
@@ -21,11 +19,6 @@ public class SingleDoubleConfig extends SingleConfig<Double>{
 		name = lines[0].substring(0, lines[0].indexOf(SEPARATOR)).trim();
 		value = Double.parseDouble(lines[0].substring(lines[0].indexOf(SEPARATOR) + 1, lines[0].length()).trim());
 		return this;
-	}
-
-	@Override
-	protected void setValue(Double value) {
-		this.value = value;
 	}
 
 }

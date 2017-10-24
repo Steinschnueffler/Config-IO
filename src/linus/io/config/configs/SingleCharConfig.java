@@ -4,9 +4,7 @@ import linus.io.config.Config;
 import linus.io.config.SingleConfig;
 
 public class SingleCharConfig extends SingleConfig<Character>{
-	public SingleCharConfig() {
-		setValue(' ');
-	}
+	public SingleCharConfig() {}
 
 	public SingleCharConfig(String name, char value) {
 		super(name, value);

@@ -4,9 +4,7 @@ import linus.io.config.Config;
 import linus.io.config.SingleConfig;
 
 public class SingleStringConfig extends SingleConfig<String>{
-	public SingleStringConfig() {
-		setValue("");
-	}
+	public SingleStringConfig() {}
 
 	public SingleStringConfig(String name, String value) {
 		super(name);

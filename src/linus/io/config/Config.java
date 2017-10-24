@@ -227,28 +227,12 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	}
 
 	/**
-	 * This method should stay protected. It is used by {@link #read(SerializableConfigData)} to
-	 * change the value.
-	 * @param value
-	 */
-	protected abstract void setValue(E value);
-
-	/**
 	 * Reads a Config from a {@link SerializableConfigData}. This should change the Value and the Name
 	 * and the Value of this Config. Calling this metod should be equal as calling this class
 	 * with the Constructor {@code Config(SerializableConfigData data)}.
 	 * @param data
 	 */
-	@SuppressWarnings("unchecked")
-	public Config<E> read(SerializableConfigData<?> data) throws IllegalArgumentException{
-		name = data.name;
-		try{
-			setValue((E) data.value);
-		}catch(Exception e){
-			throw new IllegalArgumentException();
-		}
-		return this;
-	}
+	public abstract Config<E> read(SerializableConfigData<E> data);
 
 	/**
 	 * Gives back a Config which has the same name and the value as String, so

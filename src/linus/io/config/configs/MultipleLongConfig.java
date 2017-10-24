@@ -2,6 +2,7 @@ package linus.io.config.configs;
 
 import linus.io.config.Config;
 import linus.io.config.MultipleConfig;
+import linus.io.config.SerializableConfigData;
 
 public class MultipleLongConfig extends MultipleConfig<Long>{
 	public MultipleLongConfig() {}
@@ -40,11 +41,13 @@ public class MultipleLongConfig extends MultipleConfig<Long>{
 	}
 
 	@Override
-	protected void setValue(Long[] value) {
-		super.setValue(value);
-		for(int i = 0; i < value.length; i++){
-			this.primitive[i] = value[i].longValue();
+	public MultipleConfig<Long> read(SerializableConfigData<Long[]> data) {
+		super.read(data);
+		primitive = new long[value.length];
+		for(int i = 0; i < primitive.length; i++){
+			primitive[i] = value[i].longValue();
 		}
+		return this;
 	}
 
 }

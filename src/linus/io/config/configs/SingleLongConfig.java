@@ -4,9 +4,7 @@ import linus.io.config.Config;
 import linus.io.config.SingleConfig;
 
 public class SingleLongConfig extends SingleConfig<Long>{
-	public SingleLongConfig() {
-		setValue(0l);
-	}
+	public SingleLongConfig() {}
 
 	public SingleLongConfig(String name, long value) {
 		super(name, value);

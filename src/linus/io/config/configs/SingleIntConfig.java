@@ -4,9 +4,7 @@ import linus.io.config.Config;
 import linus.io.config.SingleConfig;
 
 public class SingleIntConfig extends SingleConfig<Integer>{
-	public SingleIntConfig() {
-		setValue(0);
-	}
+	public SingleIntConfig() {}
 
 	public SingleIntConfig(String name, int value) {
 		super(name, value);
