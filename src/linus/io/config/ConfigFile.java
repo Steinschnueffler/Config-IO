@@ -79,14 +79,36 @@ public class ConfigFile extends File{
 		return new SimpleConfigWriter(this);
 	}
 
+	/**
+	 * this method returns a new {@link SerializingConfigWriter} with the
+	 * position at the beginn of the file.
+	 *
+	 * @return a new ConfigWriter
+	 * @throws FileNotFoundException if the File doesn't exists
+	 */
 	public SerializingConfigWriter getSerializingWriter() throws FileNotFoundException{
 		return new SerializingConfigWriter(this);
 	}
 
+	/**
+	 * this method returns a new {@link SerializingConfigReader} with the
+	 * position at the beginn of the file.
+	 *
+	 * @return a new ConfigReader
+	 * @throws FileNotFoundException if the File doesn't exists
+	 */
 	public SerializingConfigReader getSerializingReader() throws FileNotFoundException{
 		return new SerializingConfigReader(this);
 	}
 
+	/**
+	 * Trys to return the reader, with that related Writer the File was written. If it
+	 * isn't succesfull, it will return {@link ComplexConfigReader}.
+	 *
+	 * @return a fitting {@link ConfigReader} to the File
+	 * @throws FileNotFoundException
+	 * @throws ReflectiveOperationException
+	 */
 	public ConfigReader getFittingReader() throws FileNotFoundException, ReflectiveOperationException{
 		Scanner s = new Scanner(this);
 		boolean hasNext = s.hasNext();

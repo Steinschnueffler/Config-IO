@@ -1,6 +1,7 @@
 package linus.io.config;
 
 import java.io.Closeable;
+import java.io.FileOutputStream;
 import java.io.OutputStream;
 
 /**
@@ -37,9 +38,39 @@ public abstract interface ConfigWriter extends Closeable{
 	public abstract void writeConfig(Config<?> cfg);
 
 	/**
-	 * Writes a new Line to the given File.
+	 * Writes a new Line to the given Source with no chars in it.
 	 */
 	public abstract void writeln();
 
+	/**
+	 * returns the Source of the Writer as an {@link OutputStream}. Usally it is the
+	 * Stream with that it was constructed or a {@link FileOutputStream} o the File
+	 * Source.
+	 *
+	 * @return the source of the writer
+	 */
 	public abstract OutputStream getSource();
+
+	/**
+	 * Writes a Head information to the source of the Reader, in that
+	 * are copyrights and Infos how to use the Config File. It is definit
+	 * in the {@link ConfigIOChars} so it can be changed with  {@link ConfigIOCharsBuilder}.
+	 */
+	public abstract void writeHeader();
+
+	/**
+	 * Returns the {@link ConfigIOChars} that are used by the reader.
+	 *
+	 * @return the actual ConfigIOChars
+	 */
+	public abstract ConfigIOChars getConfigIOChars();
+
+	/**
+	 * Sets the used {@link ConfigIOChars} to the given one. This will
+	 * make the Writer writing a line with the Information about it, so
+	 * the reader is able to read further exactly.
+	 *
+	 * @param chars the new ConfigIOChars used by the Writer
+	 */
+	public abstract void setConfigIOChars(ConfigIOChars chars);
 }

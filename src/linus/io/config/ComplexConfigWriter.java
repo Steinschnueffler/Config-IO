@@ -19,7 +19,7 @@ public class ComplexConfigWriter implements ConfigWriter{
 
 	private final PrintWriter writer;
 	private ConfigIOChars chars;
-	private OutputStream source;
+	private final OutputStream source;
 
 	/**
 	 * Creates a new ConfigWriter of the given File
@@ -82,7 +82,7 @@ public class ComplexConfigWriter implements ConfigWriter{
 	public ComplexConfigWriter(OutputStream out, ConfigIOChars chars){
 		writer = new PrintWriter(out);
 		source = out;
-		useConfigIOChars(chars);
+		setConfigIOChars(chars);
 	}
 
 	@Override
@@ -108,20 +108,11 @@ public class ComplexConfigWriter implements ConfigWriter{
 	}
 
 	/**
-	 * Sets the used {@link ConfigIOChars} to the given.
-	 *
-	 * @param chars the used ConfigIOChars
-	 */
-	public void useConfigIOChars(ConfigIOChars chars){
-		this.chars = chars;
-		writer.println("%ConfigIOChars : " +chars.getClass().getName());
-	}
-
-	/**
 	 *Returns the actually used {@link ConfigIOChars}
 	 *
 	 * @return the used CofigIOChars
 	 */
+	@Override
 	public ConfigIOChars getConfigIOChars(){
 		return chars;
 	}
@@ -135,6 +126,18 @@ public class ComplexConfigWriter implements ConfigWriter{
 	@Override
 	public OutputStream getSource() {
 		return source;
+	}
+
+	@Override
+	public void writeHeader() {
+		for(String s : chars.getHeader())
+			writeInfo(s);
+	}
+
+	@Override
+	public void setConfigIOChars(ConfigIOChars chars) {
+		this.chars = chars;
+		writer.println("%ConfigIOChars : " + chars.getClass().getName());
 	}
 
 }

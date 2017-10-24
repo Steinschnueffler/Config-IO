@@ -3,7 +3,7 @@ package linus.io.config;
 /**
  * This interface is used by {@link ComplexConfigWriter} and {@link ComplexConfigReader} to
  * get the chars and Strings that marks something in a File. A default implementation
- * is the {@link ConfigIOCharsAdapter}
+ * is the {@link ConfigIOCharsBuilder}
  *
  * @author Linus Dierheimer
  * @see ConfigIOCharsAdapter
@@ -36,11 +36,44 @@ public interface ConfigIOChars {
 	public abstract String getClassEnd();
 
 	/**
+	 * Returns the header for a ConfigFile. It contains information about
+	 * copyright, how to use the File and other Things. Each line
+	 * will automatically start with the Info-start-char of {@link #getInfoStart()}.
+	 *
+	 * @return the Header of a ConfigFile.
+	 */
+	public abstract String[] getHeader();
+
+	/**
 	 * returns the default {@link ConfigIOChars} implementation of {@link ConfigIOCharsAdapter}.
 	 * Calling this method is equal to using {@code new ConfigIOCharsAdapter()}
 	 * @return
 	 */
 	public static ConfigIOChars getDefault(){
-		return ConfigIOCharsBuilder.getDefault();
+		return new ConfigIOChars() {
+
+			@Override
+			public char getInfoStart() {
+				return '#';
+			}
+
+			@Override
+			public String[] getHeader() {
+				String[] header = {
+
+				};
+				return header;
+			}
+
+			@Override
+			public char getClassStart() {
+				return '@';
+			}
+
+			@Override
+			public String getClassEnd() {
+				return getClassStart() + "Finish";
+			}
+		};
 	}
 }

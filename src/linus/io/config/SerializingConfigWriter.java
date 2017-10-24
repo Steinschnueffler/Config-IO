@@ -13,8 +13,9 @@ import java.net.URI;
 
 public class SerializingConfigWriter implements ConfigWriter{
 
-	private PrintStream writer;
-	private OutputStream source;
+	private final PrintStream writer;
+	private final OutputStream source;
+	private ConfigIOChars chars;
 
 	private Exception e = null;
 
@@ -84,6 +85,23 @@ public class SerializingConfigWriter implements ConfigWriter{
 		baos.flush();
 		baos.close();
 		return new String(baos.toByteArray());
+	}
+
+	@Override
+	public void writeHeader() {
+		for(String s : chars.getHeader())
+			writeInfo(s);
+	}
+
+	@Override
+	public ConfigIOChars getConfigIOChars() {
+		return chars;
+	}
+
+	@Override
+	public void setConfigIOChars(ConfigIOChars chars) {
+		this.chars = chars;
+		writer.println("%ConfigIOChars : " +chars.getClass().getName());
 	}
 
 }

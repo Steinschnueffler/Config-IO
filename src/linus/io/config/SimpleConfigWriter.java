@@ -11,7 +11,8 @@ import java.net.URI;
 public class SimpleConfigWriter implements ConfigWriter{
 
 	private final PrintWriter writer;
-	private OutputStream source;
+	private final OutputStream source;
+	private ConfigIOChars chars;
 
 	public SimpleConfigWriter(String pathName) throws FileNotFoundException {
 		this(new File(pathName));
@@ -72,5 +73,22 @@ public class SimpleConfigWriter implements ConfigWriter{
 	@Override
 	public OutputStream getSource() {
 		return source;
+	}
+
+	@Override
+	public void writeHeader() {
+		for(String s : chars.getHeader())
+			writeInfo(s);
+	}
+
+	@Override
+	public ConfigIOChars getConfigIOChars() {
+		return chars;
+	}
+
+	@Override
+	public void setConfigIOChars(ConfigIOChars chars) {
+		this.chars = chars;
+		writer.println("%ConfigIOChars : " +chars.getClass().getName());
 	}
 }

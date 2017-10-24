@@ -5,6 +5,9 @@ package linus.io.config;
  * This class does't contains any Methods
  *
  * @author Linus Dierheimer
+ * @see Config
+ * @since java 1.4
+ * @version 1.0
  *
  */
 public abstract class ConfigBase{

@@ -1,13 +1,14 @@
 package linus.io.config;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
+import java.util.Vector;
 
-public class ThreadedConfigWriter implements ConfigWriter{
+public class ThreadedConfigWriter implements Closeable{
 
 	private ConfigWriter writer;
-	private volatile ArrayList<WriterLines> lines = new ArrayList<>();
+	private volatile Vector<WriterLines> lines = new Vector<>();
 	private boolean stayAlive = true;
 	private WritingThread thread = new WritingThread();
 
@@ -59,12 +60,10 @@ public class ThreadedConfigWriter implements ConfigWriter{
 		writer.close();
 	}
 
-	@Override
 	public void writeInfo(String info) {
 		lines.add(new WriterLines(info));
 	}
 
-	@Override
 	public void writeConfig(Config<?> cfg) {
 		lines.add(new WriterLines(cfg));
 	}
@@ -75,7 +74,6 @@ public class ThreadedConfigWriter implements ConfigWriter{
 		}
 	}
 
-	@Override
 	public void writeln() {
 		lines.add(new WriterLines(true));
 	}
@@ -104,19 +102,17 @@ public class ThreadedConfigWriter implements ConfigWriter{
 		@Override
 		public void run() {
 			while (stayAlive) {
-				synchronized (lines) {
-					if(lines.size() == 0) continue;
-					WriterLines wt = lines.get(0);
-					if(wt.cfg != null) writer.writeConfig(wt.cfg);
-					if(wt.info != null) writer.writeInfo(wt.info);
-					if(wt.writeln == true) writer.writeln();
-				}
+				if(lines.size() == 0) continue;
+				WriterLines wt = lines.get(0);
+				lines.remove(0);
+				if(wt.cfg != null) writer.writeConfig(wt.cfg);
+				if(wt.info != null) writer.writeInfo(wt.info);
+				if(wt.writeln == true) writer.writeln();
 			}
 		}
 
 	}
 
-	@Override
 	public OutputStream getSource() {
 		return writer.getSource();
 	}
