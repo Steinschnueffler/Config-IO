@@ -265,4 +265,9 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	public void writeTo(ThreadedConfigWriter writer){
 		writer.writeConfig(this);
 	}
+
+//	public final Config<?> toPrimitiveConfig(){
+//
+//	}
+
 }
