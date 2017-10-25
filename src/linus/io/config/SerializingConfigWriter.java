@@ -47,6 +47,7 @@ public class SerializingConfigWriter extends ConfigWriter{
 	public void close() throws IOException {
 		writer.flush();
 		writer.close();
+		if(source != null) source.close();
 	}
 
 	@Override

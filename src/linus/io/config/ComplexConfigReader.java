@@ -144,7 +144,7 @@ public class ComplexConfigReader extends ConfigReader{
 	@Override
 	public void close() throws IOException{
 		reader.close();
-		source.close();
+		if(source != null) source.close();
 	}
 
 	@Override

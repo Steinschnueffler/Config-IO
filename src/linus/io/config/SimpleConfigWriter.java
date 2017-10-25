@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.URI;
@@ -49,9 +50,10 @@ public class SimpleConfigWriter extends ConfigWriter{
 	}
 
 	@Override
-	public void close(){
+	public void close() throws IOException{
 		writer.flush();
 		writer.close();
+		if(source != null) source.close();
 	}
 
 	@Override

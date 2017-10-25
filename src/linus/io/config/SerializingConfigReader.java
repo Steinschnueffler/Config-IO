@@ -41,7 +41,7 @@ public class SerializingConfigReader extends ConfigReader{
 	@Override
 	public void close() throws IOException {
 		reader.close();
-		source.close();
+		if(source != null) source.close();
 	}
 
 	@SuppressWarnings("unchecked")
