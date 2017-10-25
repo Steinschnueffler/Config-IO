@@ -289,4 +289,20 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	private static class GeneratedException extends Exception{
 		private static final long serialVersionUID = 1L;
 	}
+
+	//Static
+
+	/**
+	 * Trys to return the right Config out of the readed lines. returns null if readedLines is
+	 * null or has a length of 0.
+	 *
+	 * @param readedLines
+	 * @return a fitting Config
+	 */
+	@SuppressWarnings("unchecked")
+	public static <E extends ConfigBase> E getConfig(String[] readedLines){
+		if(readedLines.length == 0) return null;
+		if(readedLines.length == 1) return (E) SingleConfig.getSingleConfig(readedLines[0]);
+		return (E) MultipleConfig.getMultipleConfig(readedLines);
+	}
 }
