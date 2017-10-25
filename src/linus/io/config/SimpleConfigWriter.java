@@ -8,11 +8,9 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.URI;
 
-public class SimpleConfigWriter implements ConfigWriter{
+public class SimpleConfigWriter extends ConfigWriter{
 
 	private final PrintWriter writer;
-	private final OutputStream source;
-	private ConfigIOChars chars;
 
 	public SimpleConfigWriter(String pathName) throws FileNotFoundException {
 		this(new File(pathName));
@@ -31,8 +29,13 @@ public class SimpleConfigWriter implements ConfigWriter{
 	}
 
 	public SimpleConfigWriter(OutputStream out) {
+		super(out);
 		writer = new PrintWriter(out);
-		source = out;
+	}
+
+	public SimpleConfigWriter(OutputStream out, ConfigIOChars chars) {
+		this(out);
+		setConfigIOChars(chars);
 	}
 
 	@Override
@@ -71,24 +74,14 @@ public class SimpleConfigWriter implements ConfigWriter{
 	}
 
 	@Override
-	public OutputStream getSource() {
-		return source;
-	}
-
-	@Override
 	public void writeHeader() {
 		for(String s : chars.getHeader())
 			writeInfo(s);
 	}
 
 	@Override
-	public ConfigIOChars getConfigIOChars() {
-		return chars;
-	}
-
-	@Override
 	public void setConfigIOChars(ConfigIOChars chars) {
-		this.chars = chars;
+		super.setConfigIOChars(chars);
 		writer.println("%ConfigIOChars : " +chars.getClass().getName());
 	}
 }

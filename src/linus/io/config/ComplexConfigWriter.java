@@ -15,11 +15,9 @@ import java.io.PrintWriter;
  * @see ComplexConfigReader
  * @see ConfigFile
  */
-public class ComplexConfigWriter implements ConfigWriter{
+public class ComplexConfigWriter extends ConfigWriter{
 
 	private final PrintWriter writer;
-	private ConfigIOChars chars;
-	private final OutputStream source;
 
 	/**
 	 * Creates a new ConfigWriter of the given File
@@ -80,9 +78,8 @@ public class ComplexConfigWriter implements ConfigWriter{
 	 * @param out the OutputStream
 	 */
 	public ComplexConfigWriter(OutputStream out, ConfigIOChars chars){
+		super(out);
 		writer = new PrintWriter(out);
-		source = out;
-		setConfigIOChars(chars);
 	}
 
 	@Override
@@ -107,25 +104,10 @@ public class ComplexConfigWriter implements ConfigWriter{
 		writer.println();
 	}
 
-	/**
-	 *Returns the actually used {@link ConfigIOChars}
-	 *
-	 * @return the used CofigIOChars
-	 */
-	@Override
-	public ConfigIOChars getConfigIOChars(){
-		return chars;
-	}
-
 	@Override
 	public void close(){
 		writer.flush();
 		writer.close();
-	}
-
-	@Override
-	public OutputStream getSource() {
-		return source;
 	}
 
 	@Override
@@ -136,7 +118,7 @@ public class ComplexConfigWriter implements ConfigWriter{
 
 	@Override
 	public void setConfigIOChars(ConfigIOChars chars) {
-		this.chars = chars;
+		super.setConfigIOChars(chars);
 		writer.println("%ConfigIOChars : " + chars.getClass().getName());
 	}
 

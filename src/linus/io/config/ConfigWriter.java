@@ -18,7 +18,14 @@ import java.io.OutputStream;
 * @author Linus Dierheimer
 *
 */
-public abstract interface ConfigWriter extends Closeable{
+public abstract class ConfigWriter implements Closeable{
+
+	protected OutputStream source;
+	protected ConfigIOChars chars = ConfigIOChars.getDefault();
+
+	public ConfigWriter(OutputStream source) {
+		this.source = source;
+	}
 
 	/**
 	 *Writes a Info to the given File. It starts with a info-start-char
@@ -49,7 +56,9 @@ public abstract interface ConfigWriter extends Closeable{
 	 *
 	 * @return the source of the writer
 	 */
-	public abstract OutputStream getSource();
+	public OutputStream getSource(){
+		return source;
+	}
 
 	/**
 	 * Writes a Head information to the source of the Reader, in that
@@ -63,7 +72,9 @@ public abstract interface ConfigWriter extends Closeable{
 	 *
 	 * @return the actual ConfigIOChars
 	 */
-	public abstract ConfigIOChars getConfigIOChars();
+	public ConfigIOChars getConfigIOChars(){
+		return chars;
+	}
 
 	/**
 	 * Sets the used {@link ConfigIOChars} to the given one. This will
@@ -72,5 +83,7 @@ public abstract interface ConfigWriter extends Closeable{
 	 *
 	 * @param chars the new ConfigIOChars used by the Writer
 	 */
-	public abstract void setConfigIOChars(ConfigIOChars chars);
+	public void setConfigIOChars(ConfigIOChars chars){
+		this.chars = chars;
+	}
 }

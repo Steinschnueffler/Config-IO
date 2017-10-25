@@ -11,11 +11,9 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.URI;
 
-public class SerializingConfigWriter implements ConfigWriter{
+public class SerializingConfigWriter extends ConfigWriter{
 
 	private final PrintStream writer;
-	private final OutputStream source;
-	private ConfigIOChars chars;
 
 	private Exception e = null;
 
@@ -36,8 +34,13 @@ public class SerializingConfigWriter implements ConfigWriter{
 	}
 
 	public SerializingConfigWriter(OutputStream os) {
-		source = os;
+		super(os);
 		writer = new PrintStream(os);
+	}
+
+	public SerializingConfigWriter(OutputStream os, ConfigIOChars chars) {
+		this(os);
+		setConfigIOChars(chars);
 	}
 
 	@Override
@@ -65,11 +68,6 @@ public class SerializingConfigWriter implements ConfigWriter{
 		writer.println();
 	}
 
-	@Override
-	public OutputStream getSource() {
-		return source;
-	}
-
 	public Exception checkException(){
 		Exception temp = e;
 		e = null;
@@ -94,13 +92,8 @@ public class SerializingConfigWriter implements ConfigWriter{
 	}
 
 	@Override
-	public ConfigIOChars getConfigIOChars() {
-		return chars;
-	}
-
-	@Override
 	public void setConfigIOChars(ConfigIOChars chars) {
-		this.chars = chars;
+		super.setConfigIOChars(chars);
 		writer.println("%ConfigIOChars : " +chars.getClass().getName());
 	}
 

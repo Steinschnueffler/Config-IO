@@ -8,13 +8,11 @@ import java.util.Vector;
 public class ThreadedConfigWriter implements Closeable{
 
 	private ConfigWriter writer;
-	private volatile Vector<WriterLines> lines = new Vector<>();
+	private Vector<WriterLines> lines = new Vector<>();
 	private boolean stayAlive = true;
 	private WritingThread thread = new WritingThread();
 
 	public ThreadedConfigWriter(ConfigWriter writer) {
-		if(writer instanceof ThreadedConfigWriter)
-			throw new InvalidConfigWriterException("ThraededConfigWriter cannot be constructed with another ThreadedConfigWriter");
 		this.writer = writer;
 	}
 
