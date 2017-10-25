@@ -15,6 +15,7 @@ import java.io.OutputStream;
 * @see SimpleConfigWriter
 * @see ComplexConfigWriter
 * @see ThreadedConfigWriter
+* @see ConfigReader
 * @author Linus Dierheimer
 *
 */
@@ -23,6 +24,11 @@ public abstract class ConfigWriter implements Closeable{
 	protected OutputStream source;
 	protected ConfigIOChars chars = ConfigIOChars.getDefault();
 
+	/**
+	 * Creates a new abstract ConfigWriter to the given source
+	 *
+	 * @param source
+	 */
 	public ConfigWriter(OutputStream source) {
 		this.source = source;
 	}

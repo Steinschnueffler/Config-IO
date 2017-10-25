@@ -17,6 +17,7 @@ import java.io.InputStream;
  * @see SimpleConfigReader
  * @see ComplexConfigReader
  * @see ThreadedConfigReader
+ * @see ConfigWriter
  * @author Linus Dierheimer
  *
  */
@@ -25,6 +26,10 @@ public abstract class ConfigReader implements Closeable{
 	protected InputStream source;
 	protected ConfigIOChars chars;
 
+	/**
+	 * Creates  new abstract ConfigReader on the given source.
+	 * @param source
+	 */
 	public ConfigReader(InputStream source) {
 		this.source = source;
 	}
@@ -57,7 +62,21 @@ public abstract class ConfigReader implements Closeable{
 		return source;
 	}
 
+	/**
+	 * Returns the actual used {@link ConfigIOChars}. The Default is ConfigIOChars.getDefault.
+	 * They might be changed by infos in the Source.
+	 *
+	 * @return the actual ConfigIOChars
+	 */
 	public ConfigIOChars getConfigIOChars(){
 		return chars;
+	}
+
+	public InvalidConfigReaderException createException(String msg){
+		return new InvalidConfigReaderException(this, new GeneratedConfigException(msg));
+	}
+
+	public InvalidConfigReaderException createException(){
+		return createException("");
 	}
 }

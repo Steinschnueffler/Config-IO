@@ -18,7 +18,10 @@ import linus.io.config.configs.SingleStringConfig;
  * @param <E> - The type of the value of the Config
  * @see SingleConfig
  * @see MultipleConfig
- * @see RandomConfig
+ * @see ConfigReader
+ * @see ConfigWriter
+ * @see ConfigComparator
+ * @see ConfigFile
  * @version 1.0
  * @since java 1.5 (because of the use of generic)
  *
@@ -279,16 +282,24 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	/**
 	 * This method creates an {@link InvalidConfigException} to this Config.
 	 * It can be used to throw if this Config isn't supported or a wrong type.
+	 * The Info will be the given String.
+	 *
+	 * @return a InvalidConfigException to this Config
+	 */
+	public InvalidConfigException createException(String msg){
+		return new InvalidConfigException(this, new GeneratedConfigException(msg));
+	}
+
+	/**
+	 * This method creates an {@link InvalidConfigException} to this Config.
+	 * It can be used to throw if this Config isn't supported or a wrong type.
 	 *
 	 * @return a InvalidConfigException to this Config
 	 */
 	public InvalidConfigException createException(){
-		return new InvalidConfigException(this, new GeneratedException());
+		return createException("");
 	}
 
-	private static class GeneratedException extends Exception{
-		private static final long serialVersionUID = 1L;
-	}
 
 	//Static
 

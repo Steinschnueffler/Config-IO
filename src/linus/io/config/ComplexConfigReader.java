@@ -9,11 +9,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import linus.io.config.configs.MultipleIntConfig;
-import linus.io.config.configs.MultipleStringConfig;
-import linus.io.config.configs.SingleIntConfig;
-import linus.io.config.configs.SingleStringConfig;
-
 /**
  *
  *This class can read {@link Config}s and interprete them into the right Form.
@@ -132,11 +127,6 @@ public class ComplexConfigReader extends ConfigReader{
 		}
 	}
 
-	/**
-	 * This method returns the actual {@link ConfigIOChars} readed and used by the reader.
-	 *
-	 * @return the actual ConfigIOChars
-	 */
 	public ConfigIOChars getConfigIOChars(){
 		return chars;
 	}
@@ -153,16 +143,6 @@ public class ComplexConfigReader extends ConfigReader{
 	}
 
 	private Config<?> loadConfig(String classPath, String[] readed) throws ReflectiveOperationException{
-		if(classPath.startsWith("linus.io.config.configs")){
-			if(classPath.equals("linus.io.config.configs.SingleStringConfig"))
-				return new SingleStringConfig().read(readed);
-			if(classPath.equals("linus.io.config.configs.MultipleStringConfig"))
-				return new MultipleStringConfig().read(readed);
-			if(classPath.equals("linus.io.config.configs.SingleIntConfig"))
-				return new SingleIntConfig().read(readed);
-			if(classPath.equals("linus.io.config.configs.MultipleIntConfig"))
-				return new MultipleIntConfig().read(readed);
-		}
 		Class<?> clazz = Class.forName(classPath);
 		Config<?> cfg = (Config<?>) clazz.newInstance();
 		return cfg.read(readed);
