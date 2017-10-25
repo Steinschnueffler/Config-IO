@@ -266,8 +266,27 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 		writer.writeConfig(this);
 	}
 
-//	public final Config<?> toPrimitiveConfig(){
-//
-//	}
+	/**
+	 * This method returns the Value of a Config as a String representation.
+	 * In the standart implementation it is <code>{@link #getValue()}.toString() </code>.
+	 *
+	 * @return a String representation of the Value
+	 */
+	public String getValueAsString(){
+		return getValue().toString();
+	}
 
+	/**
+	 * This method creates an {@link InvalidConfigException} to this Config.
+	 * It can be used to throw if this Config isn't supported or a wrong type.
+	 *
+	 * @return a InvalidConfigException to this Config
+	 */
+	public InvalidConfigException createException(){
+		return new InvalidConfigException(this, new GeneratedException());
+	}
+
+	private static class GeneratedException extends Exception{
+		private static final long serialVersionUID = 1L;
+	}
 }

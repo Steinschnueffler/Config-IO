@@ -19,6 +19,12 @@ public enum ConfigType {
 	 * This ConfigType marks that a Config can have a lot of different
 	 * Values / return Types
 	 */
-	Multiple
+	Multiple,
+
+	/**
+	 * This ConfigType mark that a Config is a custom Config and not
+	 * an Instance of {@link SingleConfig} or {@link MultipleConfig}.
+	 */
+	Custom
 
 }

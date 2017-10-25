@@ -7,4 +7,8 @@ public class InvalidConfigException extends IllegalArgumentException{
 		super(str);
 	}
 
+	InvalidConfigException(Config<?> cfg, Throwable cause) {
+		super(cfg.toString(), cause);
+	}
+
 }
