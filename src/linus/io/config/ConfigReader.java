@@ -20,7 +20,14 @@ import java.io.InputStream;
  * @author Linus Dierheimer
  *
  */
-public abstract interface ConfigReader extends Closeable{
+public abstract class ConfigReader implements Closeable{
+
+	protected InputStream source;
+	protected ConfigIOChars chars;
+
+	public ConfigReader(InputStream source) {
+		this.source = source;
+	}
 
 	/**
 	 * Reads the next {@link Config} and returns it with
@@ -46,5 +53,11 @@ public abstract interface ConfigReader extends Closeable{
 	 *
 	 * @return the source of the Reader
 	 */
-	public abstract InputStream getSource();
+	public InputStream getSource(){
+		return source;
+	}
+
+	public ConfigIOChars getConfigIOChars(){
+		return chars;
+	}
 }

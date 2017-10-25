@@ -11,10 +11,9 @@ import java.io.ObjectInputStream;
 import java.net.URI;
 import java.util.Scanner;
 
-public class SerializingConfigReader implements ConfigReader{
+public class SerializingConfigReader extends ConfigReader{
 
 	private Scanner reader;
-	private InputStream source;
 	private Config<?> buffer;
 
 	public SerializingConfigReader(String pathName) throws FileNotFoundException {
@@ -34,14 +33,15 @@ public class SerializingConfigReader implements ConfigReader{
 	}
 
 	public SerializingConfigReader(InputStream in) {
+		super(in);
 		reader = new Scanner(in);
-		source = in;
 		buffer = nextConfig();
 	}
 
 	@Override
 	public void close() throws IOException {
 		reader.close();
+		source.close();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -92,11 +92,6 @@ public class SerializingConfigReader implements ConfigReader{
 	@Override
 	public boolean hasNext() {
 		return buffer != null;
-	}
-
-	@Override
-	public InputStream getSource() {
-		return source;
 	}
 
 }

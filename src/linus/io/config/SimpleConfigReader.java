@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ import linus.io.config.configs.*;
  * @author Linus Dierheimer
  *
  */
-public class SimpleConfigReader implements ConfigReader{
+public class SimpleConfigReader extends ConfigReader{
 
 	private final Scanner reader;
 	private Config<?> buffer;
@@ -40,8 +41,8 @@ public class SimpleConfigReader implements ConfigReader{
 	}
 
 	public SimpleConfigReader(InputStream in) {
+		super(in);
 		reader = new Scanner(in);
-		source = in;
 		if(reader.hasNextLine())
 			lineBuffer = reader.nextLine();
 		buffer = nextConfig();
@@ -103,13 +104,9 @@ public class SimpleConfigReader implements ConfigReader{
 	}
 
 	@Override
-	public void close(){
+	public void close() throws IOException{
 		reader.close();
-	}
-
-	@Override
-	public InputStream getSource() {
-		return source;
+		source.close();
 	}
 
 	@SuppressWarnings("unchecked")

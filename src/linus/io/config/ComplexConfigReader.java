@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -26,10 +27,9 @@ import linus.io.config.configs.SingleStringConfig;
  * @see ConfigFile
  *
  */
-public class ComplexConfigReader implements ConfigReader{
+public class ComplexConfigReader extends ConfigReader{
 
 	private final Scanner reader;
-	private ConfigIOChars chars = ConfigIOChars.getDefault();
 	private Config<?> buffer;
 
 	private InputStream source;
@@ -65,8 +65,8 @@ public class ComplexConfigReader implements ConfigReader{
 	 * @param in
 	 */
 	public ComplexConfigReader(InputStream in) {
+		super(in);
 		reader = new Scanner(in);
-		source = in;
 		try {
 			buffer = nextConfig();
 		} catch (ReaderFinishedException e) {
@@ -142,8 +142,9 @@ public class ComplexConfigReader implements ConfigReader{
 	}
 
 	@Override
-	public void close(){
+	public void close() throws IOException{
 		reader.close();
+		source.close();
 	}
 
 	@Override
