@@ -13,8 +13,6 @@ public class ThreadedConfigReader implements Closeable{
 	private ReadingThread thread;
 
 	public ThreadedConfigReader(ConfigReader reader) {
-		if(reader instanceof ThreadedConfigReader)
-			throw new InvalidConfigReaderException("ThreadedConfigReader cannot be constructed with another ThreadedConfigReader");
 		this.originReader = reader;
 	}
 
