@@ -40,7 +40,6 @@ public abstract class ConfigWriter implements Closeable, Flushable, Appendable{
 
 		if(getFittingReader() != null)
 			writer.println("%FittingReader : " +getFittingReader().getName());
-		writer.println("%UsedWriter : " +getClass().getName());
 		setConfigIOChars(chars);
 	}
 
