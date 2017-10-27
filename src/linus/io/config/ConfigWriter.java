@@ -25,7 +25,7 @@ import java.io.PrintWriter;
 public abstract class ConfigWriter implements Closeable, Flushable, Appendable{
 
 	protected OutputStream source;
-	protected ConfigIOChars chars = ConfigIOChars.getDefault();
+	protected ConfigIOChars chars;
 	protected PrintWriter writer;
 
 	/**
@@ -33,9 +33,19 @@ public abstract class ConfigWriter implements Closeable, Flushable, Appendable{
 	 *
 	 * @param source
 	 */
-	public ConfigWriter(OutputStream source) {
+	public ConfigWriter(OutputStream source, ConfigIOChars chars) {
+		if(source == null) source = System.out;
 		this.source = source;
-		writer = new PrintWriter(source);
+		writer = new PrintWriter(this.source);
+	}
+
+	/**
+	 * Creates a new abstract ConfigWriter to the given source
+	 *
+	 * @param source
+	 */
+	public ConfigWriter(OutputStream source) {
+		this(source, ConfigIOChars.getDefault());
 	}
 
 	/**
@@ -46,6 +56,7 @@ public abstract class ConfigWriter implements Closeable, Flushable, Appendable{
 	 * @param info the info to be printed
 	 */
 	public void writeInfo(String info){
+		if(info == null) info = "null";
 		writer.println(chars.getInfoStart() + info);
 	}
 
@@ -81,6 +92,7 @@ public abstract class ConfigWriter implements Closeable, Flushable, Appendable{
 	 * in the {@link ConfigIOChars} so it can be changed with  {@link ConfigIOCharsBuilder}.
 	 */
 	public void writeHeader(){
+		if(chars.getHeader() == null) return;
 		for(String s : chars.getHeader())
 			writeInfo(s);
 	}
