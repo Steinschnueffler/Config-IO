@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.net.URI;
-import java.util.Scanner;
 
 public class SerializingConfigReader extends ConfigReader{
 
@@ -31,45 +30,41 @@ public class SerializingConfigReader extends ConfigReader{
 
 	public SerializingConfigReader(InputStream in) {
 		super(in);
-		reader = new Scanner(in);
-		buffer = nextConfig();
+	}
+
+	@Override
+	protected Config<?> nextConfig() {
+
+		//zur nächsten Config
+		if(!reader.hasNextLine()) return null;
+		String line = reader.nextLine();
+		while(line.startsWith("" +chars.getInfoStart())){
+			if(!reader.hasNextLine()) return null;
+			line = reader.nextLine();
+		}
+
+		try {
+			return getConfig(line);
+		} catch (IOException e) {
+			return null;
+		} catch (ReflectiveOperationException e) {
+			return nextConfig();
+		}
+
 	}
 
 	@SuppressWarnings("unchecked")
-	protected Config<?> nextConfig(){
-		SerializableConfigData<Object> data;
-		try {
-			data = (SerializableConfigData<Object>) nextData();
-		} catch (IOException | ReflectiveOperationException e) {
-			e.printStackTrace();
-			return null;
-		}catch(ReaderFinishedException e){
-			return null;
-		}
-		try {
-			Class<?> clazz = Class.forName(data.classPath);
-			Config<Object> cfg = (Config<Object>) clazz.newInstance();
-			return cfg.read(data);
-		} catch (ReflectiveOperationException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	private SerializableConfigData<?> nextData() throws IOException, ReflectiveOperationException{
-		String next = reader.next();
-		while(next.trim().length() == 0 || next.startsWith("#")){
-			if(reader.hasNext())
-				next = reader.next();
-			else
-				throw new ReaderFinishedException();
-		}
-		ByteArrayInputStream bais = new ByteArrayInputStream(next.getBytes());
+	private Config<?> getConfig(String str) throws IOException, ReflectiveOperationException{
+		ByteArrayInputStream bais = new ByteArrayInputStream(str.getBytes());
 		ObjectInputStream ois = new ObjectInputStream(bais);
-		SerializableConfigData<?> data = (SerializableConfigData<?>) ois.readObject();
+		SerializableConfigData<Object> scd = (SerializableConfigData<Object>) ois.readObject();
 		ois.close();
 		bais.close();
-		return data;
+
+		Class<?> clazz = Class.forName(scd.classPath);
+		Config<Object> cfg = (Config<Object>) clazz.newInstance();
+		return cfg.read(scd);
 	}
+
 
 }
