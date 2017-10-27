@@ -13,9 +13,6 @@ import java.util.Scanner;
 
 public class SerializingConfigReader extends ConfigReader{
 
-	private Scanner reader;
-	private Config<?> buffer;
-
 	public SerializingConfigReader(String pathName) throws FileNotFoundException {
 		this(new File(pathName));
 	}
@@ -38,22 +35,8 @@ public class SerializingConfigReader extends ConfigReader{
 		buffer = nextConfig();
 	}
 
-	@Override
-	public void close() throws IOException {
-		reader.close();
-		if(source != null) source.close();
-	}
-
 	@SuppressWarnings("unchecked")
-	@Override
-	public <E extends ConfigBase> E next() {
-		Config<?> cfg = buffer;
-		buffer = nextConfig();
-		return (E) cfg;
-	}
-
-	@SuppressWarnings("unchecked")
-	private Config<?> nextConfig(){
+	protected Config<?> nextConfig(){
 		SerializableConfigData<Object> data;
 		try {
 			data = (SerializableConfigData<Object>) nextData();
@@ -87,11 +70,6 @@ public class SerializingConfigReader extends ConfigReader{
 		ois.close();
 		bais.close();
 		return data;
-	}
-
-	@Override
-	public boolean hasNext() {
-		return buffer != null;
 	}
 
 }

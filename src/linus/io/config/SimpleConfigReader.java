@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.ArrayList;
@@ -19,10 +18,7 @@ import linus.io.config.configs.*;
  */
 public class SimpleConfigReader extends ConfigReader{
 
-	private final Scanner reader;
-	private Config<?> buffer;
 	private String lineBuffer;
-	private InputStream source;
 
 	public SimpleConfigReader(String pathName) throws FileNotFoundException {
 		this(new File(pathName));
@@ -48,7 +44,8 @@ public class SimpleConfigReader extends ConfigReader{
 		buffer = nextConfig();
 	}
 
-	private Config<?> nextConfig(){
+	@Override
+	protected Config<?> nextConfig(){
 		if(lineBuffer == null) return null;
 
 		String line = lineBuffer;
@@ -96,25 +93,6 @@ public class SimpleConfigReader extends ConfigReader{
 
 		//die aktuellen Zeilen als Config zurückgeben
 		return MultipleConfig.getMultipleConfig(lines.toArray(new String[lines.size()]));
-	}
-
-	@Override
-	public boolean hasNext(){
-		return buffer != null;
-	}
-
-	@Override
-	public void close() throws IOException{
-		reader.close();
-		if(source != null) source.close();
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public <E extends ConfigBase> E next() {
-		Config<?> cfg = buffer;
-		buffer = nextConfig();
-		return (E) cfg;
 	}
 
 }

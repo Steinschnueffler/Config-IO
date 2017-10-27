@@ -4,7 +4,9 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.util.Scanner;
 
 import linus.io.config.exception.InvalidConfigReaderException;
 
@@ -27,13 +29,18 @@ public abstract class ConfigReader implements Closeable{
 
 	protected InputStream source;
 	protected ConfigIOChars chars;
+	protected Scanner reader;
+	protected Config<?> buffer;
 
 	/**
 	 * Creates  new abstract ConfigReader on the given source.
 	 * @param source
 	 */
 	public ConfigReader(InputStream source) {
+		if(source == null) source = System.in;
 		this.source = source;
+		reader = new Scanner(this.source);
+		buffer = nextConfig();
 	}
 
 	/**
@@ -44,14 +51,23 @@ public abstract class ConfigReader implements Closeable{
 	 * @param <E> - the Config Type
 	 * @return the next Config<?>
 	 */
-	public abstract <E extends ConfigBase> E next();
+	@SuppressWarnings("unchecked")
+	public <E extends ConfigBase> E next(){
+		Config<?> cfg = buffer;
+		buffer = nextConfig();
+		return (E) cfg;
+	};
 
 	/**
 	 * Returns if the reader has a next {@link Config} to read.
 	 *
 	 * @return true if the reader has a next Config
 	 */
-	public abstract boolean hasNext();
+	public boolean hasNext(){
+		return buffer != null;
+	}
+
+	protected abstract Config<?> nextConfig();
 
 	/**
 	 * Returns the source of the Reader as {@link InputStream}. Usually its the InputStream
@@ -80,5 +96,11 @@ public abstract class ConfigReader implements Closeable{
 
 	public InvalidConfigReaderException createException(){
 		return createException("");
+	}
+
+	@Override
+	public void close() throws IOException {
+		if(reader != null) reader.close();
+		if(source != null) source.close();
 	}
 }
