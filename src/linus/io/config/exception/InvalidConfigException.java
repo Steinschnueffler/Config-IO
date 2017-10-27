@@ -1,4 +1,6 @@
-package linus.io.config;
+package linus.io.config.exception;
+
+import linus.io.config.Config;
 
 /**
  * This {@link Exception} marks that a Config is invalid, not supported or
@@ -10,7 +12,7 @@ package linus.io.config;
  * @version 1.0
  *
  */
-public class InvalidConfigException extends IllegalArgumentException{
+public class InvalidConfigException extends ConfigOperationException{
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -21,8 +23,8 @@ public class InvalidConfigException extends IllegalArgumentException{
 		super(str);
 	}
 
-	InvalidConfigException(Config<?> cfg, Throwable cause) {
-		super(cfg.toString(), cause);
+	public InvalidConfigException(String str, Throwable cause) {
+		super(str, cause);
 	}
 
 }

@@ -2,7 +2,10 @@ package linus.io.config;
 
 import java.io.Closeable;
 import java.io.FileOutputStream;
+import java.io.Flushable;
+import java.io.IOException;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 
 /**
 *
@@ -19,10 +22,11 @@ import java.io.OutputStream;
 * @author Linus Dierheimer
 *
 */
-public abstract class ConfigWriter implements Closeable{
+public abstract class ConfigWriter implements Closeable, Flushable, Appendable{
 
 	protected OutputStream source;
 	protected ConfigIOChars chars = ConfigIOChars.getDefault();
+	protected PrintWriter writer;
 
 	/**
 	 * Creates a new abstract ConfigWriter to the given source
@@ -31,6 +35,7 @@ public abstract class ConfigWriter implements Closeable{
 	 */
 	public ConfigWriter(OutputStream source) {
 		this.source = source;
+		writer = new PrintWriter(source);
 	}
 
 	/**
@@ -40,7 +45,9 @@ public abstract class ConfigWriter implements Closeable{
 	 *
 	 * @param info the info to be printed
 	 */
-	public abstract void writeInfo(String info);
+	public void writeInfo(String info){
+		writer.println(chars.getInfoStart() + info);
+	}
 
 	/**
 	 * Writes the given {@link Config} to the given File. Usally it
@@ -53,7 +60,9 @@ public abstract class ConfigWriter implements Closeable{
 	/**
 	 * Writes a new Line to the given Source with no chars in it.
 	 */
-	public abstract void writeln();
+	public void writeln(){
+		writer.println();
+	}
 
 	/**
 	 * returns the Source of the Writer as an {@link OutputStream}. Usally it is the
@@ -71,7 +80,10 @@ public abstract class ConfigWriter implements Closeable{
 	 * are copyrights and Infos how to use the Config File. It is definit
 	 * in the {@link ConfigIOChars} so it can be changed with  {@link ConfigIOCharsBuilder}.
 	 */
-	public abstract void writeHeader();
+	public void writeHeader(){
+		for(String s : chars.getHeader())
+			writeInfo(s);
+	}
 
 	/**
 	 * Returns the {@link ConfigIOChars} that are used by the reader.
@@ -90,6 +102,40 @@ public abstract class ConfigWriter implements Closeable{
 	 * @param chars the new ConfigIOChars used by the Writer
 	 */
 	public void setConfigIOChars(ConfigIOChars chars){
+		writer.println("%ConfigIOChars : " +chars.getClass().getName());
 		this.chars = chars;
 	}
+
+	@Override
+	public void flush() throws IOException {
+		if(writer != null) writer.flush();
+		if(source != null) source.flush();
+	}
+
+	@Override
+	public void close() throws IOException {
+		flush();
+		if(writer != null) writer.close();
+		if(source != null) source.close();
+	}
+
+	@Override
+	public Appendable append(char c) throws IOException {
+		writer.write(c);
+		return this;
+	}
+
+	@Override
+	public Appendable append(CharSequence csq) throws IOException {
+		writer.append(csq);
+		return this;
+	}
+
+	@Override
+	public Appendable append(CharSequence csq, int start, int end) throws IOException {
+		writer.append(csq, start, end);
+		return this;
+	}
+
+
 }

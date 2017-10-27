@@ -1,4 +1,6 @@
-package linus.io.config;
+package linus.io.config.exception;
+
+import linus.io.config.ConfigWriter;
 
 /**
  * This {@link Exception} marks that a {@link ConfigWriter} is invalid
@@ -10,7 +12,7 @@ package linus.io.config;
  * @see ConfigWriter
  *
  */
-public class InvalidConfigWriterException extends IllegalArgumentException{
+public class InvalidConfigWriterException extends ConfigOperationException{
 	private static final long serialVersionUID = 1L;
 
 	/**

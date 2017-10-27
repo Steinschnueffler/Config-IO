@@ -6,6 +6,8 @@ import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.InputStream;
 
+import linus.io.config.exception.InvalidConfigReaderException;
+
 /**
  *
  *This Interface is the root of all ConfigReaders. It contains the
@@ -73,7 +75,7 @@ public abstract class ConfigReader implements Closeable{
 	}
 
 	public InvalidConfigReaderException createException(String msg){
-		return new InvalidConfigReaderException(this, new GeneratedConfigException(msg));
+		return new InvalidConfigReaderException(toString(), new GeneratedConfigException(msg));
 	}
 
 	public InvalidConfigReaderException createException(){

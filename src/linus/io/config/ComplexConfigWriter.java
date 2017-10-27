@@ -3,9 +3,9 @@ package linus.io.config;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PrintWriter;
+
+import linus.io.config.exception.InvalidConfigException;
 
 /**
  *This class can write {@link Config}s in a {@link ComplexConfigReader} and user readable form.
@@ -17,8 +17,6 @@ import java.io.PrintWriter;
  * @see ConfigFile
  */
 public class ComplexConfigWriter extends ConfigWriter{
-
-	private final PrintWriter writer;
 
 	/**
 	 * Creates a new ConfigWriter of the given File
@@ -80,12 +78,6 @@ public class ComplexConfigWriter extends ConfigWriter{
 	 */
 	public ComplexConfigWriter(OutputStream out, ConfigIOChars chars){
 		super(out);
-		writer = new PrintWriter(out);
-	}
-
-	@Override
-	public void writeInfo(String info){
-		writer.println(chars.getInfoStart() + info);
 	}
 
 	@Override
@@ -98,30 +90,6 @@ public class ComplexConfigWriter extends ConfigWriter{
 		for(String s : cfg.write())
 			writer.println(s);
 		writer.println(chars.getClassEnd());
-	}
-
-	@Override
-	public void writeln(){
-		writer.println();
-	}
-
-	@Override
-	public void close() throws IOException{
-		writer.flush();
-		writer.close();
-		if(source != null) source.close();
-	}
-
-	@Override
-	public void writeHeader() {
-		for(String s : chars.getHeader())
-			writeInfo(s);
-	}
-
-	@Override
-	public void setConfigIOChars(ConfigIOChars chars) {
-		super.setConfigIOChars(chars);
-		writer.println("%ConfigIOChars : " + chars.getClass().getName());
 	}
 
 }

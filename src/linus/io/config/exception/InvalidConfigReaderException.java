@@ -1,4 +1,6 @@
-package linus.io.config;
+package linus.io.config.exception;
+
+import linus.io.config.ConfigReader;
 
 /**
  * This {@link Exception} marks that a {@link ConfigReader} is invalid or
@@ -10,7 +12,7 @@ package linus.io.config;
  * @see ConfigReader
  *
  */
-public class InvalidConfigReaderException extends IllegalArgumentException{
+public class InvalidConfigReaderException extends ConfigOperationException{
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -21,8 +23,8 @@ public class InvalidConfigReaderException extends IllegalArgumentException{
 		super(str);
 	}
 
-	InvalidConfigReaderException(ConfigReader cr, Throwable th) {
-		super("Invalid ConfigReader: " +cr.toString(), th);
+	public InvalidConfigReaderException(String str, Throwable th) {
+		super(str, th);
 	}
 
 }

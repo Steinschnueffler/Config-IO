@@ -2,6 +2,7 @@ package linus.io.config;
 
 import linus.io.config.configs.MultipleStringConfig;
 import linus.io.config.configs.SingleStringConfig;
+import linus.io.config.exception.InvalidConfigException;
 
 /**
  *This abstract class is the root of all Configs and it or
@@ -287,7 +288,7 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 * @return a InvalidConfigException to this Config
 	 */
 	public InvalidConfigException createException(String msg){
-		return new InvalidConfigException(this, new GeneratedConfigException(msg));
+		return new InvalidConfigException(toString(), new GeneratedConfigException(msg));
 	}
 
 	/**
