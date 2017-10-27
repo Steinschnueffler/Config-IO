@@ -37,6 +37,11 @@ public abstract class ConfigWriter implements Closeable, Flushable, Appendable{
 		if(source == null) source = System.out;
 		this.source = source;
 		writer = new PrintWriter(this.source);
+
+		if(getFittingReader() != null)
+			writer.println("%FittingReader : " +getFittingReader().getName());
+		writer.println("%UsedWriter : " +getClass().getName());
+		setConfigIOChars(chars);
 	}
 
 	/**
@@ -149,5 +154,6 @@ public abstract class ConfigWriter implements Closeable, Flushable, Appendable{
 		return this;
 	}
 
+	public abstract Class<? extends ConfigReader> getFittingReader();
 
 }

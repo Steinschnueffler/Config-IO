@@ -55,4 +55,9 @@ public class SimpleConfigWriter extends ConfigWriter{
 		for(String s : mc.writeSimple())
 			writer.println(s);
 	}
+
+	@Override
+	public Class<SimpleConfigReader> getFittingReader() {
+		return SimpleConfigReader.class;
+	}
 }

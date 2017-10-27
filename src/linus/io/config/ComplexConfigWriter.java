@@ -93,4 +93,9 @@ public class ComplexConfigWriter extends ConfigWriter{
 		writer.println(chars.getClassEnd());
 	}
 
+	@Override
+	public Class<ComplexConfigReader> getFittingReader() {
+		return ComplexConfigReader.class;
+	}
+
 }

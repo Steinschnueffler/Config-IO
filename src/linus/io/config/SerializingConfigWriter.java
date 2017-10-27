@@ -65,4 +65,9 @@ public class SerializingConfigWriter extends ConfigWriter{
 		return new String(baos.toByteArray());
 	}
 
+	@Override
+	public Class<SerializingConfigReader> getFittingReader() {
+		return SerializingConfigReader.class;
+	}
+
 }
