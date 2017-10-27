@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 
 import linus.io.config.exception.InvalidConfigException;
+import linus.io.config.util.ConfigFile;
 
 /**
  *This class can write {@link Config}s in a {@link ComplexConfigReader} and user readable form.
