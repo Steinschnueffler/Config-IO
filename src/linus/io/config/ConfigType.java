@@ -25,6 +25,11 @@ public enum ConfigType {
 	 * This ConfigType mark that a Config is a custom Config and not
 	 * an Instance of {@link SingleConfig} or {@link MultipleConfig}.
 	 */
-	Custom
+	Custom,
+
+	/**
+	 * This ConfigType marks that a Config doesn't has any value.
+	 */
+	NULL
 
 }
