@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import linus.io.config.exception.ConfigReadException;
 import linus.io.config.exception.GeneratedConfigException;
 import linus.io.config.exception.InvalidConfigReaderException;
 
@@ -61,9 +62,13 @@ public abstract class ConfigReader implements Closeable{
 	 * @throws Exception 
 	 */
 	@SuppressWarnings("unchecked")
-	public <E extends ConfigBase> E next() throws IOException, ReflectiveOperationException{
+	public <E extends ConfigBase> E next() throws ConfigReadException, ReflectiveOperationException{
 		Config<?> cfg = buffer;
-		buffer = nextConfig();
+		try {
+			buffer = nextConfig();
+		} catch (IOException e) {
+			throw new ConfigReadException(e);
+		}
 		return (E) cfg;
 	};
 
@@ -76,7 +81,7 @@ public abstract class ConfigReader implements Closeable{
 		return buffer != null;
 	}
 
-	protected abstract Config<?> nextConfig() throws IOException, ReflectiveOperationException;
+	protected abstract Config<?> nextConfig() throws ConfigReadException, ReflectiveOperationException;
 
 	/**
 	 * Returns the source of the Reader as {@link InputStream}. Usually its the InputStream
@@ -108,8 +113,12 @@ public abstract class ConfigReader implements Closeable{
 	}
 
 	@Override
-	public void close() throws IOException {
-		if(reader != null) reader.close();
-		if(source != null) source.close();
+	public void close() throws ConfigReadException {
+			try {
+				if(source != null) source.close();
+				if(reader != null) reader.close();
+			} catch (IOException e) {
+				throw new ConfigReadException(e);
+			}
 	}
 }

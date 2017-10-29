@@ -3,10 +3,8 @@ package linus.io.config;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
 
-import linus.io.config.exception.ConfigOperationException;
 import linus.io.config.exception.ConfigWriteEexception;
 import linus.io.config.util.ConfigFile;
 
@@ -24,9 +22,11 @@ public class ComplexConfigWriter extends ComplexConfigWriterBase{
 	private Exception e = null;
 	
 	public Exception checkException() {
-		Exception akt = e;
+		return e;
+	}
+	
+	public void supressException() {
 		e = null;
-		return akt;
 	}
 	
 	/**
@@ -89,14 +89,16 @@ public class ComplexConfigWriter extends ComplexConfigWriterBase{
 	 */
 	public ComplexConfigWriter(OutputStream out, ConfigIOChars chars){
 		super(out);
+		setConfigIOChars(chars);
 	}
 	
 	@Override
 	public void close(){
 		try {
 			super.close();
-		} catch (IOException e) {
-			e = new ConfigWriteEexception(e);
+			e = null;
+		} catch (ConfigWriteEexception e) {
+			this.e = e;
 		}
 	}
 	
@@ -104,8 +106,9 @@ public class ComplexConfigWriter extends ComplexConfigWriterBase{
 	public void setConfigIOChars(ConfigIOChars chars){
 		try {
 			super.setConfigIOChars(chars);
-		} catch (IOException e) {
-			e = new ConfigWriteEexception(e);
+			e = null;
+		} catch (ConfigWriteEexception e) {
+			this.e = e;
 		}
 	}
 	
@@ -113,8 +116,9 @@ public class ComplexConfigWriter extends ComplexConfigWriterBase{
 	public void flush(){
 		try {
 			super.flush();
-		} catch (IOException e) {
-			throw new ConfigOperationException(e);
+			e = null;
+		} catch (ConfigWriteEexception e) {
+			this.e = e;
 		}
 	}
 	
@@ -122,8 +126,9 @@ public class ComplexConfigWriter extends ComplexConfigWriterBase{
 	public void writeConfig(Config<?> cfg){
 		try {
 			super.writeConfig(cfg);
-		} catch (IOException e) {
-			throw new ConfigOperationException(e);
+			e = null;
+		} catch (ConfigWriteEexception e) {
+			this.e = e;
 		}
 	}
 	
@@ -131,8 +136,9 @@ public class ComplexConfigWriter extends ComplexConfigWriterBase{
 	public void writeHeader(){
 		try {
 			super.writeHeader();
-		} catch (IOException e) {
-			throw new ConfigOperationException(e);
+			e = null;
+		} catch (ConfigWriteEexception e) {
+			this.e = e;
 		}
 	}
 	
@@ -140,8 +146,9 @@ public class ComplexConfigWriter extends ComplexConfigWriterBase{
 	public void writeInfo(String info){
 		try {
 			super.writeInfo(info);
-		} catch (IOException e) {
-			throw new ConfigOperationException(e);
+			e = null;
+		} catch (ConfigWriteEexception e) {
+			this.e = e;
 		}
 	}
 	
@@ -149,8 +156,43 @@ public class ComplexConfigWriter extends ComplexConfigWriterBase{
 	public void writeln(){
 		try {
 			super.writeln();
-		} catch (IOException e) {
-			throw new ConfigOperationException(e);
+			e = null;
+		} catch (ConfigWriteEexception e) {
+			this.e = e;
 		}
 	}
+	
+	@Override
+	public Appendable append(char c){
+		try {
+			super.append(c);
+			e = null;
+		} catch (ConfigWriteEexception e) {
+			this.e = e;
+		}
+		return this;
+	}
+	
+	@Override
+	public Appendable append(CharSequence csq){
+		try {
+			super.append(csq);
+			e = null;
+		} catch (ConfigWriteEexception e) {
+			this.e = e;
+		}
+		return this;
+	}
+	
+	@Override
+	public Appendable append(CharSequence csq, int start, int end){
+		try {
+			super.append(csq, start, end);
+			e = null;
+		} catch (ConfigWriteEexception e) {
+			this.e = e;
+		}
+		return this;
+	}
+	
 }

@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Vector;
 
+import linus.io.config.exception.ConfigWriteEexception;
+
 public class ThreadedConfigWriter implements Closeable{
 
 	private ConfigWriter writer;
@@ -103,9 +105,11 @@ public class ThreadedConfigWriter implements Closeable{
 				if(lines.size() == 0) continue;
 				WriterLines wt = lines.get(0);
 				lines.remove(0);
-				if(wt.cfg != null) writer.writeConfig(wt.cfg);
-				if(wt.info != null) writer.writeInfo(wt.info);
-				if(wt.writeln == true) writer.writeln();
+				try {
+					if(wt.cfg != null) writer.writeConfig(wt.cfg);
+					if(wt.info != null) writer.writeInfo(wt.info);
+					if(wt.writeln == true) writer.writeln();
+				}catch(ConfigWriteEexception e) {}
 			}
 		}
 

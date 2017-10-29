@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 
+import linus.io.config.exception.ConfigWriteEexception;
+
 public class SerializingConfigWriterBase extends ConfigWriter{
 
 	public SerializingConfigWriterBase(OutputStream source) {
@@ -12,8 +14,12 @@ public class SerializingConfigWriterBase extends ConfigWriter{
 	}
 
 	@Override
-	public void writeConfig(Config<?> cfg) throws IOException {
-		writer.write(getSerializedString(cfg.toSerializableConfig()));
+	public void writeConfig(Config<?> cfg) throws ConfigWriteEexception {
+		try {
+			writer.write(getSerializedString(cfg.toSerializableConfig()));
+		} catch (IOException e) {
+			throw new ConfigWriteEexception(e);
+		}
 	}
 	
 	private String getSerializedString(Object obj) throws IOException{

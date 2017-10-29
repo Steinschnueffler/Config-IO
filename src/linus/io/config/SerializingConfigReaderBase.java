@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 
+import linus.io.config.exception.ConfigReadException;
+
 public class SerializingConfigReaderBase extends ConfigReader{
 
 	public SerializingConfigReaderBase(InputStream source) {
@@ -12,14 +14,20 @@ public class SerializingConfigReaderBase extends ConfigReader{
 	}
 
 	@Override
-	protected Config<?> nextConfig() throws IOException {
+	protected Config<?> nextConfig() throws ConfigReadException {
 
+		String line;
+		
 		//zur nächsten Config
-		if(reader.ready()) return null;
-		String line = reader.readLine();
-		while(line.startsWith("" +chars.getInfoStart())){
+		try {
 			if(reader.ready()) return null;
 			line = reader.readLine();
+			while(line.startsWith("" +chars.getInfoStart())){
+				if(reader.ready()) return null;
+				line = reader.readLine();
+			}
+		}catch(IOException e) {
+			throw new ConfigReadException(e);
 		}
 
 		try {

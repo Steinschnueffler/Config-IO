@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
+import linus.io.config.exception.ConfigReadException;
+
 public class ThreadedConfigReader implements Closeable{
 
 	private ConfigReader reader;
@@ -60,7 +62,9 @@ public class ThreadedConfigReader implements Closeable{
 		@Override
 		public void run() {
 			while(reader.hasNext())
-				cfgs.add(reader.next());
+				try {
+					cfgs.add(reader.next());
+				} catch (ConfigReadException | ReflectiveOperationException e) {}
 		}
 
 	}
