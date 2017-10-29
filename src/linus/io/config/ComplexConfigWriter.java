@@ -3,9 +3,10 @@ package linus.io.config;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 
-import linus.io.config.exception.InvalidConfigException;
+import linus.io.config.exception.ConfigOperationException;
 import linus.io.config.util.ConfigFile;
 
 /**
@@ -17,7 +18,7 @@ import linus.io.config.util.ConfigFile;
  * @see ComplexConfigReader
  * @see ConfigFile
  */
-public class ComplexConfigWriter extends ConfigWriter{
+public class ComplexConfigWriter extends ComplexConfigWriterBase{
 
 	/**
 	 * Creates a new ConfigWriter of the given File
@@ -80,22 +81,67 @@ public class ComplexConfigWriter extends ConfigWriter{
 	public ComplexConfigWriter(OutputStream out, ConfigIOChars chars){
 		super(out);
 	}
-
+	
+	@Override
+	public void close(){
+		try {
+			super.close();
+		} catch (IOException e) {
+			throw new ConfigOperationException(e);
+		}
+	}
+	
+	@Override
+	public void setConfigIOChars(ConfigIOChars chars){
+		try {
+			super.setConfigIOChars(chars);
+		} catch (IOException e) {
+			throw new ConfigOperationException(e);
+		}
+	}
+	
+	@Override
+	public void flush(){
+		try {
+			super.flush();
+		} catch (IOException e) {
+			throw new ConfigOperationException(e);
+		}
+	}
+	
 	@Override
 	public void writeConfig(Config<?> cfg){
-
-		if(cfg.getName().startsWith("" +chars.getClassEnd()))
-			throw new InvalidConfigException("Name starts with the same character as class End: " + chars.getClassEnd());
-
-		writer.println(chars.getClassStart() + cfg.getClass().getName());
-		for(String s : cfg.write())
-			writer.println(s);
-		writer.println(chars.getClassEnd());
+		try {
+			super.writeConfig(cfg);
+		} catch (IOException e) {
+			throw new ConfigOperationException(e);
+		}
 	}
-
+	
 	@Override
-	public Class<ComplexConfigReader> getFittingReader() {
-		return ComplexConfigReader.class;
+	public void writeHeader(){
+		try {
+			super.writeHeader();
+		} catch (IOException e) {
+			throw new ConfigOperationException(e);
+		}
 	}
-
+	
+	@Override
+	public void writeInfo(String info){
+		try {
+			super.writeInfo(info);
+		} catch (IOException e) {
+			throw new ConfigOperationException(e);
+		}
+	}
+	
+	@Override
+	public void writeln(){
+		try {
+			super.writeln();
+		} catch (IOException e) {
+			throw new ConfigOperationException(e);
+		}
+	}
 }

@@ -5,7 +5,7 @@ import java.io.FileOutputStream;
 import java.io.Flushable;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PrintWriter;
+import java.io.OutputStreamWriter;
 
 /**
 *
@@ -26,7 +26,7 @@ public abstract class ConfigWriter implements Closeable, Flushable, Appendable{
 
 	protected OutputStream source;
 	protected ConfigIOChars chars;
-	protected PrintWriter writer;
+	protected OutputStreamWriter writer;
 
 	/**
 	 * Creates a new abstract ConfigWriter to the given source
@@ -36,11 +36,17 @@ public abstract class ConfigWriter implements Closeable, Flushable, Appendable{
 	public ConfigWriter(OutputStream source, ConfigIOChars chars) {
 		if(source == null) source = System.out;
 		this.source = source;
-		writer = new PrintWriter(this.source);
+		writer = new OutputStreamWriter(this.source);
 
 		if(getFittingReader() != null)
-			writer.println("%FittingReader : " +getFittingReader().getName());
-		setConfigIOChars(chars);
+			try {
+				writer.write("%FittingReader : " +getFittingReader().getName());
+			} catch (IOException e) {}
+		try {
+			setConfigIOChars(chars);
+		} catch (IOException e) {
+			chars = ConfigIOChars.getDefault();
+		}
 	}
 
 	/**
@@ -59,9 +65,9 @@ public abstract class ConfigWriter implements Closeable, Flushable, Appendable{
 	 *
 	 * @param info the info to be printed
 	 */
-	public void writeInfo(String info){
+	public void writeInfo(String info) throws IOException{
 		if(info == null) info = "null";
-		writer.println(chars.getInfoStart() + info);
+		writer.write(chars.getInfoStart() + info);
 	}
 
 	/**
@@ -70,13 +76,13 @@ public abstract class ConfigWriter implements Closeable, Flushable, Appendable{
 	 *
 	 * @param cfg the Config that should be written
 	 */
-	public abstract void writeConfig(Config<?> cfg);
+	public abstract void writeConfig(Config<?> cfg) throws IOException;
 
 	/**
 	 * Writes a new Line to the given Source with no chars in it.
 	 */
-	public void writeln(){
-		writer.println();
+	public void writeln() throws IOException{
+		writer.write('\n');
 	}
 
 	/**
@@ -94,8 +100,9 @@ public abstract class ConfigWriter implements Closeable, Flushable, Appendable{
 	 * Writes a Head information to the source of the Reader, in that
 	 * are copyrights and Infos how to use the Config File. It is definit
 	 * in the {@link ConfigIOChars} so it can be changed with  {@link ConfigIOCharsBuilder}.
+	 * @throws IOException 
 	 */
-	public void writeHeader(){
+	public void writeHeader() throws IOException{
 		if(chars.getHeader() == null) return;
 		for(String s : chars.getHeader())
 			writeInfo(s);
@@ -117,8 +124,8 @@ public abstract class ConfigWriter implements Closeable, Flushable, Appendable{
 	 *
 	 * @param chars the new ConfigIOChars used by the Writer
 	 */
-	public void setConfigIOChars(ConfigIOChars chars){
-		writer.println("%ConfigIOChars : " +chars.getClass().getName());
+	public void setConfigIOChars(ConfigIOChars chars) throws IOException{
+		writer.write("%ConfigIOChars : " +chars.getClass().getName());
 		this.chars = chars;
 	}
 
@@ -143,6 +150,7 @@ public abstract class ConfigWriter implements Closeable, Flushable, Appendable{
 
 	@Override
 	public Appendable append(CharSequence csq) throws IOException {
+		if(csq == null) csq = "null";
 		writer.append(csq);
 		return this;
 	}

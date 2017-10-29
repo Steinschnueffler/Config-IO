@@ -1,12 +1,13 @@
 package linus.io.config;
 
+import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Scanner;
+import java.io.InputStreamReader;
 
 import linus.io.config.exception.GeneratedConfigException;
 import linus.io.config.exception.InvalidConfigReaderException;
@@ -30,18 +31,23 @@ public abstract class ConfigReader implements Closeable{
 
 	protected InputStream source;
 	protected ConfigIOChars chars;
-	protected Scanner reader;
+	protected BufferedReader reader;
 	protected Config<?> buffer;
 
 	/**
 	 * Creates  new abstract ConfigReader on the given source.
 	 * @param source
+	 * @throws Exception 
 	 */
-	public ConfigReader(InputStream source) {
+	public ConfigReader(InputStream source){
 		if(source == null) source = System.in;
 		this.source = source;
-		reader = new Scanner(this.source);
-		buffer = nextConfig();
+		reader = new BufferedReader(new InputStreamReader(source));
+		try {
+			buffer = nextConfig();
+		} catch (ReflectiveOperationException | IOException e) {
+			buffer = null;
+		}
 	}
 
 	/**
@@ -51,9 +57,11 @@ public abstract class ConfigReader implements Closeable{
 	 *
 	 * @param <E> - the Config Type
 	 * @return the next Config<?>
+	 * @throws ReflectiveOperationException 
+	 * @throws Exception 
 	 */
 	@SuppressWarnings("unchecked")
-	public <E extends ConfigBase> E next(){
+	public <E extends ConfigBase> E next() throws IOException, ReflectiveOperationException{
 		Config<?> cfg = buffer;
 		buffer = nextConfig();
 		return (E) cfg;
@@ -68,7 +76,7 @@ public abstract class ConfigReader implements Closeable{
 		return buffer != null;
 	}
 
-	protected abstract Config<?> nextConfig();
+	protected abstract Config<?> nextConfig() throws IOException, ReflectiveOperationException;
 
 	/**
 	 * Returns the source of the Reader as {@link InputStream}. Usually its the InputStream

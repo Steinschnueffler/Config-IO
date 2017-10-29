@@ -1,7 +1,10 @@
 package linus.io.config;
 
+import java.io.IOException;
+
 import linus.io.config.configs.MultipleStringConfig;
 import linus.io.config.configs.SingleStringConfig;
+import linus.io.config.exception.ConfigOperationException;
 import linus.io.config.exception.GeneratedConfigException;
 import linus.io.config.exception.InvalidConfigException;
 import linus.io.config.util.ConfigComparator;
@@ -259,7 +262,11 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 * @param writer - the writer that should write this Config
 	 */
 	public void writeTo(ConfigWriter writer){
-		writer.writeConfig(this);
+		try {
+			writer.writeConfig(this);
+		} catch (IOException e) {
+			throw new ConfigOperationException(e);
+		}
 	}
 
 	/**

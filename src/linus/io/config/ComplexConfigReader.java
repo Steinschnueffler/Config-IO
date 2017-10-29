@@ -3,52 +3,37 @@ package linus.io.config;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 
-public class ComplexConfigReader extends ConfigReader{
+import linus.io.config.exception.ConfigOperationException;
+
+public class ComplexConfigReader extends ComplexConfigReaderBase{
 
 	public ComplexConfigReader(File f) throws FileNotFoundException {
 		this(new FileInputStream(f));
 	}
 
-	public ComplexConfigReader(InputStream source) {
+	public ComplexConfigReader(InputStream source){
 		super(source);
 	}
-
+	
 	@Override
-	protected Config<?> nextConfig() {
-
-		//bis zur nächsten Config kommen
-		if(!reader.hasNextLine()) return null;
-		String line = reader.nextLine();
-		while(!line.startsWith("" +chars.getClassStart())){
-			if(!reader.hasNextLine()) return null;
-			line = reader.nextLine();
-		}
-
-		//werte Einlesen
-		ArrayList<String> werte = new ArrayList<>();
-		if(!reader.hasNextLine()) return null;
-		String wert = reader.nextLine();
-		while(!wert.startsWith(chars.getClassEnd())){
-			if(!wert.startsWith("" +chars.getInfoStart())) werte.add(wert);
-			if(!reader.hasNextLine()) break;
-			wert = reader.nextLine();
-		}
-
-		//Config zurückgeben
-		Class<?> clazz;
-		Config<?> cfg;
+	public void close(){
 		try {
-			clazz = Class.forName(line.substring(line.indexOf(chars.getClassStart()) + 1));
-			cfg = (Config<?>) clazz.getConstructor().newInstance();
-		} catch (ReflectiveOperationException e) {
-			return nextConfig();
+			super.close();
+		} catch (IOException e) {
+			throw new ConfigOperationException(e);
 		}
-
-		return cfg.read(werte.toArray(new String[werte.size()]));
-
 	}
-
+	
+	@Override
+	public <E extends ConfigBase> E next() {
+		try {
+			return super.next();
+		}catch(Exception e) {
+			throw new ConfigOperationException(e);
+		}
+	}
+	
 }

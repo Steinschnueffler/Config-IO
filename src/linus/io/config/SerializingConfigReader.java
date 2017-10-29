@@ -1,16 +1,16 @@
 package linus.io.config;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectInputStream;
 import java.net.URI;
 
-public class SerializingConfigReader extends ConfigReader{
+import linus.io.config.exception.ConfigOperationException;
+
+public class SerializingConfigReader extends SerializingConfigReaderBase{
 
 	public SerializingConfigReader(String pathName) throws FileNotFoundException {
 		this(new File(pathName));
@@ -31,40 +31,22 @@ public class SerializingConfigReader extends ConfigReader{
 	public SerializingConfigReader(InputStream in) {
 		super(in);
 	}
-
+	
 	@Override
-	protected Config<?> nextConfig() {
-
-		//zur nächsten Config
-		if(!reader.hasNextLine()) return null;
-		String line = reader.nextLine();
-		while(line.startsWith("" +chars.getInfoStart())){
-			if(!reader.hasNextLine()) return null;
-			line = reader.nextLine();
-		}
-
+	public void close(){
 		try {
-			return getConfig(line);
+			super.close();
 		} catch (IOException e) {
-			return null;
-		} catch (ReflectiveOperationException e) {
-			return nextConfig();
+			throw new ConfigOperationException(e);
 		}
-
 	}
-
-	@SuppressWarnings("unchecked")
-	private Config<?> getConfig(String str) throws IOException, ReflectiveOperationException{
-		ByteArrayInputStream bais = new ByteArrayInputStream(str.getBytes());
-		ObjectInputStream ois = new ObjectInputStream(bais);
-		SerializableConfigData<Object> scd = (SerializableConfigData<Object>) ois.readObject();
-		ois.close();
-		bais.close();
-
-		Class<?> clazz = Class.forName(scd.classPath);
-		Config<Object> cfg = (Config<Object>) clazz.getConstructor().newInstance();
-		return cfg.read(scd);
+	
+	@Override
+	public <E extends ConfigBase> E next(){
+		try {
+			return super.next();
+		} catch (IOException | ReflectiveOperationException e) {
+			throw new ConfigOperationException(e);
+		}
 	}
-
-
 }
