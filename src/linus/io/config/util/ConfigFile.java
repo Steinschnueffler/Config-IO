@@ -139,7 +139,7 @@ public class ConfigFile extends File{
 		}
 
 		Class<?> clazz = Class.forName(classPath);
-		return (ConfigReader) clazz.newInstance();
+		return (ConfigReader) clazz.getConstructor().newInstance();
 	}
 
 }

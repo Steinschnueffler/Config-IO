@@ -62,7 +62,7 @@ public class SerializingConfigReader extends ConfigReader{
 		bais.close();
 
 		Class<?> clazz = Class.forName(scd.classPath);
-		Config<Object> cfg = (Config<Object>) clazz.newInstance();
+		Config<Object> cfg = (Config<Object>) clazz.getConstructor().newInstance();
 		return cfg.read(scd);
 	}
 

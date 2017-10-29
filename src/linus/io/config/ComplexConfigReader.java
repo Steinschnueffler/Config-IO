@@ -42,7 +42,7 @@ public class ComplexConfigReader extends ConfigReader{
 		Config<?> cfg;
 		try {
 			clazz = Class.forName(line.substring(line.indexOf(chars.getClassStart()) + 1));
-			cfg = (Config<?>) clazz.newInstance();
+			cfg = (Config<?>) clazz.getConstructor().newInstance();
 		} catch (ReflectiveOperationException e) {
 			return nextConfig();
 		}
