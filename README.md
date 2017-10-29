@@ -1,4 +1,4 @@
-# linus.io.config
+# Config-IO
 
 This classes are for reading and writing specials Configs. There
 are some primitive Configs like SingleStringConfig in the Pack, but with the
