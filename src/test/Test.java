@@ -1,11 +1,15 @@
 package test;
 
-import java.io.FileInputStream;
+import linus.io.config.SimpleConfigWriter;
+import linus.io.config.configs.MultipleStringConfig;
+import linus.io.config.util.ConfigFile;
 
 public class Test {
 
-	@SuppressWarnings("resource")
 	public static void main(String[] args) throws Exception {
-		new FileInputStream("");
+		ConfigFile cf = new ConfigFile(".\\config.cfg");
+		SimpleConfigWriter scw = cf.getSimpleWriter();
+		scw.writeConfig(new MultipleStringConfig("Name", "1", "1", "2", "2", "2", "3", "3", "3", "3"));
+		scw.close();
 	}
 }
