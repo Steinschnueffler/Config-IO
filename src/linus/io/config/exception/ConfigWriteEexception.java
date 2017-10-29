@@ -4,4 +4,12 @@ import java.io.IOException;
 
 public class ConfigWriteEexception extends IOException{
 	private static final long serialVersionUID = 1L;
+	
+	public ConfigWriteEexception(Throwable cause) {
+		super(cause);
+	}
+	
+	public ConfigWriteEexception() {
+		super();
+	}
 }

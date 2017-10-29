@@ -1,11 +1,14 @@
 package linus.io.config;
 
+import java.io.BufferedWriter;
 import java.io.Closeable;
 import java.io.FileOutputStream;
 import java.io.Flushable;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+
+import linus.io.config.exception.ConfigWriteEexception;
 
 /**
 *
@@ -26,7 +29,7 @@ public abstract class ConfigWriter implements Closeable, Flushable, Appendable{
 
 	protected OutputStream source;
 	protected ConfigIOChars chars;
-	protected OutputStreamWriter writer;
+	protected BufferedWriter writer;
 
 	/**
 	 * Creates a new abstract ConfigWriter to the given source
@@ -36,7 +39,7 @@ public abstract class ConfigWriter implements Closeable, Flushable, Appendable{
 	public ConfigWriter(OutputStream source, ConfigIOChars chars) {
 		if(source == null) source = System.out;
 		this.source = source;
-		writer = new OutputStreamWriter(this.source);
+		writer = new BufferedWriter(new OutputStreamWriter(source));
 
 		if(getFittingReader() != null)
 			try {
@@ -65,9 +68,13 @@ public abstract class ConfigWriter implements Closeable, Flushable, Appendable{
 	 *
 	 * @param info the info to be printed
 	 */
-	public void writeInfo(String info) throws IOException{
+	public void writeInfo(String info) throws ConfigWriteEexception{
 		if(info == null) info = "null";
-		writer.write(chars.getInfoStart() + info);
+		try {
+			writer.write(chars.getInfoStart() + info);
+		} catch (IOException e) {
+			throw new ConfigWriteEexception(e);
+		}
 	}
 
 	/**
@@ -76,13 +83,17 @@ public abstract class ConfigWriter implements Closeable, Flushable, Appendable{
 	 *
 	 * @param cfg the Config that should be written
 	 */
-	public abstract void writeConfig(Config<?> cfg) throws IOException;
+	public abstract void writeConfig(Config<?> cfg) throws ConfigWriteEexception;
 
 	/**
 	 * Writes a new Line to the given Source with no chars in it.
 	 */
-	public void writeln() throws IOException{
-		writer.write('\n');
+	public void writeln() throws ConfigWriteEexception{
+		try {
+			writer.write('\n');
+		} catch (IOException e) {
+			throw new ConfigWriteEexception(e);
+		}
 	}
 
 	/**
@@ -102,7 +113,7 @@ public abstract class ConfigWriter implements Closeable, Flushable, Appendable{
 	 * in the {@link ConfigIOChars} so it can be changed with  {@link ConfigIOCharsBuilder}.
 	 * @throws IOException 
 	 */
-	public void writeHeader() throws IOException{
+	public void writeHeader() throws ConfigWriteEexception{
 		if(chars.getHeader() == null) return;
 		for(String s : chars.getHeader())
 			writeInfo(s);
@@ -124,40 +135,64 @@ public abstract class ConfigWriter implements Closeable, Flushable, Appendable{
 	 *
 	 * @param chars the new ConfigIOChars used by the Writer
 	 */
-	public void setConfigIOChars(ConfigIOChars chars) throws IOException{
-		writer.write("%ConfigIOChars : " +chars.getClass().getName());
+	public void setConfigIOChars(ConfigIOChars chars) throws ConfigWriteEexception{
+		try {
+			writer.write("%ConfigIOChars : " +chars.getClass().getName());
+		} catch (IOException e) {
+			throw new ConfigWriteEexception(e);
+		}
 		this.chars = chars;
 	}
 
 	@Override
-	public void flush() throws IOException {
-		if(writer != null) writer.flush();
-		if(source != null) source.flush();
+	public void flush() throws ConfigWriteEexception {
+		try {
+			if(writer != null) writer.flush();
+			if(source != null) source.flush();
+		}catch(IOException e) {
+			throw new ConfigWriteEexception(e);
+		}
 	}
 
 	@Override
-	public void close() throws IOException {
+	public void close() throws ConfigWriteEexception {
 		flush();
-		if(writer != null) writer.close();
-		if(source != null) source.close();
+		try {
+			if(writer != null) writer.close();
+			if(source != null) source.close();
+		}catch(IOException e) {
+			throw new ConfigWriteEexception(e);
+		}
 	}
 
 	@Override
-	public Appendable append(char c) throws IOException {
-		writer.write(c);
+	public Appendable append(char c) throws ConfigWriteEexception {
+		try {
+			writer.write(c);
+		} catch (IOException e) {
+			throw new ConfigWriteEexception(e);
+		}
 		return this;
 	}
 
 	@Override
-	public Appendable append(CharSequence csq) throws IOException {
+	public Appendable append(CharSequence csq) throws ConfigWriteEexception {
 		if(csq == null) csq = "null";
-		writer.append(csq);
+		try {
+			writer.append(csq);
+		} catch (IOException e) {
+			throw new ConfigWriteEexception(e);
+		}
 		return this;
 	}
 
 	@Override
-	public Appendable append(CharSequence csq, int start, int end) throws IOException {
-		writer.append(csq, start, end);
+	public Appendable append(CharSequence csq, int start, int end) throws ConfigWriteEexception {
+		try {
+			writer.append(csq, start, end);
+		} catch (IOException e) {
+			throw new ConfigWriteEexception(e);
+		}
 		return this;
 	}
 

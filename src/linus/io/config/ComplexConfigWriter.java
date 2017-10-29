@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import linus.io.config.exception.ConfigOperationException;
+import linus.io.config.exception.ConfigWriteEexception;
 import linus.io.config.util.ConfigFile;
 
 /**
@@ -20,6 +21,14 @@ import linus.io.config.util.ConfigFile;
  */
 public class ComplexConfigWriter extends ComplexConfigWriterBase{
 
+	private Exception e = null;
+	
+	public Exception checkException() {
+		Exception akt = e;
+		e = null;
+		return akt;
+	}
+	
 	/**
 	 * Creates a new ConfigWriter of the given File
 	 *
@@ -87,7 +96,7 @@ public class ComplexConfigWriter extends ComplexConfigWriterBase{
 		try {
 			super.close();
 		} catch (IOException e) {
-			throw new ConfigOperationException(e);
+			e = new ConfigWriteEexception(e);
 		}
 	}
 	
@@ -96,7 +105,7 @@ public class ComplexConfigWriter extends ComplexConfigWriterBase{
 		try {
 			super.setConfigIOChars(chars);
 		} catch (IOException e) {
-			throw new ConfigOperationException(e);
+			e = new ConfigWriteEexception(e);
 		}
 	}
 	
