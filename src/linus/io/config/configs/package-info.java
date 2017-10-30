@@ -3,4 +3,4 @@
  * @author Linus Dierheimer
  * 
  */
-package linus.io.config;
+package linus.io.config.configs;
