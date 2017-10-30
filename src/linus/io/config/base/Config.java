@@ -14,6 +14,7 @@ import linus.io.config.io.SerializingConfigWriter;
 import linus.io.config.io.ThreadedConfigWriter;
 import linus.io.config.util.ConfigComparator;
 import linus.io.config.util.ConfigFile;
+import linus.io.config.util.ConfigHolder;
 
 /**
  *This abstract class is the root of all Configs and it or
@@ -314,6 +315,27 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 */
 	public InvalidConfigException createException(){
 		return createException("");
+	}
+	
+	/**
+	 * Returns a new {@link ConfigHolder} holding only this Config. Further Configs can be added
+	 * to it.
+	 * 
+	 * @return a new ConfigHolder
+	 */
+	public ConfigHolder newHolder() {
+		return new ConfigHolder(this);
+	}
+	
+	/**
+	 * Adds this Config to the given {@link ConfigHolder} and returns it.
+	 * @param holder
+	 * @return
+	 */
+	public ConfigHolder addToHolder(ConfigHolder holder) {
+		if(holder == null) return newHolder();
+		holder.add(this);
+		return holder;
 	}
 
 

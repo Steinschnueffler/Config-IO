@@ -14,6 +14,7 @@ import linus.io.config.io.ComplexConfigWriter;
 import linus.io.config.io.ConfigIOChars;
 import linus.io.config.io.SimpleConfigWriter;
 import linus.io.config.io.ThreadedConfigWriter;
+import linus.io.config.util.ConfigHolder;
 
 /**
 *
@@ -95,6 +96,17 @@ public abstract class ConfigWriter implements Closeable, Flushable, Appendable{
 	 */
 	public void writeln() throws ConfigWriteEexception{
 		writeln("");
+	}
+	
+	/**
+	 * Writes all Configs of an {@link ConfigHolder}.
+	 * 
+	 * @param holder
+	 * @throws ConfigWriteEexception
+	 */
+	public void write(ConfigHolder holder) throws ConfigWriteEexception {
+		for(Config<?> cfg : holder)
+			writeConfig(cfg);
 	}
 	
 	protected void writeln(String str) throws ConfigWriteEexception{
