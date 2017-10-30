@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
+import linus.io.config.exception.ConfigOperationException;
 import linus.io.config.exception.ConfigWriteEexception;
 
 /**
@@ -90,8 +91,9 @@ public abstract class ConfigWriter implements Closeable, Flushable, Appendable{
 	 */
 	public void writeln() throws ConfigWriteEexception{
 		try {
-			writer.write('\n');
+			writer.newLine();
 		} catch (IOException e) {
+			System.out.println(e);
 			throw new ConfigWriteEexception(e);
 		}
 	}
@@ -168,7 +170,7 @@ public abstract class ConfigWriter implements Closeable, Flushable, Appendable{
 	@Override
 	public Appendable append(char c) throws ConfigWriteEexception {
 		try {
-			writer.write(c);
+			writeInfo("" +c);
 		} catch (IOException e) {
 			throw new ConfigWriteEexception(e);
 		}
@@ -179,7 +181,7 @@ public abstract class ConfigWriter implements Closeable, Flushable, Appendable{
 	public Appendable append(CharSequence csq) throws ConfigWriteEexception {
 		if(csq == null) csq = "null";
 		try {
-			writer.append(csq);
+			writeInfo(csq.toString());
 		} catch (IOException e) {
 			throw new ConfigWriteEexception(e);
 		}
@@ -188,8 +190,11 @@ public abstract class ConfigWriter implements Closeable, Flushable, Appendable{
 
 	@Override
 	public Appendable append(CharSequence csq, int start, int end) throws ConfigWriteEexception {
+		if(csq.length() == 0) return this;
+		if(start < 0) throw new ConfigOperationException("start < 0");
+		if(end > csq.length()) throw new ConfigOperationException("end > csq.length");
 		try {
-			writer.append(csq, start, end);
+			writeInfo(csq.subSequence(start, end).toString());
 		} catch (IOException e) {
 			throw new ConfigWriteEexception(e);
 		}
