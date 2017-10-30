@@ -7,13 +7,13 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.Scanner;
 
-import linus.io.config.ComplexConfigReader;
-import linus.io.config.ComplexConfigWriter;
-import linus.io.config.ConfigReader;
-import linus.io.config.SerializingConfigReader;
-import linus.io.config.SerializingConfigWriter;
-import linus.io.config.SimpleConfigReader;
-import linus.io.config.SimpleConfigWriter;
+import linus.io.config.base.ConfigReader;
+import linus.io.config.io.ComplexConfigReader;
+import linus.io.config.io.ComplexConfigWriter;
+import linus.io.config.io.SerializingConfigReader;
+import linus.io.config.io.SerializingConfigWriter;
+import linus.io.config.io.SimpleConfigReader;
+import linus.io.config.io.SimpleConfigWriter;
 
 /**
  *

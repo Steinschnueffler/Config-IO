@@ -2,7 +2,7 @@ package linus.io.config.util;
 
 import java.util.Comparator;
 
-import linus.io.config.Config;
+import linus.io.config.base.Config;
 
 /**
  * This implementation of {@link Comparator} is able to compare

@@ -1,7 +1,7 @@
 package linus.io.config.configs;
 
-import linus.io.config.Config;
-import linus.io.config.SingleConfig;
+import linus.io.config.base.Config;
+import linus.io.config.base.SingleConfig;
 
 public class SingleBooleanConfig extends SingleConfig<Boolean>{
 	public SingleBooleanConfig() {}

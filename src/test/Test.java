@@ -1,7 +1,7 @@
 package test;
 
-import linus.io.config.SimpleConfigWriter;
 import linus.io.config.configs.MultipleStringConfig;
+import linus.io.config.io.SimpleConfigWriter;
 import linus.io.config.util.ConfigFile;
 
 public class Test {
