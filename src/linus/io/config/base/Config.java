@@ -293,7 +293,7 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 * @return a String representation of the Value
 	 */
 	public String getValueAsString(){
-		return getValue().toString();
+		return String.valueOf(getValue());
 	}
 
 	/**
@@ -339,7 +339,17 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	}
 	
 	public Config<?> normalize(){
-		return this;
+		if(getValue().getClass().isArray()) {
+			Object[] datas = (Object[]) getValue();
+			String[] strs = new String[datas.length];
+			for(int i = 0; i < strs.length; i++) {
+				strs[i] = String.valueOf(datas[i]);
+			}
+			MultipleStringConfig msc = new MultipleStringConfig(getName(), strs);
+			return msc.normalize();
+		}
+		SingleStringConfig ssc = new SingleStringConfig(getName(), String.valueOf(getValue()));
+		return ssc.normalize();
 	}
 	
 	//Static
