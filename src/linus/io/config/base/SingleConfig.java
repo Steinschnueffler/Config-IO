@@ -70,7 +70,10 @@ public abstract class SingleConfig<E> extends Config<E>{
 		String name = line.substring(0, line.indexOf(Config.SEPARATOR)).trim();
 		String value = line.substring(line.indexOf(Config.SEPARATOR) +1, line.length()).trim();
 
-		//testen was es am ehesten für eine Config ist
+		return getSingleConfig(name, value);
+	}
+		
+	public static SingleConfig<?> getSingleConfig(String name, String value) {
 		try{
 			return new SingleIntConfig(name, Integer.parseInt(value));
 		}catch(Exception e){}

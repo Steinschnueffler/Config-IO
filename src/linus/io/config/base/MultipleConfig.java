@@ -150,5 +150,9 @@ public abstract class MultipleConfig<E> extends Config<E[]> implements Iterable<
 		}
 		return new MultipleStringConfig(name, data);
 	}
+	
+	public static MultipleConfig<?> getMultipleConfig(String name, String string){
+		return null;
+	}
 
 }
