@@ -63,6 +63,11 @@ public abstract class SingleConfig<E> extends Config<E>{
 		this.value = data.value;
 		return this;
 	}
+	
+	@Override
+	public Config<?> normalize() {
+		return getSingleConfig(getName(), getValue().toString());
+	}
 
 	//static
 

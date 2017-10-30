@@ -339,10 +339,6 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	}
 	
 	public Config<?> normalize(){
-		if(this instanceof SingleConfig)
-			return SingleConfig.getSingleConfig(getName(), getValue().toString());
-		else if(this instanceof MultipleConfig)
-			return MultipleConfig.getMultipleConfig(getName(), getValue().toString());
 		return this;
 	}
 	

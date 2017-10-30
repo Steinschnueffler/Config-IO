@@ -52,6 +52,12 @@ public abstract class MultipleConfig<E> extends Config<E[]> implements Iterable<
 			}
 		};
 	}
+	
+	@Override
+	public Config<?> normalize() {
+		//bad performance :(
+		return getMultipleConfig(writeSimple());
+	}
 
 	@Override
 	public String toString() {
@@ -98,7 +104,6 @@ public abstract class MultipleConfig<E> extends Config<E[]> implements Iterable<
 	public static MultipleConfig<?> getMultipleConfig(String[] lines){
 		String name = lines[0].substring(0, lines[0].indexOf(Config.SEPARATOR)).trim();
 		if(lines.length == 1) return new MultipleStringConfig(name, new String[0]);
-
 		//testen was es am ehesten für eine Config ist
 		try{
 			int[] data = new int[lines.length - 1];
@@ -150,9 +155,4 @@ public abstract class MultipleConfig<E> extends Config<E[]> implements Iterable<
 		}
 		return new MultipleStringConfig(name, data);
 	}
-	
-	public static MultipleConfig<?> getMultipleConfig(String name, String string){
-		return null;
-	}
-
 }
