@@ -48,7 +48,7 @@ public abstract class ConfigWriter implements Closeable, Flushable, Appendable{
 
 		if(getFittingReader() != null)
 			try {
-				writer.write("%FittingReader : " +getFittingReader().getName());
+				writeln("%FittingReader : " +getFittingReader().getName());
 			} catch (IOException e) {}
 		try {
 			setConfigIOChars(chars);
@@ -76,7 +76,7 @@ public abstract class ConfigWriter implements Closeable, Flushable, Appendable{
 	public void writeInfo(String info) throws ConfigWriteEexception{
 		if(info == null) info = "null";
 		try {
-			writer.write(chars.getInfoStart() + info);
+			writeln(chars.getInfoStart() + info);
 		} catch (IOException e) {
 			throw new ConfigWriteEexception(e);
 		}
@@ -94,10 +94,14 @@ public abstract class ConfigWriter implements Closeable, Flushable, Appendable{
 	 * Writes a new Line to the given Source with no chars in it.
 	 */
 	public void writeln() throws ConfigWriteEexception{
+		writeln("");
+	}
+	
+	protected void writeln(String str) throws ConfigWriteEexception{
 		try {
+			writer.write(str);
 			writer.newLine();
 		} catch (IOException e) {
-			System.out.println(e);
 			throw new ConfigWriteEexception(e);
 		}
 	}
@@ -143,7 +147,7 @@ public abstract class ConfigWriter implements Closeable, Flushable, Appendable{
 	 */
 	public void setConfigIOChars(ConfigIOChars chars) throws ConfigWriteEexception{
 		try {
-			writer.write("%ConfigIOChars : " +chars.getClass().getName());
+			writeln("%ConfigIOChars : " +chars.getClass().getName());
 		} catch (IOException e) {
 			throw new ConfigWriteEexception(e);
 		}

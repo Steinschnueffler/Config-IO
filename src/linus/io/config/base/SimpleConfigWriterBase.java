@@ -30,7 +30,7 @@ public class SimpleConfigWriterBase extends ConfigWriter{
 
 	public void writeConfig(SingleConfig<?> sc) throws ConfigWriteEexception{
 		try {
-			writer.write(sc.writeSimple());
+		writeln(sc.writeSimple());
 		} catch (IOException e) {
 			throw new ConfigWriteEexception(e);
 		}
@@ -39,7 +39,7 @@ public class SimpleConfigWriterBase extends ConfigWriter{
 	public void writeConfig(MultipleConfig<?> mc) throws ConfigWriteEexception{
 		for(String s : mc.writeSimple())
 			try {
-				writer.write(s);
+				writeln(s);
 			} catch (IOException e) {
 				throw new ConfigWriteEexception(e);
 			}
