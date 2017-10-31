@@ -1,4 +1,4 @@
-package linus.io.config.base;
+package linus.io.config;
 
 /**
  * This Enum contains the Info of a {@link Config} is Single or Multiple.

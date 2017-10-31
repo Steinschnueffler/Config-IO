@@ -7,8 +7,7 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.net.URI;
 
-import linus.io.config.base.Config;
-import linus.io.config.base.SerializingConfigWriterBase;
+import linus.io.config.Config;
 import linus.io.config.exception.ConfigWriteEexception;
 
 public class SerializingConfigWriter extends SerializingConfigWriterBase{

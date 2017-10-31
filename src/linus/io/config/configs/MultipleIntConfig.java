@@ -1,7 +1,7 @@
 package linus.io.config.configs;
 
-import linus.io.config.base.Config;
-import linus.io.config.base.MultipleConfig;
+import linus.io.config.Config;
+import linus.io.config.MultipleConfig;
 import linus.io.config.io.SerializableConfigData;
 
 public class MultipleIntConfig extends MultipleConfig<Integer>{

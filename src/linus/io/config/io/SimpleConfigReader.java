@@ -7,8 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.URI;
 
-import linus.io.config.base.ConfigBase;
-import linus.io.config.base.SimpleConfigReaderBase;
+import linus.io.config.ConfigBase;
 import linus.io.config.exception.ConfigReadException;
 
 /**

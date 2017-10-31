@@ -7,9 +7,9 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.Scanner;
 
-import linus.io.config.base.ConfigReader;
 import linus.io.config.io.ComplexConfigReader;
 import linus.io.config.io.ComplexConfigWriter;
+import linus.io.config.io.ConfigReader;
 import linus.io.config.io.SerializingConfigReader;
 import linus.io.config.io.SerializingConfigWriter;
 import linus.io.config.io.SimpleConfigReader;

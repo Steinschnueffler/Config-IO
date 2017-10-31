@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 
-import linus.io.config.base.Config;
+import linus.io.config.Config;
 import linus.io.config.exception.ConfigOperationException;
 
 public class ConfigHolder implements Iterable<Config<?>>, Cloneable{

@@ -1,4 +1,4 @@
-package linus.io.config.base;
+package linus.io.config.io;
 
 import java.io.BufferedReader;
 import java.io.Closeable;
@@ -9,13 +9,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import linus.io.config.Config;
+import linus.io.config.ConfigBase;
 import linus.io.config.exception.ConfigReadException;
 import linus.io.config.exception.GeneratedConfigException;
 import linus.io.config.exception.InvalidConfigReaderException;
-import linus.io.config.io.ComplexConfigReader;
-import linus.io.config.io.ConfigIOChars;
-import linus.io.config.io.SimpleConfigReader;
-import linus.io.config.io.ThreadedConfigReader;
 
 /**
  *

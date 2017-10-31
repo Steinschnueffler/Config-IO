@@ -5,8 +5,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Vector;
 
-import linus.io.config.base.Config;
-import linus.io.config.base.ConfigWriter;
+import linus.io.config.Config;
 import linus.io.config.exception.ConfigWriteEexception;
 
 public class ThreadedConfigWriter implements Closeable{

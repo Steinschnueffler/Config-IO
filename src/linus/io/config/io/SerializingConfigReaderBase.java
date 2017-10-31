@@ -1,12 +1,12 @@
-package linus.io.config.base;
+package linus.io.config.io;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 
+import linus.io.config.Config;
 import linus.io.config.exception.ConfigReadException;
-import linus.io.config.io.SerializableConfigData;
 
 public class SerializingConfigReaderBase extends ConfigReader{
 

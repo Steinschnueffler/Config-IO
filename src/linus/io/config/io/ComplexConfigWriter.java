@@ -5,8 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 
-import linus.io.config.base.ComplexConfigWriterBase;
-import linus.io.config.base.Config;
+import linus.io.config.Config;
 import linus.io.config.exception.ConfigWriteEexception;
 import linus.io.config.util.ConfigFile;
 

@@ -1,12 +1,12 @@
-package linus.io.config.base;
+package linus.io.config.io;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 
+import linus.io.config.Config;
 import linus.io.config.exception.ConfigWriteEexception;
-import linus.io.config.io.SerializingConfigReader;
 
 public class SerializingConfigWriterBase extends ConfigWriter{
 

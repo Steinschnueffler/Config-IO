@@ -1,4 +1,4 @@
-package linus.io.config.base;
+package linus.io.config;
 
 import java.io.IOException;
 
@@ -9,6 +9,8 @@ import linus.io.config.exception.GeneratedConfigException;
 import linus.io.config.exception.InvalidConfigException;
 import linus.io.config.io.ComplexConfigReader;
 import linus.io.config.io.ComplexConfigWriter;
+import linus.io.config.io.ConfigReader;
+import linus.io.config.io.ConfigWriter;
 import linus.io.config.io.SerializableConfigData;
 import linus.io.config.io.SerializingConfigWriter;
 import linus.io.config.io.ThreadedConfigWriter;

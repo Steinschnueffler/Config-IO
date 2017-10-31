@@ -1,6 +1,6 @@
 package linus.io.config.exception;
 
-import linus.io.config.base.Config;
+import linus.io.config.Config;
 
 /**
  * This {@link Exception} marks that a Config is invalid, not supported or

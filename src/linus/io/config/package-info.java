@@ -3,4 +3,4 @@
  * @author Linus
  *
  */
-package linus.io.config.base;
+package linus.io.config;

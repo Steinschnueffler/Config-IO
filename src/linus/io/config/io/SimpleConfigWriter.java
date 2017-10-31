@@ -7,10 +7,9 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.net.URI;
 
-import linus.io.config.base.Config;
-import linus.io.config.base.MultipleConfig;
-import linus.io.config.base.SimpleConfigWriterBase;
-import linus.io.config.base.SingleConfig;
+import linus.io.config.Config;
+import linus.io.config.MultipleConfig;
+import linus.io.config.SingleConfig;
 import linus.io.config.exception.ConfigWriteEexception;
 
 public class SimpleConfigWriter extends SimpleConfigWriterBase{

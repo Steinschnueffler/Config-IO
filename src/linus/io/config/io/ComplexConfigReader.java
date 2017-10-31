@@ -5,8 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
-import linus.io.config.base.ComplexConfigReaderBase;
-import linus.io.config.base.ConfigBase;
+import linus.io.config.ConfigBase;
 import linus.io.config.exception.ConfigReadException;
 
 public class ComplexConfigReader extends ComplexConfigReaderBase{

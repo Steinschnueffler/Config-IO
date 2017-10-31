@@ -1,11 +1,12 @@
-package linus.io.config.base;
+package linus.io.config.io;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
+import linus.io.config.Config;
+import linus.io.config.MultipleConfig;
+import linus.io.config.SingleConfig;
 import linus.io.config.exception.ConfigWriteEexception;
-import linus.io.config.io.ConfigIOChars;
-import linus.io.config.io.SimpleConfigReader;
 
 public class SimpleConfigWriterBase extends ConfigWriter{
 

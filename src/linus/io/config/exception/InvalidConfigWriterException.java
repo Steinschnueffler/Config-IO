@@ -1,6 +1,6 @@
 package linus.io.config.exception;
 
-import linus.io.config.base.ConfigWriter;
+import linus.io.config.io.ConfigWriter;
 
 /**
  * This {@link Exception} marks that a {@link ConfigWriter} is invalid

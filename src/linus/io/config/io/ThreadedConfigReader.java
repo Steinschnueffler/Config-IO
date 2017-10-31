@@ -5,8 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
-import linus.io.config.base.Config;
-import linus.io.config.base.ConfigReader;
+import linus.io.config.Config;
 import linus.io.config.exception.ConfigReadException;
 
 public class ThreadedConfigReader implements Closeable{

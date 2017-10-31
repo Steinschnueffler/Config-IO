@@ -1,4 +1,4 @@
-package linus.io.config.base;
+package linus.io.config.io;
 
 import java.io.BufferedWriter;
 import java.io.Closeable;
@@ -8,12 +8,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
+import linus.io.config.Config;
 import linus.io.config.exception.ConfigOperationException;
 import linus.io.config.exception.ConfigWriteEexception;
-import linus.io.config.io.ComplexConfigWriter;
-import linus.io.config.io.ConfigIOChars;
-import linus.io.config.io.SimpleConfigWriter;
-import linus.io.config.io.ThreadedConfigWriter;
 import linus.io.config.util.ConfigHolder;
 
 /**

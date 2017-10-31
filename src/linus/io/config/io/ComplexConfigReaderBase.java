@@ -1,9 +1,10 @@
-package linus.io.config.base;
+package linus.io.config.io;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
+import linus.io.config.Config;
 import linus.io.config.exception.ConfigReadException;
 
 public class ComplexConfigReaderBase extends ConfigReader{

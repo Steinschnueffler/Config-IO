@@ -1,6 +1,6 @@
 package linus.io.config.exception;
 
-import linus.io.config.base.ConfigReader;
+import linus.io.config.io.ConfigReader;
 
 /**
  * This {@link Exception} marks that a {@link ConfigReader} is invalid or

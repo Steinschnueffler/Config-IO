@@ -1,4 +1,4 @@
-package linus.io.config.base;
+package linus.io.config;
 
 import linus.io.config.configs.SingleBooleanConfig;
 import linus.io.config.configs.SingleCharConfig;

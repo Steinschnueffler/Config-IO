@@ -1,4 +1,4 @@
-package linus.io.config.base;
+package linus.io.config;
 
 import java.util.Arrays;
 import java.util.Iterator;
