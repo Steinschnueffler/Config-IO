@@ -30,6 +30,6 @@ public enum ConfigType {
 	/**
 	 * This ConfigType marks that a Config doesn't has any value.
 	 */
-	NULL
+	Null
 
 }
