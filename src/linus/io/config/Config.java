@@ -129,7 +129,9 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 */
 	public ConfigHolder addToHolder(ConfigHolder holder) {
 		if(holder == null) return newHolder();
-		holder.add(this);
+		synchronized (lock) {
+			holder.add(this);
+		}
 		return holder;
 	}
 
@@ -140,7 +142,9 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	@SuppressWarnings("unchecked")
 	@Override
 	public Config<E> clone() throws CloneNotSupportedException{
-		return (Config<E>) super.clone();
+		synchronized (lock) {
+			return (Config<E>) super.clone();
+		}
 	}
 
 	/**
@@ -150,7 +154,15 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 */
 	@Override
 	public int compareTo(Config<?> o) {
-		return ConfigComparator.compareStatic(this, o);
+		Config<?> cfg;
+		synchronized (lock) {
+			try {
+				cfg = clone();
+			} catch (CloneNotSupportedException e) {
+				cfg = this;
+			}
+		}
+		return ConfigComparator.compareStatic(cfg, o);
 	}
 
 	/**
@@ -171,7 +183,11 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 * @return a InvalidConfigException to this Config
 	 */
 	public InvalidConfigException createException(String msg){
-		return new InvalidConfigException(toString(), new GeneratedConfigException(msg));
+		String str;
+		synchronized (lock) {
+			str = toString();
+		}
+		return new InvalidConfigException(str, new GeneratedConfigException(msg));
 	}
 
 	@Override
@@ -183,16 +199,18 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 		if (!(obj instanceof Config))
 			return false;
 		Config<?> other = (Config<?>) obj;
-		if (name == null) {
-			if (other.name != null)
+		synchronized (lock) {
+			if (name == null) {
+				if (other.name != null)
+					return false;
+			} else if (!name.equals(other.name))
 				return false;
-		} else if (!name.equals(other.name))
-			return false;
-		if (value == null) {
-			if (other.value != null)
+			if (value == null) {
+				if (other.value != null)
+					return false;
+			} else if (!value.equals(other.value))
 				return false;
-		} else if (!value.equals(other.value))
-			return false;
+		}
 		return true;
 	}
 	
@@ -222,7 +240,9 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 * @return the Name of the Config
 	 */
 	public String getName(){
-		return name;
+		synchronized (lock) {
+			return name;
+		}
 	}
 
 	/**
@@ -245,7 +265,8 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 * @return a String representation of the Value
 	 */
 	public String getValueAsString(){
-		return String.valueOf(getValue());
+		Object obj = getValue();
+		return obj == null ? "null" : obj.toString();
 	}
 
 	/**
@@ -260,8 +281,10 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + ((value == null) ? 0 : value.hashCode());
+		synchronized (lock) {
+			result = prime * result + ((name == null) ? 0 : name.hashCode());
+			result = prime * result + ((value == null) ? 0 : value.hashCode());
+		}
 		return result;
 	}
 
@@ -272,7 +295,9 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 * @return a new ConfigHolder
 	 */
 	public ConfigHolder newHolder() {
-		return new ConfigHolder(this);
+		synchronized (lock) {
+			return new ConfigHolder(this);
+		}
 	}
 
 	/**
@@ -283,17 +308,19 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 * @return
 	 */
 	public Config<?> normalize(){
-		if(getValue().getClass().isArray()) {
-			Object[] datas = (Object[]) getValue();
-			String[] strs = new String[datas.length];
-			for(int i = 0; i < strs.length; i++) {
-				strs[i] = String.valueOf(datas[i]);
+		synchronized (lock) {
+			if (getValue().getClass().isArray()) {
+				Object[] datas = (Object[]) getValue();
+				String[] strs = new String[datas.length];
+				for (int i = 0; i < strs.length; i++) {
+					strs[i] = String.valueOf(datas[i]);
+				}
+				MultipleStringConfig msc = new MultipleStringConfig(getName(), strs);
+				return msc.normalize();
 			}
-			MultipleStringConfig msc = new MultipleStringConfig(getName(), strs);
-			return msc.normalize();
+			SingleStringConfig ssc = new SingleStringConfig(getName(), String.valueOf(getValue()));
+			return ssc.normalize();
 		}
-		SingleStringConfig ssc = new SingleStringConfig(getName(), String.valueOf(getValue()));
-		return ssc.normalize();
 	}
 
 	/**
@@ -363,10 +390,12 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 * @param writer - the writer that should write this Config
 	 */
 	public void writeTo(ConfigWriter writer){
-		try {
-			writer.writeConfig(this);
-		} catch (IOException e) {
-			throw new ConfigOperationException(e);
+		synchronized (lock) {
+			try {
+				writer.writeConfig(this);
+			} catch (IOException e) {
+				throw new ConfigOperationException(e);
+			}
 		}
 	}
 	
@@ -378,7 +407,9 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 * @param writer - the writer that should write this Config
 	 */
 	public void writeTo(ThreadedConfigWriter writer){
-		writer.writeConfig(this);
+		synchronized (lock) {
+			writer.writeConfig(this);
+		}
 	}
 	
 	/**
@@ -391,7 +422,11 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 * @throws IOException if a IOException occures
 	 */
 	public void writeTo(OutputStream out) throws IOException {
-		out.write(toString().getBytes());
+		byte[] bs;
+		synchronized (lock) {
+			bs = toString().getBytes();
+		}
+		out.write(bs);
 	}
 	
 	/**
@@ -404,15 +439,21 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 * @throws IOException if a IOException occures
 	 */
 	public void writeTo(Writer writer) throws IOException {
-		writer.write(toString());
+		String str;
+		synchronized (lock) {
+			str = toString();
+		}
+		writer.write(str);
 	}
 	
 	@Override
 	public int read(CharBuffer cb) throws IOException {
-		String append = toString();
+		String append;
+		synchronized (lock) {
+			append = toString();
+		}
 		return cb.put(append).length();
-	}
-	
+	}	
 	
 	
 }
