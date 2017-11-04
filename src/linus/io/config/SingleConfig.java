@@ -11,15 +11,12 @@ import linus.io.config.io.SerializableConfigData;
 public abstract class SingleConfig<E> extends Config<E>{
 	public SingleConfig() {}
 
-	protected E value = null;
-
 	public SingleConfig(String name) {
 		super(name);
 	}
 
 	public SingleConfig(String name, E value){
-		super(name);
-		this.value = value;
+		super(name, value);
 	}
 
 	@Override
@@ -38,10 +35,6 @@ public abstract class SingleConfig<E> extends Config<E>{
 		return (SingleConfig<E>) super.clone();
 	}
 
-	@Override
-	public E getValue() {
-		return value;
-	}
 	@Override
 	public SingleStringConfig toStringConfig() {
 		String str = getValue() == null ? null : getValue().toString();
