@@ -1,7 +1,7 @@
 package linus.io.config;
 
 /**
- * This Enum contains the Info of a {@link Config} is Single or Multiple.
+ * This Enum contains the Info if a {@link Config} is Single, Multiple Custom or has a Value of null.
  *
  * @author Linus Dierheimer
  * @since java 1.5

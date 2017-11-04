@@ -214,7 +214,6 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 		return true;
 	}
 	
-
 	/**
 	 *  Config musn't be finalized
 	 */
@@ -230,6 +229,25 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 */
 	public ConfigType getConfigType() {
 		return ConfigType.Custom;
+	}
+	
+	/**
+	 * Returns the actual {@link ConfigType}, directed tested at calling this method, so it can 
+	 * change while handling with this Config. If value is null, it returns {@link ConfigType#Null}.
+	 * If it is an Array, it returns {@link ConfigType#Multiple}. If the class of the Value is an Enum,
+	 * it return {@link ConfigType#Custom}. Otherwise it returns {@link ConfigType#Single}.
+	 * 
+	 * @return the actual ConfigType
+	 */
+	public final ConfigType getActualConfigType() {
+		Object obj;
+		synchronized (lock) {
+			obj = getValue();
+		}
+		if(obj == null) return ConfigType.Null;
+		if(obj.getClass().isArray()) return ConfigType.Multiple;
+		if(obj.getClass().isEnum()) return ConfigType.Custom;
+		return ConfigType.Single;
 	}
 
 	/**
@@ -359,7 +377,7 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 */
 	@Override
 	public String toString() {
-		return getName() + " = " +getValueAsString();
+		return getName() +" " +SEPARATOR +" " +getValueAsString();
 	}
 	
 	/**
@@ -454,6 +472,5 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 		}
 		return cb.put(append).length();
 	}	
-	
 	
 }
