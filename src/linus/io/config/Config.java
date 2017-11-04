@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import java.io.Writer;
 import java.nio.CharBuffer;
 
+import jdk.internal.HotSpotIntrinsicCandidate;
 import linus.io.config.configs.MultipleStringConfig;
 import linus.io.config.configs.SingleStringConfig;
 import linus.io.config.exception.ConfigOperationException;
@@ -239,7 +240,7 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 * 
 	 * @return the actual ConfigType
 	 */
-	public final ConfigType getActualConfigType() {
+	public ConfigType getActualConfigType() {
 		Object obj;
 		synchronized (lock) {
 			obj = getValue();
