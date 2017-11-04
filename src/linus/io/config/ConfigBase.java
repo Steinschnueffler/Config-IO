@@ -10,7 +10,7 @@ package linus.io.config;
  * @version 1.0
  *
  */
-public abstract class ConfigBase{
+public abstract class ConfigBase extends Object{
 	//Only for Config<?> constructable
 	ConfigBase() {}
 }
