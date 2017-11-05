@@ -5,7 +5,6 @@ import java.io.OutputStream;
 import java.io.Writer;
 import java.nio.CharBuffer;
 
-import jdk.internal.HotSpotIntrinsicCandidate;
 import linus.io.config.configs.MultipleStringConfig;
 import linus.io.config.configs.SingleStringConfig;
 import linus.io.config.exception.ConfigOperationException;
@@ -220,7 +219,13 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 */
 	@Override
 	@Deprecated
-	protected final void finalize() throws Throwable{}
+	protected final void finalize() throws Throwable{
+		try {
+			throw new Throwable("Can't finalize a Config");
+		}finally {
+			super.finalize();
+		}
+	}
 
 	/**
 	 *Returns the ConfigType of a Config. This can be used
