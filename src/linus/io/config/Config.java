@@ -2,7 +2,6 @@ package linus.io.config;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.CharBuffer;
 
@@ -23,18 +22,17 @@ import linus.io.config.util.ConfigFile;
 import linus.io.config.util.ConfigHolder;
 
 /**
- *This abstract class is the root of all Configs and it or
- *any extend of it can be written by {@link ConfigWriter}s and
- *readed by {@link ConfigReader}s <br>
- *It should be used to make own Configs with own way of writing
- *and reading. The Classes wich extends from this and should be readed by
- *ConfigReader <b>MUST</b> be default Constructable because oft the use of
- *reflections to return exactly this class. This provides to have a lot of different
- *config types in one file.
- *(Empty Constructor).
+ * This abstract class is the root of all Configs and it or any extend of it can
+ * be written by {@link ConfigWriter}s and readed by {@link ConfigReader}s <br>
+ * It should be used to make own Configs with own way of writing and reading.
+ * The Classes wich extends from this and should be readed by ConfigReader
+ * <b>MUST</b> be default Constructable because oft the use of reflections to
+ * return exactly this class. This provides to have a lot of different config
+ * types in one file. (Empty Constructor).
  *
  * @author Linus Dierheimer
- * @param <E> - The type of the value of the Config
+ * @param <E>
+ *            - The type of the value of the Config
  * @see SingleConfig
  * @see MultipleConfig
  * @see ConfigReader
@@ -45,91 +43,98 @@ import linus.io.config.util.ConfigHolder;
  * @since java 1.5 (because of the use of generic)
  *
  */
-public abstract class Config<E> extends ConfigBase implements Cloneable, Comparable<Config<?>>, Readable{
+public abstract class Config<E> extends ConfigBase implements Cloneable, Comparable<Config<?>>, Readable {
 
-	//static
-	
+	// static
+
 	/**
-	 * This char is the standart Separator for Name and Value. It is used
-	 * by all Standart Config Implementations.
+	 * This char is the standart Separator for Name and Value. It is used by all
+	 * Standart Config Implementations.
 	 */
 	public static final char SEPARATOR = '=';
-	
+
 	/**
-	 * Trys to return the right Config out of the readed lines. returns null if readedLines is
-	 * null or has a length of 0.
+	 * Trys to return the right Config out of the readed lines. returns null if
+	 * readedLines is null or has a length of 0.
 	 *
 	 * @param readedLines
 	 * @return a fitting Config
 	 */
 	@SuppressWarnings("unchecked")
-	public static <E extends ConfigBase> E getConfig(String[] readedLines){
-		if(readedLines.length == 0) return null;
-		if(readedLines.length == 1) return (E) SingleConfig.getSingleConfig(readedLines[0]);
+	public static <E extends ConfigBase> E getConfig(String[] readedLines) {
+		if (readedLines.length == 0)
+			return null;
+		if (readedLines.length == 1)
+			return (E) SingleConfig.getSingleConfig(readedLines[0]);
 		return (E) MultipleConfig.getMultipleConfig(readedLines);
 	}
-	
-	//Config
+
+	// Config
 
 	/**
-	 * This Object is for multithreading access. Critical parts a surrounded
-	 * by synchronized like this:
-	 * <blockquote>
-	 * <code>
+	 * This Object is for multithreading access. Critical parts a surrounded by
+	 * synchronized like this: <blockquote> <code>
 	 * synchronized(lock){
 	 * 	<dd>//action</dd>
 	 * }
-	 * </code>
-	 * </blockquote>
+	 * </code> </blockquote>
 	 */
 	protected final Object lock = new Object();
 
 	/**
-	 * The Name value of a Config. If a Config is Constucted with a default Constructor
-	 * it will be a String with a length of 0. Calling the {@link #read(String[])} method
-	 * should change the value.
+	 * The Name value of a Config. If a Config is Constucted with a default
+	 * Constructor it will be a String with a length of 0. Calling the
+	 * {@link #read(String[])} method should change the value.
 	 */
 	protected String name = "unknown_name";
-	
+
 	/**
 	 * The Value of this Config
 	 */
 	protected E value = null;
 
 	/**
-	 * Creates a standart abstract Config with 
-	 * the name of "unknown_name" and a value of null
+	 * Creates a standart abstract Config with the name of "unknown_name" and a
+	 * value of null
 	 */
-	public Config() {}
-	
+	public Config() {
+	}
+
 	/**
 	 * Creates a new Config with the given Name and a value of null.
 	 * 
-	 * @param name the name of the Config
+	 * @param name
+	 *            the name of the Config
 	 */
 	public Config(String name) {
 		this.name = name;
 	}
 
 	/**
-	 * Constructs a Config like the default Constructor, it only sets the Value of {@link #name}
+	 * Constructs a Config like the default Constructor, it only sets the Value of
+	 * {@link #name}
 	 * 
 	 * to the given String.
-	 * @param name the Name of the Config
-	 * @param value the value of the Config
+	 * 
+	 * @param name
+	 *            the Name of the Config
+	 * @param value
+	 *            the value of the Config
 	 */
-	public Config(String name, E value){
+	public Config(String name, E value) {
 		this.name = name;
 		this.value = value;
 	}
 
 	/**
 	 * Adds this Config to the given {@link ConfigHolder} and returns it.
+	 * 
 	 * @param holder
 	 * @return
 	 */
 	public ConfigHolder addToHolder(ConfigHolder holder) {
-		if(holder == null) return newHolder();
+		if (holder == null)
+			return newHolder();
 		synchronized (lock) {
 			holder.add(this);
 		}
@@ -137,21 +142,22 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	}
 
 	/**
-	 * Clones the Config. This means that it gives back a brand new Config, but with the
-	 * class, the Name and the Value of the old one.
+	 * Clones the Config. This means that it gives back a brand new Config, but with
+	 * the class, the Name and the Value of the old one.
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public Config<E> clone() throws CloneNotSupportedException{
+	public Config<E> clone() throws CloneNotSupportedException {
 		synchronized (lock) {
 			return (Config<E>) super.clone();
 		}
 	}
 
 	/**
-	 * Compares the Config to any other Config. First it Sorts after the {@link ConfigType},
-	 * then after the Class of the Value (alphabetic) and then after the Name. If all this
-	 * is equal it trys to compare the Value. if even this is equal it returns 0.
+	 * Compares the Config to any other Config. First it Sorts after the
+	 * {@link ConfigType}, then after the Class of the Value (alphabetic) and then
+	 * after the Name. If all this is equal it trys to compare the Value. if even
+	 * this is equal it returns 0.
 	 */
 	@Override
 	public int compareTo(Config<?> o) {
@@ -167,23 +173,23 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	}
 
 	/**
-	 * This method creates an {@link InvalidConfigException} to this Config.
-	 * It can be used to throw if this Config isn't supported or a wrong type.
+	 * This method creates an {@link InvalidConfigException} to this Config. It can
+	 * be used to throw if this Config isn't supported or a wrong type.
 	 *
 	 * @return a InvalidConfigException to this Config
 	 */
-	public InvalidConfigException createException(){
+	public InvalidConfigException createException() {
 		return createException("");
 	}
 
 	/**
-	 * This method creates an {@link InvalidConfigException} to this Config.
-	 * It can be used to throw if this Config isn't supported or a wrong type.
-	 * The Info will be the given String.
+	 * This method creates an {@link InvalidConfigException} to this Config. It can
+	 * be used to throw if this Config isn't supported or a wrong type. The Info
+	 * will be the given String.
 	 *
 	 * @return a InvalidConfigException to this Config
 	 */
-	public InvalidConfigException createException(String msg){
+	public InvalidConfigException createException(String msg) {
 		String str;
 		synchronized (lock) {
 			str = toString();
@@ -214,35 +220,36 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 		}
 		return true;
 	}
-	
+
 	/**
-	 *  Config musn't be finalized
+	 * Config musn't be finalized
 	 */
 	@Override
 	@Deprecated
-	protected final void finalize() throws Throwable{
+	protected final void finalize() throws Throwable {
 		try {
 			throw new Throwable("Can't finalize a Config");
-		}finally {
+		} finally {
 			super.finalize();
 		}
 	}
 
 	/**
-	 *Returns the ConfigType of a Config. This can be used
-	 *to sort or handle right with them. Usually its Single or Multiple
+	 * Returns the ConfigType of a Config. This can be used to sort or handle right
+	 * with them. Usually its Single or Multiple
 	 *
 	 * @return the ConfigType of a Config
 	 */
 	public ConfigType getConfigType() {
 		return ConfigType.Custom;
 	}
-	
+
 	/**
-	 * Returns the actual {@link ConfigType}, directed tested at calling this method, so it can 
-	 * change while handling with this Config. If value is null, it returns {@link ConfigType#Null}.
-	 * If it is an Array, it returns {@link ConfigType#Multiple}. If the class of the Value is an Enum,
-	 * it return {@link ConfigType#Custom}. Otherwise it returns {@link ConfigType#Single}.
+	 * Returns the actual {@link ConfigType}, directed tested at calling this
+	 * method, so it can change while handling with this Config. If value is null,
+	 * it returns {@link ConfigType#Null}. If it is an Array, it returns
+	 * {@link ConfigType#Multiple}. If the class of the Value is an Enum, it return
+	 * {@link ConfigType#Custom}. Otherwise it returns {@link ConfigType#Single}.
 	 * 
 	 * @return the actual ConfigType
 	 */
@@ -251,29 +258,33 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 		synchronized (lock) {
 			obj = getValue();
 		}
-		if(obj == null) return ConfigType.Null;
-		if(obj.getClass().isArray()) return ConfigType.Multiple;
-		if(obj.getClass().isEnum()) return ConfigType.Custom;
+		if (obj == null)
+			return ConfigType.Null;
+		if (obj.getClass().isArray())
+			return ConfigType.Multiple;
+		if (obj.getClass().isEnum())
+			return ConfigType.Custom;
 		return ConfigType.Single;
 	}
 
 	/**
 	 * This class is used for getting the name of the Config and by
-	 * {@link ConfigWriter} to write it to a file. This method should never return null,
-	 * so the name should be in the Array of the read and write method and, if it existst,
-	 * in a Constructor. Note that there still must be a empty Constructor.
+	 * {@link ConfigWriter} to write it to a file. This method should never return
+	 * null, so the name should be in the Array of the read and write method and, if
+	 * it existst, in a Constructor. Note that there still must be a empty
+	 * Constructor.
+	 * 
 	 * @return the Name of the Config
 	 */
-	public String getName(){
+	public String getName() {
 		synchronized (lock) {
 			return name;
 		}
 	}
 
 	/**
-	 *This method is for use after reading the class to get the Value.
-	 *This can be any Object of the class given by the generic parameter
-	 *of this class
+	 * This method is for use after reading the class to get the Value. This can be
+	 * any Object of the class given by the generic parameter of this class
 	 *
 	 * @return the Value of this Config
 	 */
@@ -284,22 +295,25 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	}
 
 	/**
-	 * This method returns the Value of a Config as a String representation.
-	 * In the standart implementation it is <code>{@link #getValue()}.toString() </code>.
+	 * This method returns the Value of a Config as a String representation. In the
+	 * standart implementation it is <code>{@link #getValue()}.toString() </code>.
 	 *
 	 * @return a String representation of the Value
 	 */
-	public String getValueAsString(){
+	public String getValueAsString() {
 		Object obj = getValue();
 		return obj == null ? "null" : obj.toString();
 	}
 
 	/**
-	 * Because of the Overriding of {@link #equals(Object)} this Method is also Overriden
-	 * to have a safer handle hat HashContainers. It simply returns super.hashCode * 13. If this
-	 * would be higer than Integer.MAX_VALUE it returns super.hashCode / 13.
+	 * Because of the Overriding of {@link #equals(Object)} this Method is also
+	 * Overriden to have a safer handle hat HashContainers. It simply returns
+	 * super.hashCode * 13. If this would be higer than Integer.MAX_VALUE it returns
+	 * super.hashCode / 13.
 	 */
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#hashCode()
 	 */
 	@Override
@@ -314,8 +328,8 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	}
 
 	/**
-	 * Returns a new {@link ConfigHolder} holding only this Config. Further Configs can be added
-	 * to it.
+	 * Returns a new {@link ConfigHolder} holding only this Config. Further Configs
+	 * can be added to it.
 	 * 
 	 * @return a new ConfigHolder
 	 */
@@ -326,13 +340,13 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	}
 
 	/**
-	 * Normalizes this Config by trying to convert it to
-	 * a Config of a primitive Type. It also makes it, if necesarry and possible,
-	 * to an Instance of {@link SingleConfig} or {@link MultipleConfig}.
+	 * Normalizes this Config by trying to convert it to a Config of a primitive
+	 * Type. It also makes it, if necesarry and possible, to an Instance of
+	 * {@link SingleConfig} or {@link MultipleConfig}.
 	 * 
 	 * @return
 	 */
-	public Config<?> normalize(){
+	public Config<?> normalize() {
 		synchronized (lock) {
 			if (getValue().getClass().isArray()) {
 				Object[] datas = (Object[]) getValue();
@@ -349,19 +363,26 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	}
 
 	/**
-	 * Reads a Config from a {@link SerializableConfigData}. This should change the Value and the Name
-	 * and the Value of this Config. Calling this metod should be equal as calling this class
-	 * with the Constructor {@code Config(SerializableConfigData data)}.
-	 * @param data
+	 * Reads a Config from a {@link SerializableConfigData}. This should change the
+	 * Value and the Name and the Value of this Config. Calling this metod should be
+	 * equal as calling this class with the Constructor
+	 * {@code Config(SerializableConfigData data)}.
+	 * 
+	 * @param data the data to be readed
 	 */
-	public abstract Config<E> read(SerializableConfigData<E> data);
-
+	public Config<E> read(SerializableConfigData<E> data) {
+		this.name = data.name;
+		this.value = data.value;
+		return this;
+	}
+	
 	/**
-	 * This method is used by {@link ConfigReader} to read this Config.
-	 *Each String in the given Array represents a line in the File. Using this
-	 *method should be equal as initializing this class with a Constructor.
+	 * This method is used by {@link ConfigReader} to read this Config. Each String
+	 * in the given Array represents a line in the File. Using this method should be
+	 * equal as initializing this class with a Constructor.
 	 *
-	 * @param lines - the readed lines
+	 * @param lines
+	 *            - the readed lines
 	 */
 	public abstract Config<E> read(String[] lines);
 
@@ -369,55 +390,60 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 * returns a {@link SerializableConfigData} of the Config with the same values.
 	 * This is used by {@link SerializingConfigWriter} to write the Config compact.
 	 * It can be converted back to a Config by {@link #read(SerializableConfigData)}
+	 * 
 	 * @return
 	 */
-	public SerializableConfigData<E> toSerializableConfig(){
+	public SerializableConfigData<E> toSerializableConfig() {
 		return new SerializableConfigData<E>(getName(), getValue(), getClass().getName());
 	}
-	
+
 	/**
-	 * This method is the standart implementation of toString by Config.
-	 * It simply returns <br>
+	 * This method is the standart implementation of toString by Config. It simply
+	 * returns <br>
 	 * <code>getName() + " = " + getValue().toString</code>
 	 *
 	 * @return a String representation of this config
 	 */
 	@Override
 	public String toString() {
-		return getName() +" " +SEPARATOR +" " +getValueAsString();
+		return getName() + " " + SEPARATOR + " " + getValueAsString();
 	}
-	
+
 	/**
-	 * Gives back a Config which has the same name and the value as String, so
-	 * it can be used universally. At {@link SingleConfig} it is normally
+	 * Gives back a Config which has the same name and the value as String, so it
+	 * can be used universally. At {@link SingleConfig} it is normally
 	 * {@link SingleStringConfig} and at {@link MultipleConfig} it is usually
 	 * {@link MultipleStringConfig}. In the standart implementation by these two,
 	 * converting to String works easally over the toString() method.
+	 * 
 	 * @return a String Config with the same name and the Value as a String
 	 */
 	public Config<? extends Object> toStringConfig() {
 		return new SingleStringConfig(getName(), getValueAsString());
 	}
-	
+
 	/**
-	 *This method is used by {@link ComplexConfigWriter} to write this Config
-	 *to a file. Each String in the Array is a new Line. The {@link ComplexConfigReader}
-	 *gives exactly this Array to the read method at reading if it
-	 *wasn't changed by the user.
+	 * This method is used by {@link ComplexConfigWriter} to write this Config to a
+	 * file. Each String in the Array is a new Line. The {@link ComplexConfigReader}
+	 * gives exactly this Array to the read method at reading if it wasn't changed
+	 * by the user.
 	 *
 	 * @return an array of String that should be written
 	 */
 	public abstract String[] write();
-	
+
 	/**
-	 *This method executes the given {@link ConfigWriter} to write itself.
-	 *Calling this is equal to <code>writer.writeConfig(thisConfig)</code>.
+	 * This method executes the given {@link ConfigWriter} to write itself. Calling
+	 * this is equal to <code>writer.writeConfig(thisConfig)</code>.
 	 *
-	 * @throws NullPointerException if writer is null
-	 * @param writer - the writer that should write this Config
-	 * @throws ConfigWriteEexception if the writer throws a {@link ConfigWriteEexception}
+	 * @throws NullPointerException
+	 *             if writer is null
+	 * @param writer
+	 *            - the writer that should write this Config
+	 * @throws ConfigWriteEexception
+	 *             if the writer throws a {@link ConfigWriteEexception}
 	 */
-	public void writeTo(ConfigWriter writer) throws ConfigWriteEexception{
+	public void writeTo(ConfigWriter writer) throws ConfigWriteEexception {
 		Config<E> cfg;
 		try {
 			cfg = clone();
@@ -428,15 +454,17 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 			writer.writeConfig(cfg);
 		}
 	}
-	
+
 	/**
 	 * This method behaves as {@link #writeTo(ConfigWriter)}, only with the
 	 * different that the given writer is a {@link ThreadedConfigWriter}.
 	 *
-	 * @throws NullPointerException if writer is null
-	 * @param writer - the writer that should write this Config
+	 * @throws NullPointerException
+	 *             if writer is null
+	 * @param writer
+	 *            - the writer that should write this Config
 	 */
-	public void writeTo(ThreadedConfigWriter writer){
+	public void writeTo(ThreadedConfigWriter writer) {
 		Config<E> cfg;
 		try {
 			cfg = clone();
@@ -447,38 +475,47 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 			writer.writeConfig(cfg);
 		}
 	}
-	
+
 	/**
-	 * Writes the Config to the given {@link OutputStream}. The standart implemented is
-	 * <code>
+	 * Writes the Config to the given {@link OutputStream}. The standart implemented
+	 * is <code>
 	 * out.write(toString().getBytes());
 	 * </code>.
 	 * 
-	 * @param out the OutputStream
-	 * @throws IOException if a IOException occures
+	 * @param out
+	 *            the OutputStream
+	 * @throws IOException
+	 *             if a IOException occures
 	 */
 	public void writeTo(OutputStream out) throws IOException {
-		writeTo(new OutputStreamWriter(out));
+		String[] lines;
+		synchronized (lock) {
+			lines = write();
+		}
+		for (String s : lines)
+			out.write(s.getBytes());
 	}
-	
+
 	/**
 	 * Writes the Config to the given {@link Writer}. The standart implemented is
 	 * <code>
 	 * writer.write(toString());
 	 * </code>.
 	 * 
-	 * @param out the OutputStream
-	 * @throws IOException if a IOException occures
+	 * @param out
+	 *            the OutputStream
+	 * @throws IOException
+	 *             if a IOException occures
 	 */
 	public void writeTo(Writer writer) throws IOException {
 		String[] lines;
 		synchronized (lock) {
 			lines = write();
 		}
-		for(String s : lines)
+		for (String s : lines)
 			writer.write(s);
 	}
-	
+
 	@Override
 	public int read(CharBuffer cb) throws IOException {
 		String append;
@@ -486,30 +523,31 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 			append = toString();
 		}
 		return cb.put(append).length();
-	}	
+	}
 
 	/**
-	 * Testes if this Config contains a setted value. This means that it looks
-	 * if the Value is default (null) or was changed. The Value can be setted by using
-	 * the right Constructor, calling the {@link #read(SerializableConfigData)} or the 
-	 * {@link #read(String[])} method.
+	 * Testes if this Config contains a setted value. This means that it looks if
+	 * the Value is default (null) or was changed. The Value can be setted by using
+	 * the right Constructor, calling the {@link #read(SerializableConfigData)} or
+	 * the {@link #read(String[])} method.
 	 * 
 	 * @return true if the value isn't null
 	 */
 	public boolean containsValue() {
 		return getValue() != null;
 	}
-	
+
 	/**
-	 * Testes if this Config has a setted Name. This means that it looks if the value is null
-	 * or default ("unknown_name"). Otherwise it returns true. The Name can be setted by using
-	 * the right Constructor, calling the {@link #read(SerializableConfigData)} or the 
-	 * {@link #read(String[])} method.
+	 * Testes if this Config has a setted Name. This means that it looks if the
+	 * value is null or default ("unknown_name"). Otherwise it returns true. The
+	 * Name can be setted by using the right Constructor, calling the
+	 * {@link #read(SerializableConfigData)} or the {@link #read(String[])} method.
 	 * 
 	 * @return true if the Name was setted
 	 */
 	public boolean hasName() {
-		if(getName() == null || getName().equalsIgnoreCase("unknown_name")) return false;
+		if (getName() == null || getName().equalsIgnoreCase("unknown_name"))
+			return false;
 		return true;
 	}
 }
