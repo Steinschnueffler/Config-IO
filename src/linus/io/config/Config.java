@@ -2,12 +2,13 @@ package linus.io.config;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.CharBuffer;
 
 import linus.io.config.configs.MultipleStringConfig;
 import linus.io.config.configs.SingleStringConfig;
-import linus.io.config.exception.ConfigOperationException;
+import linus.io.config.exception.ConfigWriteEexception;
 import linus.io.config.exception.GeneratedConfigException;
 import linus.io.config.exception.InvalidConfigException;
 import linus.io.config.io.ComplexConfigReader;
@@ -394,7 +395,9 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 * converting to String works easally over the toString() method.
 	 * @return a String Config with the same name and the Value as a String
 	 */
-	public abstract Config<? extends Object> toStringConfig();
+	public Config<? extends Object> toStringConfig() {
+		return new SingleStringConfig(getName(), getValueAsString());
+	}
 	
 	/**
 	 *This method is used by {@link ComplexConfigWriter} to write this Config
@@ -412,14 +415,17 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 *
 	 * @throws NullPointerException if writer is null
 	 * @param writer - the writer that should write this Config
+	 * @throws ConfigWriteEexception if the writer throws a {@link ConfigWriteEexception}
 	 */
-	public void writeTo(ConfigWriter writer){
+	public void writeTo(ConfigWriter writer) throws ConfigWriteEexception{
+		Config<E> cfg;
+		try {
+			cfg = clone();
+		} catch (CloneNotSupportedException e) {
+			cfg = this;
+		}
 		synchronized (lock) {
-			try {
-				writer.writeConfig(this);
-			} catch (IOException e) {
-				throw new ConfigOperationException(e);
-			}
+			writer.writeConfig(cfg);
 		}
 	}
 	
@@ -431,8 +437,14 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 * @param writer - the writer that should write this Config
 	 */
 	public void writeTo(ThreadedConfigWriter writer){
+		Config<E> cfg;
+		try {
+			cfg = clone();
+		} catch (CloneNotSupportedException e) {
+			cfg = this;
+		}
 		synchronized (lock) {
-			writer.writeConfig(this);
+			writer.writeConfig(cfg);
 		}
 	}
 	
@@ -446,11 +458,7 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 * @throws IOException if a IOException occures
 	 */
 	public void writeTo(OutputStream out) throws IOException {
-		byte[] bs;
-		synchronized (lock) {
-			bs = toString().getBytes();
-		}
-		out.write(bs);
+		writeTo(new OutputStreamWriter(out));
 	}
 	
 	/**
@@ -463,11 +471,12 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 * @throws IOException if a IOException occures
 	 */
 	public void writeTo(Writer writer) throws IOException {
-		String str;
+		String[] lines;
 		synchronized (lock) {
-			str = toString();
+			lines = write();
 		}
-		writer.write(str);
+		for(String s : lines)
+			writer.write(s);
 	}
 	
 	@Override
@@ -478,5 +487,29 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 		}
 		return cb.put(append).length();
 	}	
+
+	/**
+	 * Testes if this Config contains a setted value. This means that it looks
+	 * if the Value is default (null) or was changed. The Value can be setted by using
+	 * the right Constructor, calling the {@link #read(SerializableConfigData)} or the 
+	 * {@link #read(String[])} method.
+	 * 
+	 * @return true if the value isn't null
+	 */
+	public boolean containsValue() {
+		return getValue() != null;
+	}
 	
+	/**
+	 * Testes if this Config has a setted Name. This means that it looks if the value is null
+	 * or default ("unknown_name"). Otherwise it returns true. The Name can be setted by using
+	 * the right Constructor, calling the {@link #read(SerializableConfigData)} or the 
+	 * {@link #read(String[])} method.
+	 * 
+	 * @return true if the Name was setted
+	 */
+	public boolean hasName() {
+		if(getName() == null || getName().equalsIgnoreCase("unknown_name")) return false;
+		return true;
+	}
 }

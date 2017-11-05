@@ -58,8 +58,8 @@ public abstract class SingleConfig<E> extends Config<E>{
 	}
 	
 	@Override
-	public Config<?> normalize() {
-		return getSingleConfig(getName(), getValue().toString());
+	public SingleConfig<?> normalize() {
+		return getSingleConfig(getName(), getValueAsString());
 	}
 
 	//static
