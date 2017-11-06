@@ -21,8 +21,11 @@ public class ComplexConfigWriterBase extends ConfigWriter{
 
 		try {
 			writer.write(chars.getClassStart() + cfg.getClass().getName());
-			for(String s : cfg.write())
+			writer.newLine();
+			for(String s : cfg.write()) {
 				writer.write(s);
+				writer.newLine();
+			}
 			writer.write(chars.getClassEnd());
 		}catch (IOException e) {
 			throw new ConfigWriteEexception(e);

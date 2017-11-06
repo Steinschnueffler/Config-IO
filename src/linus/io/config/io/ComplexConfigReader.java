@@ -1,6 +1,7 @@
 package linus.io.config.io;
 
 import java.io.File;
+import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -26,6 +27,14 @@ public class ComplexConfigReader extends ComplexConfigReaderBase{
 
 	public ComplexConfigReader(InputStream source){
 		super(source);
+	}
+	
+	public ComplexConfigReader(String pathName) throws FileNotFoundException {
+		this(new File(pathName));
+	}
+	
+	public ComplexConfigReader(FileDescriptor fd) {
+		this(new FileInputStream(fd));
 	}
 	
 	@Override
