@@ -47,84 +47,85 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 
 	// static
 
-	private static final class EmptyConfig extends Config<Object>{
-		
+	private static final class EmptyConfig extends Config<Object> {
+
 		private EmptyConfig() {
 			super();
 		}
-		
+
 		@Override
-		public Config<Object> clone(){
+		public Config<Object> clone() {
 			return new EmptyConfig();
 		}
 
 		@Override
 		public int compareTo(Config<?> o) {
-			if(o instanceof EmptyConfig) return 0;
-			return  o.isEmpty() ? 1 : -1;
+			if (o instanceof EmptyConfig)
+				return 0;
+			return o.isEmpty() ? 1 : -1;
 		}
-		
+
 		@SuppressWarnings("unchecked")
 		@Override
 		public boolean equals(Object obj) {
-			if(obj instanceof Config)
+			if (obj instanceof Config)
 				return ((Config<Object>) obj).isEmpty();
 			return false;
 		}
-		
+
 		@Override
 		public ConfigStat getConfigStat() {
 			return ConfigStat.Empty;
 		}
-		
+
 		@Override
 		public ConfigType getConfigType() {
 			return ConfigType.Custom;
 		}
-		
+
 		@Override
 		public boolean hasName() {
 			return false;
 		}
-		
+
 		@Override
 		public boolean hasValue() {
 			return false;
 		}
-		
+
 		@Override
 		public boolean isEmpty() {
 			return true;
 		}
-		
+
 		@Override
 		public Config<?> normalize() {
 			return clone();
 		}
-		
+
 		@Override
 		public Config<Object> read(SerializableConfigData<Object> data) {
 			return this;
 		}
-		
+
 		@Override
 		public Config<Object> read(String[] lines) {
 			return this;
 		}
-		
+
 		@Override
 		public String toString() {
 			return "empty config";
 		}
-		
+
 		@Override
 		public String[] write() {
 			return new String[0];
 		}
-		
+
 	}
-	 
-	/** 
+
+	/**
 	 * This is the default name of a Config, which it will have if it wasn't set. It
 	 * is implemented by "unknown_name".
 	 */
@@ -135,14 +136,14 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 * It is implemented by null.
 	 */
 	public static final Object DEFAULT_VALUE = null;
-	
+
 	/**
-	 * This Config represents an Empty Config with the {@link #DEFAULT_NAME} and the {@link #DEFAULT_VALUE}.
-	 * It's write method will return a String array with the length of 0 and the read Method does nothing 
-	 * except of returning itself.
+	 * This Config represents an Empty Config with the {@link #DEFAULT_NAME} and the
+	 * {@link #DEFAULT_VALUE}. It's write method will return a String array with the
+	 * length of 0 and the read Method does nothing except of returning itself.
 	 */
 	public static final Config<Object> EMPTY_CONFIG = new EmptyConfig();
-	
+
 	/**
 	 * This char is the standart Separator for Name and Value. It is used by all
 	 * Standart Config Implementations.
@@ -164,7 +165,7 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 			return (E) SingleConfig.getSingleConfig(readedLines[0]);
 		return (E) MultipleConfig.getMultipleConfig(readedLines);
 	}
-	
+
 	// Config
 
 	/**
@@ -359,9 +360,12 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 * @return the actual ConfigStat
 	 */
 	public ConfigStat getConfigStat() {
-		if(isEmpty()) return ConfigStat.Empty;
-		if(!hasName()) return ConfigStat.Value;
-		if(!hasValue()) return ConfigStat.Name;
+		if (isEmpty())
+			return ConfigStat.Empty;
+		if (!hasName())
+			return ConfigStat.Value;
+		if (!hasValue())
+			return ConfigStat.Name;
 		return ConfigStat.Normal;
 	}
 
@@ -419,11 +423,6 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 * super.hashCode * 13. If this would be higer than Integer.MAX_VALUE it returns
 	 * super.hashCode / 13.
 	 */
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#hashCode()
-	 */
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -462,6 +461,13 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 		return getValue() != null;
 	}
 
+	/**
+	 * Testes if this Config doesn't has a name AND does't has a value.
+	 * So it will return false if {@link #hasName()} or / and {@link #hasName()} 
+	 * returns true.
+	 * 
+	 * @return true if the Config doesn't has a name AND doesn't has a Value.
+	 */
 	public boolean isEmpty() {
 		return hasValue() || hasName();
 	}
