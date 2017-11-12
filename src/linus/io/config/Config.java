@@ -114,10 +114,38 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 		}
 
 		@Override
+		@Deprecated
+		public EmptyConfig setName(String name) {
+			super.setName(name);
+			return this;
+		}
+
+		@Override
+		@Deprecated
+		public EmptyConfig setValue(Object value) {
+			super.setValue(value);
+			return this;
+		}
+		
+		@Override
+		@Deprecated
+		public EmptyConfig setValues(String name, Object value) {
+			super.setValues(name, value);
+			return this;
+		}
+		
+		@Override
+		@Deprecated
+		public EmptyConfig setValues(Config<Object> cfg) {
+			super.setValues(cfg);
+			return this;
+		}
+
+		@Override
 		public String toString() {
 			return "empty config";
 		}
-
+		
 		@Override
 		public String[] write() {
 			return new String[0];
@@ -213,7 +241,7 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 *            the value of the Config
 	 */
 	public Config(E value) {
-		this.value = value;
+		setValue(value);
 	}
 
 	/**
@@ -223,7 +251,7 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 *            the name of the Config
 	 */
 	public Config(String name) {
-		this.name = name;
+		setName(name);
 	}
 
 	/**
@@ -238,8 +266,16 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 *            the value of the Config
 	 */
 	public Config(String name, E value) {
-		this.name = name;
-		this.value = value;
+		setValues(name, value);
+	}
+	
+	/**
+	 * Constructs a Config with the same name and value like them of the given Config.
+	 * 
+	 * @param cfg the Config which values should be copied.
+	 */
+	public Config(Config<E> cfg) {
+		setValues(cfg);
 	}
 
 	/**
@@ -542,6 +578,56 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	public abstract Config<E> read(String[] lines);
 
 	/**
+	 * Sets the name and the value tot given name and value.
+	 *  
+	 * @param name the new Name of the Config
+	 * @param value the new Value of the Config
+	 * @return itself
+	 */
+	public Config<E> setValues(String name, E value){
+		setName(name);
+		setValue(value);
+		return this;
+	}
+
+	/**
+	 * sets the value of the name to the given String.
+	 * 
+	 * @param name the new Name of the Config
+	 * @return itself
+	 */
+	public Config<E> setName(String name) {
+		synchronized (lock) {
+			this.name = name;
+		}
+		return this;
+	}
+
+	/**
+	 * sets the value to the given Object.
+	 * 
+	 * @param value the new Value of the Config
+	 * @return itself
+	 */
+	public Config<E> setValue(E value) {
+		synchronized (lock) {
+			this.value = value;
+		}
+		return this;
+	}
+
+	/**
+	 * Copys the value and the of the given Config and sets the own ones to it.
+	 * 
+	 * @param cfg the Config thet should be copied.
+	 * @return itself
+	 */
+	public Config<E> setValues(Config<E> cfg){
+		setValues(cfg.getName(), cfg.getValue());
+		return this;
+	}
+	
+	/**
 	 * returns a {@link SerializableConfigData} of the Config with the same values.
 	 * This is used by {@link SerializingConfigWriter} to write the Config compact.
 	 * It can be converted back to a Config by {@link #read(SerializableConfigData)}
@@ -629,7 +715,7 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 		for (String s : lines)
 			out.write(s.getBytes());
 	}
-
+	
 	/**
 	 * This method behaves as {@link #writeTo(ConfigWriter)}, only with the
 	 * different that the given writer is a {@link ThreadedConfigWriter}.
@@ -670,4 +756,5 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 		for (String s : lines)
 			writer.write(s);
 	}
+	
 }
