@@ -129,15 +129,15 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 		
 		@Override
 		@Deprecated
-		public EmptyConfig setValues(String name, Object value) {
-			super.setValues(name, value);
+		public EmptyConfig setValues(Config<Object> cfg) {
+			super.setValues(cfg);
 			return this;
 		}
 		
 		@Override
 		@Deprecated
-		public EmptyConfig setValues(Config<Object> cfg) {
-			super.setValues(cfg);
+		public EmptyConfig setValues(String name, Object value) {
+			super.setValues(name, value);
 			return this;
 		}
 
@@ -231,6 +231,15 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	}
 
 	/**
+	 * Constructs a Config with the same name and value like them of the given Config.
+	 * 
+	 * @param cfg the Config which values should be copied.
+	 */
+	public Config(Config<E> cfg) {
+		setValues(cfg);
+	}
+
+	/**
 	 * Creates a new Config with the given Value and a Name of "unknown_name". If
 	 * the Value is a String the Constructor actually sets the Name and not the
 	 * value. To provide this the Constructor {@link #Config(String, Object)} can be
@@ -253,7 +262,7 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	public Config(String name) {
 		setName(name);
 	}
-
+	
 	/**
 	 * Constructs a Config like the default Constructor, it only sets the Value of
 	 * {@link #name}
@@ -267,15 +276,6 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 */
 	public Config(String name, E value) {
 		setValues(name, value);
-	}
-	
-	/**
-	 * Constructs a Config with the same name and value like them of the given Config.
-	 * 
-	 * @param cfg the Config which values should be copied.
-	 */
-	public Config(Config<E> cfg) {
-		setValues(cfg);
 	}
 
 	/**
@@ -578,19 +578,6 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	public abstract Config<E> read(String[] lines);
 
 	/**
-	 * Sets the name and the value tot given name and value.
-	 *  
-	 * @param name the new Name of the Config
-	 * @param value the new Value of the Config
-	 * @return itself
-	 */
-	public Config<E> setValues(String name, E value){
-		setName(name);
-		setValue(value);
-		return this;
-	}
-
-	/**
 	 * sets the value of the name to the given String.
 	 * 
 	 * @param name the new Name of the Config
@@ -624,6 +611,19 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 */
 	public Config<E> setValues(Config<E> cfg){
 		setValues(cfg.getName(), cfg.getValue());
+		return this;
+	}
+
+	/**
+	 * Sets the name and the value tot given name and value.
+	 *  
+	 * @param name the new Name of the Config
+	 * @param value the new Value of the Config
+	 * @return itself
+	 */
+	public Config<E> setValues(String name, E value){
+		setName(name);
+		setValue(value);
 		return this;
 	}
 	
@@ -689,9 +689,12 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 		try {
 			cfg = clone();
 		} catch (CloneNotSupportedException e) {
-			cfg = this;
+			synchronized (lock) {
+				writer.writeConfig(this);
+			}
+			return;
 		}
-		synchronized (lock) {
+		synchronized (cfg.lock) {
 			writer.writeConfig(cfg);
 		}
 	}
@@ -730,9 +733,12 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 		try {
 			cfg = clone();
 		} catch (CloneNotSupportedException e) {
-			cfg = this;
+			synchronized (lock) {
+				writer.writeConfig(this);
+			}
+			return;
 		}
-		synchronized (lock) {
+		synchronized (cfg.lock) {
 			writer.writeConfig(cfg);
 		}
 	}
