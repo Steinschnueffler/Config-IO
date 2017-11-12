@@ -318,10 +318,14 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 			try {
 				cfg = clone();
 			} catch (CloneNotSupportedException e) {
-				cfg = this;
+				synchronized (lock) {
+					return ConfigComparator.compareStatic(this, o);
+				}
 			}
 		}
-		return ConfigComparator.compareStatic(cfg, o);
+		synchronized (cfg.lock) {
+			return ConfigComparator.compareStatic(cfg, o);
+		}
 	}
 
 	/**
