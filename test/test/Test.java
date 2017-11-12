@@ -8,6 +8,6 @@ public class Test {
 
 	public static void main(String[] args) throws Exception{
 		Config<?> empty = Config.EMPTY_CONFIG;
-		System.out.println(empty.toString());
+		System.out.println(empty.getValueAsString());
 	}
 }

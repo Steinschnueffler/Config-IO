@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 
 import linus.io.config.Config;
-import linus.io.config.ValueContainable;
 import linus.io.config.exception.ConfigReadException;
 
 public class SerializingConfigReaderBase extends ConfigReader{
@@ -16,7 +15,7 @@ public class SerializingConfigReaderBase extends ConfigReader{
 	}
 
 	@Override
-	protected ValueContainable<?> nextConfig() throws ConfigReadException {
+	protected Config<?> nextConfig() throws ConfigReadException {
 
 		String line;
 		
@@ -43,7 +42,7 @@ public class SerializingConfigReaderBase extends ConfigReader{
 	}
 
 	@SuppressWarnings("unchecked")
-	private ValueContainable<?> getConfig(String str) throws IOException, ReflectiveOperationException{
+	private Config<?> getConfig(String str) throws IOException, ReflectiveOperationException{
 		ByteArrayInputStream bais = new ByteArrayInputStream(str.getBytes());
 		ObjectInputStream ois = new ObjectInputStream(bais);
 		SerializableConfigData<Object> scd = (SerializableConfigData<Object>) ois.readObject();

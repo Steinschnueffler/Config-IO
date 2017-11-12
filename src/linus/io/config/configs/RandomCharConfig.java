@@ -2,6 +2,8 @@ package linus.io.config.configs;
 
 import java.util.Random;
 
+import linus.io.config.ConfigType;
+
 public class RandomCharConfig extends MultipleCharConfig{
 	public RandomCharConfig() {}
 
@@ -18,4 +20,8 @@ public class RandomCharConfig extends MultipleCharConfig{
 		return getName() + " " + SEPARATOR + " " + getRandomValue();
 	}
 
+	@Override
+	public ConfigType getConfigType() {
+		return ConfigType.Random;
+	}
 }

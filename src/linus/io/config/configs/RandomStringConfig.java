@@ -2,6 +2,8 @@ package linus.io.config.configs;
 
 import java.util.Random;
 
+import linus.io.config.ConfigType;
+
 public class RandomStringConfig extends MultipleStringConfig{
 	public RandomStringConfig() {}
 
@@ -17,5 +19,10 @@ public class RandomStringConfig extends MultipleStringConfig{
 	@Override
 	public String toString() {
 		return getName() + " = " +getRandomValue();
+	}
+
+	@Override
+	public ConfigType getConfigType() {
+		return ConfigType.Random;
 	}
 }

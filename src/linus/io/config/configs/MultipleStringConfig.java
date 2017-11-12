@@ -1,7 +1,7 @@
 package linus.io.config.configs;
 
 import linus.io.config.MultipleConfig;
-import linus.io.config.ValueContainable;
+import linus.io.config.io.SerializableConfigData;
 
 public class MultipleStringConfig extends MultipleConfig<String>{
 	public MultipleStringConfig() {}
@@ -11,7 +11,7 @@ public class MultipleStringConfig extends MultipleConfig<String>{
 	}
 
 	@Override
-	public ValueContainable<String[]> read(String[] lines) {
+	public MultipleStringConfig read(String[] lines) {
 		if(lines.length == 0){
 			name = "";
 			value = new String[0];
@@ -25,6 +25,12 @@ public class MultipleStringConfig extends MultipleConfig<String>{
 		return this;
 	}
 
+	@Override
+	public MultipleStringConfig read(SerializableConfigData<String[]> data) {
+		super.read(data);
+		return this;
+	}
+	
 	@Override
 	public MultipleStringConfig toStringConfig() {
 		try {

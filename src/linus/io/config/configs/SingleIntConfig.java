@@ -1,7 +1,7 @@
 package linus.io.config.configs;
 
 import linus.io.config.SingleConfig;
-import linus.io.config.ValueContainable;
+import linus.io.config.io.SerializableConfigData;
 
 public class SingleIntConfig extends SingleConfig<Integer>{
 	public SingleIntConfig() {}
@@ -11,9 +11,15 @@ public class SingleIntConfig extends SingleConfig<Integer>{
 	}
 
 	@Override
-	public ValueContainable<Integer> read(String[] lines) {
+	public SingleIntConfig read(String[] lines) {
 		name = lines[0].substring(0, lines[0].indexOf(SEPARATOR)).trim();
 		value = Integer.parseInt(lines[0].substring(lines[0].indexOf(SEPARATOR) + 1, lines[0].length()).trim());
+		return this;
+	}
+	
+	@Override
+	public SingleIntConfig read(SerializableConfigData<Integer> data) {
+		super.read(data);
 		return this;
 	}
 

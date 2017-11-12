@@ -3,17 +3,15 @@ package linus.io.config.io;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 
-import linus.io.config.Config;
-import linus.io.config.ValueContainable;
 import linus.io.config.exception.ConfigReadException;
+import linus.io.config.util.ConfigHolder;
 
 public class ThreadedConfigReader implements Closeable{
 
 	private ConfigReader reader;
 	private ConfigReader originReader;
-	private ArrayList<Config<?>> cfgs = new ArrayList<>();
+	private ConfigHolder cfgs = new ConfigHolder();
 	private ReadingThread thread;
 
 	public ThreadedConfigReader(ConfigReader reader) {
@@ -55,8 +53,8 @@ public class ThreadedConfigReader implements Closeable{
 		reader = null;
 	}
 
-	public ValueContainable<?>[] getAll(){
-		return cfgs.toArray(new Config<?>[cfgs.size()]);
+	public ConfigHolder getAll(){
+		return cfgs;
 	}
 
 	private class ReadingThread extends Thread{

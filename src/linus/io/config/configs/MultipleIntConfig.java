@@ -1,7 +1,6 @@
 package linus.io.config.configs;
 
 import linus.io.config.MultipleConfig;
-import linus.io.config.ValueContainable;
 import linus.io.config.io.SerializableConfigData;
 
 public class MultipleIntConfig extends MultipleConfig<Integer>{
@@ -23,7 +22,7 @@ public class MultipleIntConfig extends MultipleConfig<Integer>{
 	}
 
 	@Override
-	public ValueContainable<Integer[]> read(String[] lines) {
+	public MultipleIntConfig read(String[] lines) {
 		if(lines.length == 0){
 			name = "";
 			primitive = new int[0];
@@ -41,7 +40,7 @@ public class MultipleIntConfig extends MultipleConfig<Integer>{
 	}
 
 	@Override
-	public MultipleConfig<Integer> read(SerializableConfigData<Integer[]> data) {
+	public MultipleIntConfig read(SerializableConfigData<Integer[]> data) {
 		super.read(data);
 		primitive = new int[value.length];
 		for(int i = 0; i < primitive.length; i++){

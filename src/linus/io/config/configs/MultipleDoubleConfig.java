@@ -1,7 +1,6 @@
 package linus.io.config.configs;
 
 import linus.io.config.MultipleConfig;
-import linus.io.config.ValueContainable;
 import linus.io.config.io.SerializableConfigData;
 
 public class MultipleDoubleConfig extends MultipleConfig<Double>{
@@ -23,7 +22,7 @@ public class MultipleDoubleConfig extends MultipleConfig<Double>{
 	}
 
 	@Override
-	public ValueContainable<Double[]> read(String[] lines) {
+	public MultipleDoubleConfig read(String[] lines) {
 		if(lines.length == 0){
 			name = "";
 			primitive = new double[0];

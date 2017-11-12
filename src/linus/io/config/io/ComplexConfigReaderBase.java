@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 import linus.io.config.Config;
-import linus.io.config.ValueContainable;
 import linus.io.config.exception.ConfigReadException;
 
 public class ComplexConfigReaderBase extends ConfigReader{
@@ -15,7 +14,7 @@ public class ComplexConfigReaderBase extends ConfigReader{
 	}
 
 	@Override
-	protected ValueContainable<?> nextConfig() throws ReflectiveOperationException, ConfigReadException{
+	protected Config<?> nextConfig() throws ReflectiveOperationException, ConfigReadException{
 		//bis zur nächsten Config kommen
 		String line;
 		ArrayList<String> werte = new ArrayList<>();
