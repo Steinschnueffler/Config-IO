@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 import linus.io.config.Config;
+import linus.io.config.ValueContainable;
 import linus.io.config.exception.ConfigReadException;
 
 public class ThreadedConfigReader implements Closeable{
@@ -54,7 +55,7 @@ public class ThreadedConfigReader implements Closeable{
 		reader = null;
 	}
 
-	public Config<?>[] getAll(){
+	public ValueContainable<?>[] getAll(){
 		return cfgs.toArray(new Config<?>[cfgs.size()]);
 	}
 

@@ -123,8 +123,7 @@ public abstract class MultipleConfig<E> extends Config<E[]> implements Iterable<
 
 	@Override
 	public Config<?> normalize() {
-		// bad performance :(
-		return getMultipleConfig(writeSimple());
+		return getConfig(writeSimple());
 	}
 
 	@Override

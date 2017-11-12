@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import linus.io.config.Config;
 import linus.io.config.MultipleConfig;
 import linus.io.config.SingleConfig;
+import linus.io.config.ValueContainable;
 import linus.io.config.configs.SingleStringConfig;
 import linus.io.config.exception.ConfigReadException;
 
@@ -19,7 +20,7 @@ public class SimpleConfigReaderBase extends ConfigReader{
 	}
 
 	@Override
-	protected Config<?> nextConfig() throws ConfigReadException{
+	protected ValueContainable<?> nextConfig() throws ConfigReadException{
 		if(lineBuffer == null) return null;
 		String line = lineBuffer;
 		ArrayList<String> lines = new ArrayList<>();

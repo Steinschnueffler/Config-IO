@@ -20,16 +20,17 @@ public enum ConfigType {
 	 * Values / return Types
 	 */
 	Multiple,
+	
+	/**
+	 * This ConfigType marks that a Config can have different possible values,
+	 * but only uses one of them.
+	 */
+	Random,
 
 	/**
 	 * This ConfigType mark that a Config is a custom Config and not
 	 * an Instance of {@link SingleConfig} or {@link MultipleConfig}.
 	 */
 	Custom,
-
-	/**
-	 * This ConfigType marks that a Config doesn't has any value.
-	 */
-	Null
 
 }

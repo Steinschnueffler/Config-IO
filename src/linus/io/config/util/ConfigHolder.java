@@ -2,61 +2,27 @@ package linus.io.config.util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
+import java.util.Collection;
 
 import linus.io.config.Config;
-import linus.io.config.exception.ConfigOperationException;
 
-public class ConfigHolder implements Iterable<Config<?>>, Cloneable{
-
-	private ArrayList<Config<?>> configs = new ArrayList<>();
+public class ConfigHolder extends ArrayList<Config<?>>{
+	private static final long serialVersionUID = 1L;
+	
+	public ConfigHolder(int preSize) {
+		super(preSize);
+	}
 	
 	public ConfigHolder(Config<?>... configs) {
-		add(configs);
+		super(Arrays.asList(configs));
 	}
 	
-	public void add(Config<?>... configs) {
-		this.configs.addAll(Arrays.asList(configs));
+	public ConfigHolder(Collection<? extends Config<?>> configs) {
+		super(configs);
 	}
 	
-	public void remove(Config<?> cfg) {
-		this.configs.remove(cfg);
-	}
-	
-	public void remove(int index) {
-		this.configs.remove(index);
-	}
-	
-	public int size() {
-		return this.configs.size();
-	}
-	
-	public Config<?> get(int index){
-		return this.configs.get(index);
-	}
-	
-	@SuppressWarnings("unchecked")
-	public ArrayList<Config<?>> toArrayList(){
-		return (ArrayList<Config<?>>) configs.clone();
-	}
-	
-	@Override
-	public String toString() {
-		return configs.toString();
-	}
-	
-	@Override
-	public Object clone(){
-		try {
-			return super.clone();
-		} catch (CloneNotSupportedException e) {
-			throw new ConfigOperationException(e);
-		}
-	}
-	
-	@Override
-	public Iterator<Config<?>> iterator() {
-		return configs.iterator();
+	public ConfigHolder() {
+		super();
 	}
 	
 }

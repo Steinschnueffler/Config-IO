@@ -47,6 +47,102 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 
 	// static
 
+	private static final class EmptyConfig extends Config<Object>{
+		
+		private EmptyConfig() {
+			super();
+		}
+		
+		@Override
+		public Config<Object> clone(){
+			return new EmptyConfig();
+		}
+
+		@Override
+		public int compareTo(Config<?> o) {
+			if(o instanceof EmptyConfig) return 0;
+			return  o.isEmpty() ? 1 : -1;
+		}
+		
+		@SuppressWarnings("unchecked")
+		@Override
+		public boolean equals(Object obj) {
+			if(obj instanceof Config)
+				return ((Config<Object>) obj).isEmpty();
+			return false;
+		}
+		
+		@Override
+		public ConfigStat getConfigStat() {
+			return ConfigStat.Empty;
+		}
+		
+		@Override
+		public ConfigType getConfigType() {
+			return ConfigType.Custom;
+		}
+		
+		@Override
+		public boolean hasName() {
+			return false;
+		}
+		
+		@Override
+		public boolean hasValue() {
+			return false;
+		}
+		
+		@Override
+		public boolean isEmpty() {
+			return true;
+		}
+		
+		@Override
+		public Config<?> normalize() {
+			return clone();
+		}
+		
+		@Override
+		public Config<Object> read(SerializableConfigData<Object> data) {
+			return this;
+		}
+		
+		@Override
+		public Config<Object> read(String[] lines) {
+			return this;
+		}
+		
+		@Override
+		public String toString() {
+			return "empty config";
+		}
+		
+		@Override
+		public String[] write() {
+			return new String[0];
+		}
+		
+	}
+	 
+	/** 
+	 * This is the default name of a Config, which it will have if it wasn't set. It
+	 * is implemented by "unknown_name".
+	 */
+	public static final String DEFAULT_NAME = "unknown_name";
+
+	/**
+	 * This is the default Value of a Config, which it will have if it wasn't set.
+	 * It is implemented by null.
+	 */
+	public static final Object DEFAULT_VALUE = null;
+	
+	/**
+	 * This Config represents an Empty Config with the {@link #DEFAULT_NAME} and the {@link #DEFAULT_VALUE}.
+	 * It's write method will return a String array with the length of 0 and the read Method does nothing 
+	 * except of returning itself.
+	 */
+	public static final Config<Object> EMPTY_CONFIG = new EmptyConfig();
+	
 	/**
 	 * This char is the standart Separator for Name and Value. It is used by all
 	 * Standart Config Implementations.
@@ -68,7 +164,7 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 			return (E) SingleConfig.getSingleConfig(readedLines[0]);
 		return (E) MultipleConfig.getMultipleConfig(readedLines);
 	}
-
+	
 	// Config
 
 	/**
@@ -83,21 +179,40 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 
 	/**
 	 * The Name value of a Config. If a Config is Constucted with a default
-	 * Constructor it will be a String with a length of 0. Calling the
+	 * Constructor it will be the String "unknown_name". Calling the
 	 * {@link #read(String[])} method should change the value.
 	 */
-	protected String name = "unknown_name";
+	protected String name = DEFAULT_NAME;
 
 	/**
-	 * The Value of this Config
+	 * The Value of this Config. If this field is null, the Config handles as it
+	 * does't has any Value. This will happen for example by calling the default
+	 * Constructor. Calling the {@link #read(String[])} method should change the
+	 * value.
+	 * 
 	 */
-	protected E value = null;
+	@SuppressWarnings("unchecked")
+	protected E value = (E) DEFAULT_VALUE;
 
 	/**
 	 * Creates a standart abstract Config with the name of "unknown_name" and a
 	 * value of null
 	 */
 	public Config() {
+	}
+
+	/**
+	 * Creates a new Config with the given Value and a Name of "unknown_name". If
+	 * the Value is a String the Constructor actually sets the Name and not the
+	 * value. To provide this the Constructor {@link #Config(String, Object)} can be
+	 * called with the wanted value and the {@link #DEFAULT_NAME} :
+	 * {@code Config(Config.DEFAULT_NAME, "your Name");}.
+	 * 
+	 * @param value
+	 *            the value of the Config
+	 */
+	public Config(E value) {
+		this.value = value;
 	}
 
 	/**
@@ -235,6 +350,22 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	}
 
 	/**
+	 * Returns the actual {@link ConfigType}, directed tested at calling this
+	 * method, so it can change while handling with this Config. If value is null,
+	 * it returns {@link ConfigType#Null}. If it is an Array, it returns
+	 * {@link ConfigType#Multiple}. If the class of the Value is an Enum, it return
+	 * {@link ConfigType#Custom}. Otherwise it returns {@link ConfigType#Single}.
+	 * 
+	 * @return the actual ConfigStat
+	 */
+	public ConfigStat getConfigStat() {
+		if(isEmpty()) return ConfigStat.Empty;
+		if(!hasName()) return ConfigStat.Value;
+		if(!hasValue()) return ConfigStat.Name;
+		return ConfigStat.Normal;
+	}
+
+	/**
 	 * Returns the ConfigType of a Config. This can be used to sort or handle right
 	 * with them. Usually its Single or Multiple
 	 *
@@ -242,29 +373,6 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 */
 	public ConfigType getConfigType() {
 		return ConfigType.Custom;
-	}
-
-	/**
-	 * Returns the actual {@link ConfigType}, directed tested at calling this
-	 * method, so it can change while handling with this Config. If value is null,
-	 * it returns {@link ConfigType#Null}. If it is an Array, it returns
-	 * {@link ConfigType#Multiple}. If the class of the Value is an Enum, it return
-	 * {@link ConfigType#Custom}. Otherwise it returns {@link ConfigType#Single}.
-	 * 
-	 * @return the actual ConfigType
-	 */
-	public ConfigType getActualConfigType() {
-		Object obj;
-		synchronized (lock) {
-			obj = getValue();
-		}
-		if (obj == null)
-			return ConfigType.Null;
-		if (obj.getClass().isArray())
-			return ConfigType.Multiple;
-		if (obj.getClass().isEnum())
-			return ConfigType.Custom;
-		return ConfigType.Single;
 	}
 
 	/**
@@ -328,6 +436,37 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	}
 
 	/**
+	 * Testes if this Config has a setted Name. This means that it looks if the
+	 * value is null or default ("unknown_name"). Otherwise it returns true. The
+	 * Name can be setted by using the right Constructor, calling the
+	 * {@link #read(SerializableConfigData)} or the {@link #read(String[])} method.
+	 * 
+	 * @return true if the Name was setted
+	 */
+	public boolean hasName() {
+		String name = getName();
+		if (name == null || name.equalsIgnoreCase("unknown_name"))
+			return false;
+		return true;
+	}
+
+	/**
+	 * Testes if this Config contains a setted value. This means that it looks if
+	 * the Value is default (null) or was changed. The Value can be setted by using
+	 * the right Constructor, calling the {@link #read(SerializableConfigData)} or
+	 * the {@link #read(String[])} method.
+	 * 
+	 * @return true if the value isn't null
+	 */
+	public boolean hasValue() {
+		return getValue() != null;
+	}
+
+	public boolean isEmpty() {
+		return hasValue() || hasName();
+	}
+
+	/**
 	 * Returns a new {@link ConfigHolder} holding only this Config. Further Configs
 	 * can be added to it.
 	 * 
@@ -362,20 +501,30 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 		}
 	}
 
+	@Override
+	public int read(CharBuffer cb) throws IOException {
+		String append;
+		synchronized (lock) {
+			append = toString();
+		}
+		return cb.put(append).length();
+	}
+
 	/**
 	 * Reads a Config from a {@link SerializableConfigData}. This should change the
 	 * Value and the Name and the Value of this Config. Calling this metod should be
 	 * equal as calling this class with the Constructor
 	 * {@code Config(SerializableConfigData data)}.
 	 * 
-	 * @param data the data to be readed
+	 * @param data
+	 *            the data to be readed
 	 */
 	public Config<E> read(SerializableConfigData<E> data) {
 		this.name = data.name;
 		this.value = data.value;
 		return this;
 	}
-	
+
 	/**
 	 * This method is used by {@link ConfigReader} to read this Config. Each String
 	 * in the given Array represents a line in the File. Using this method should be
@@ -456,6 +605,26 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	}
 
 	/**
+	 * Writes the Config to the given {@link OutputStream}. The standart implemented
+	 * is <code>
+	 * out.write(toString().getBytes());
+	 * </code>.
+	 * 
+	 * @param out
+	 *            the OutputStream
+	 * @throws IOException
+	 *             if a IOException occures
+	 */
+	public void writeTo(OutputStream out) throws IOException {
+		String[] lines;
+		synchronized (lock) {
+			lines = write();
+		}
+		for (String s : lines)
+			out.write(s.getBytes());
+	}
+
+	/**
 	 * This method behaves as {@link #writeTo(ConfigWriter)}, only with the
 	 * different that the given writer is a {@link ThreadedConfigWriter}.
 	 *
@@ -477,26 +646,6 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	}
 
 	/**
-	 * Writes the Config to the given {@link OutputStream}. The standart implemented
-	 * is <code>
-	 * out.write(toString().getBytes());
-	 * </code>.
-	 * 
-	 * @param out
-	 *            the OutputStream
-	 * @throws IOException
-	 *             if a IOException occures
-	 */
-	public void writeTo(OutputStream out) throws IOException {
-		String[] lines;
-		synchronized (lock) {
-			lines = write();
-		}
-		for (String s : lines)
-			out.write(s.getBytes());
-	}
-
-	/**
 	 * Writes the Config to the given {@link Writer}. The standart implemented is
 	 * <code>
 	 * writer.write(toString());
@@ -514,40 +663,5 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 		}
 		for (String s : lines)
 			writer.write(s);
-	}
-
-	@Override
-	public int read(CharBuffer cb) throws IOException {
-		String append;
-		synchronized (lock) {
-			append = toString();
-		}
-		return cb.put(append).length();
-	}
-
-	/**
-	 * Testes if this Config contains a setted value. This means that it looks if
-	 * the Value is default (null) or was changed. The Value can be setted by using
-	 * the right Constructor, calling the {@link #read(SerializableConfigData)} or
-	 * the {@link #read(String[])} method.
-	 * 
-	 * @return true if the value isn't null
-	 */
-	public boolean containsValue() {
-		return getValue() != null;
-	}
-
-	/**
-	 * Testes if this Config has a setted Name. This means that it looks if the
-	 * value is null or default ("unknown_name"). Otherwise it returns true. The
-	 * Name can be setted by using the right Constructor, calling the
-	 * {@link #read(SerializableConfigData)} or the {@link #read(String[])} method.
-	 * 
-	 * @return true if the Name was setted
-	 */
-	public boolean hasName() {
-		if (getName() == null || getName().equalsIgnoreCase("unknown_name"))
-			return false;
-		return true;
 	}
 }
