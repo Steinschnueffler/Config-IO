@@ -47,112 +47,6 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 
 	// static
 
-	private static final class EmptyConfig extends Config<Object> {
-
-		private EmptyConfig() {
-			super();
-		}
-
-		@Override
-		public Config<Object> clone() {
-			return new EmptyConfig();
-		}
-
-		@Override
-		public int compareTo(Config<?> o) {
-			if (o instanceof EmptyConfig)
-				return 0;
-			return o.isEmpty() ? 1 : -1;
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public boolean equals(Object obj) {
-			if (obj instanceof Config)
-				return ((Config<Object>) obj).isEmpty();
-			return false;
-		}
-
-		@Override
-		public ConfigStat getConfigStat() {
-			return ConfigStat.Empty;
-		}
-
-		@Override
-		public ConfigType getConfigType() {
-			return ConfigType.Custom;
-		}
-
-		@Override
-		public boolean hasName() {
-			return false;
-		}
-
-		@Override
-		public boolean hasValue() {
-			return false;
-		}
-
-		@Override
-		public boolean isEmpty() {
-			return true;
-		}
-
-		@Override
-		public Config<?> normalize() {
-			return clone();
-		}
-
-		@Override
-		public Config<Object> read(SerializableConfigData<Object> data) {
-			return this;
-		}
-
-		@Override
-		public Config<Object> read(String[] lines) {
-			return this;
-		}
-
-		@Override
-		@Deprecated
-		public EmptyConfig setName(String name) {
-			super.setName(name);
-			return this;
-		}
-
-		@Override
-		@Deprecated
-		public EmptyConfig setValue(Object value) {
-			super.setValue(value);
-			return this;
-		}
-		
-		@Override
-		@Deprecated
-		public EmptyConfig setValues(Config<Object> cfg) {
-			super.setValues(cfg);
-			return this;
-		}
-		
-		@Override
-		@Deprecated
-		public EmptyConfig setValues(String name, Object value) {
-			super.setValues(name, value);
-			return this;
-		}
-
-		@Override
-		public String toString() {
-			return "empty config";
-		}
-		
-		@Override
-		public String[] write() {
-			return new String[0];
-		}
-
-	}
-
 	/**
 	 * This is the default name of a Config, which it will have if it wasn't set. It
 	 * is implemented by "unknown_name".
@@ -170,7 +64,18 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 * {@link #DEFAULT_VALUE}. It's write method will return a String array with the
 	 * length of 0 and the read Method does nothing except of returning itself.
 	 */
-	public static final Config<Object> EMPTY_CONFIG = new EmptyConfig();
+	public static final Config<Object> EMPTY_CONFIG = new Config<>() {
+		
+		@Override
+		public Config<Object> read(String[] lines) {
+			return this;
+		}
+		
+		@Override
+		public String[] write() {
+			return super.write();
+		}
+	};
 
 	/**
 	 * This char is the standart Separator for Name and Value. It is used by all
@@ -288,7 +193,7 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 		if (holder == null)
 			return newHolder();
 		synchronized (lock) {
-			holder.add(this);
+			holder.addConfig(this);
 		}
 		return holder;
 	}
@@ -382,7 +287,7 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 */
 	@Override
 	@Deprecated
-	protected final void finalize() throws Throwable {
+	protected void finalize() throws Throwable {
 		try {
 			throw new Throwable("Can't finalize a Config");
 		} finally {
@@ -466,7 +371,7 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = 1;
+		int result = 0;
 		synchronized (lock) {
 			result = prime * result + ((name == null) ? 0 : name.hashCode());
 			result = prime * result + ((value == null) ? 0 : value.hashCode());
@@ -531,20 +436,17 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 * 
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public Config<?> normalize() {
-		synchronized (lock) {
-			if (getValue().getClass().isArray()) {
-				Object[] datas = (Object[]) getValue();
-				String[] strs = new String[datas.length];
-				for (int i = 0; i < strs.length; i++) {
-					strs[i] = String.valueOf(datas[i]);
-				}
-				MultipleStringConfig msc = new MultipleStringConfig(getName(), strs);
-				return msc.normalize();
-			}
-			SingleStringConfig ssc = new SingleStringConfig(getName(), String.valueOf(getValue()));
-			return ssc.normalize();
+		if(isEmpty()) return EMPTY_CONFIG;
+		String name = getName();
+		E value = getValue();
+		if(value == null) return new Config<E>(name, (E) DEFAULT_VALUE) {};
+		if(name == null) return new Config<E>(DEFAULT_NAME, value) {};
+		if(value.getClass().isArray()) {
+			return MultipleConfig.getMultipleConfig(write());
 		}
+		else return SingleConfig.getSingleConfig(getName(), getValueAsString());
 	}
 
 	@Override
@@ -579,7 +481,16 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 * @param lines
 	 *            - the readed lines
 	 */
-	public abstract Config<E> read(String[] lines);
+	@SuppressWarnings("unchecked")
+	public Config<E> read(String[] lines){
+		Config<?> cfg;
+		if(lines.length == 0)
+			cfg = EMPTY_CONFIG;
+		else if(lines.length == 1)
+			cfg = SingleConfig.getSingleConfig(lines[0]);
+		else cfg = MultipleConfig.getMultipleConfig(lines);
+		return setValues((Config<E>) cfg);
+	}
 
 	/**
 	 * sets the value of the name to the given String.
@@ -675,7 +586,9 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 *
 	 * @return an array of String that should be written
 	 */
-	public abstract String[] write();
+	public String[] write() {
+		return new String[]{getName() + " " + SEPARATOR + " " + getValueAsString()};
+	}
 
 	/**
 	 * This method executes the given {@link ConfigWriter} to write itself. Calling

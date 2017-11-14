@@ -63,7 +63,7 @@ public class ThreadedConfigReader implements Closeable{
 		public void run() {
 			while(reader.hasNext())
 				try {
-					cfgs.add(reader.next());
+					cfgs.addConfig(reader.next());
 				} catch (ConfigReadException | ReflectiveOperationException e) {}
 		}
 
