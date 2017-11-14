@@ -14,6 +14,7 @@ import linus.io.config.ConfigBase;
 import linus.io.config.exception.ConfigReadException;
 import linus.io.config.exception.GeneratedConfigException;
 import linus.io.config.exception.InvalidConfigReaderException;
+import linus.io.config.util.ConfigHolder;
 
 /**
  *
@@ -122,5 +123,16 @@ public abstract class ConfigReader implements Closeable{
 			} catch (IOException e) {
 				throw new ConfigReadException(e);
 			}
+	}
+
+	public ConfigHolder readAll() {
+		ConfigHolder ch = new ConfigHolder();
+		while(hasNext())
+			try {
+				ch.addConfig(next());
+			} catch (ConfigReadException | ReflectiveOperationException e) {
+				continue;
+			}
+		return ch;
 	}
 }

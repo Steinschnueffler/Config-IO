@@ -424,9 +424,11 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 * @return a new ConfigHolder
 	 */
 	public ConfigHolder newHolder() {
+		Config<E> cfg;
 		synchronized (lock) {
-			return new ConfigHolder(this);
+			cfg = this;
 		}
+		return new ConfigHolder(cfg);
 	}
 
 	/**

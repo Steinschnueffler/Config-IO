@@ -61,11 +61,19 @@ public class ConfigHolder implements Serializable, Cloneable, Iterable<Config<?>
 		return null;
 	}
 	
+	public Config<?> removeConfig(int index){
+		return removeConfig(list.get(index));
+	}
+	
 	//standart collection
 	
 	public Config<?> getConfig(String name){
 		Integer index = table.get(name);
 		if(index == null) return null;
+		return list.get(index);
+	}
+	
+	public Config<?> getConfig(int index){
 		return list.get(index);
 	}
 	
@@ -89,6 +97,10 @@ public class ConfigHolder implements Serializable, Cloneable, Iterable<Config<?>
 		return false;
 	}
 	
+	public Config<?>[] toArray(){
+		return (Config<?>[]) list.toArray();
+	}
+	
 	//Override
 	
 	@Override
@@ -103,5 +115,10 @@ public class ConfigHolder implements Serializable, Cloneable, Iterable<Config<?>
 		} catch (CloneNotSupportedException e) {
 			return null;
 		}
+	}
+
+	@Override
+	public String toString() {
+		return list.toString();
 	}
 }

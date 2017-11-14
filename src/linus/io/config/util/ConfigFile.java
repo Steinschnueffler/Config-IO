@@ -1,9 +1,7 @@
 package linus.io.config.util;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.net.URI;
 import java.util.Scanner;
 
@@ -117,25 +115,33 @@ public class ConfigFile extends File{
 	 * @throws FileNotFoundException
 	 * @throws ReflectiveOperationException
 	 */
-	public ConfigReader getFittingReader() throws FileNotFoundException, ReflectiveOperationException{
+	public ConfigReader getFittingReader() throws FileNotFoundException{
 		Scanner s = new Scanner(this);
-		boolean hasNext = s.hasNext();
-		String line = s.nextLine();
+		while(s.hasNextLine()) {
+			String line = s.nextLine();
+			if(line.startsWith("%FittingReader")) {
+				String classPath = line.substring(line.indexOf(":"), line.length()).trim();
+				try {
+					ConfigReader cr = loadConfigReader(classPath);
+					s.close();
+					return cr;
+				} catch (ReflectiveOperationException e) {
+					continue;
+				}
+			}
+		}
 		s.close();
-		if(!hasNext) return getComplexReader();
-		if(!line.startsWith("%PreferedReader :")) return getComplexReader();
-		String readerClass = line.substring(line.indexOf(":")).trim();
-		return loadConfigReader(readerClass, new FileInputStream(this));
+		return getComplexReader();
 	}
 
-	private ConfigReader loadConfigReader(String classPath, InputStream source) throws ReflectiveOperationException{
+	private ConfigReader loadConfigReader(String classPath) throws ReflectiveOperationException, FileNotFoundException{
 		if(classPath.startsWith("linus.io.config")){
 			if(classPath.equals("linus.io.config.SimpleConfigReader"))
-				return new SimpleConfigReader(source);
+				return new SimpleConfigReader(this);
 			if(classPath.equals("linus.io.config.ComplexConfigReader"))
-				return new ComplexConfigReader(source);
+				return new ComplexConfigReader(this);
 			if(classPath.equals("linus.io.config.SerializingConfigReader"))
-				return new SerializingConfigReader(source);
+				return new SerializingConfigReader(this);
 		}
 
 		Class<?> clazz = Class.forName(classPath);
