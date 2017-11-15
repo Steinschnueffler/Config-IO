@@ -65,11 +65,11 @@ public abstract class ConfigReader implements Closeable{
 	 * @throws Exception 
 	 */
 	@SuppressWarnings("unchecked")
-	public <E extends ConfigBase> E next() throws ConfigReadException, ReflectiveOperationException{
+	public <E extends ConfigBase> E next() throws ConfigReadException{
 		Config<?> cfg = buffer;
 		try {
 			buffer = nextConfig();
-		} catch (IOException e) {
+		} catch (IOException | ReflectiveOperationException e) {
 			throw new ConfigReadException(e);
 		}
 		return (E) cfg;

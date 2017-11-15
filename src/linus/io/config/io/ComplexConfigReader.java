@@ -53,7 +53,7 @@ public class ComplexConfigReader extends ComplexConfigReaderBase{
 			E temp = super.next();
 			e = null;
 			return temp;
-		} catch (ConfigReadException | ReflectiveOperationException e) {
+		} catch (ConfigReadException e) {
 			this.e = e;
 			return null;
 		}

@@ -145,9 +145,7 @@ public class ConfigHolder implements Serializable, Cloneable, Iterable<Config<?>
 	public static ConfigHolder loadFromReader(ConfigReader reader) throws ConfigReadException {
 		ConfigHolder ch = new ConfigHolder();
 		while(reader.hasNext()){
-			try {
-				ch.addConfig(reader.next());
-			} catch (ReflectiveOperationException e) {}
+			ch.addConfig(reader.next());
 		}
 		return ch;
 	}

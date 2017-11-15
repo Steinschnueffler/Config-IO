@@ -12,7 +12,7 @@ import linus.io.config.exception.ConfigReadException;
 
 public class SimpleConfigReaderBase extends ConfigReader{
 
-	private String lineBuffer;
+	private String lineBuffer;	
 	
 	public SimpleConfigReaderBase(InputStream source) {
 		super(source);
@@ -20,13 +20,14 @@ public class SimpleConfigReaderBase extends ConfigReader{
 
 	@Override
 	protected Config<?> nextConfig() throws ConfigReadException{
+		
 		if(lineBuffer == null) return null;
 		String line = lineBuffer;
 		ArrayList<String> lines = new ArrayList<>();
-				
+		
 		try {
 			//lehre Zeilen und comments überspringen
-			while(line.trim().length() == 0 || line.startsWith("#")){
+			while(line.trim().length() == 0 || line.startsWith("#") || line.startsWith("%")){
 				//testen ob es überhaupt eine weitere Zeile gibt
 				if(reader.ready()) return null;
 				line = reader.readLine();

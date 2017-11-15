@@ -135,11 +135,11 @@ public class ConfigFile extends File{
 
 	private ConfigReader loadConfigReader(String classPath) throws ReflectiveOperationException, FileNotFoundException{
 		if(classPath.startsWith("linus.io.config")){
-			if(classPath.equalsIgnoreCase("linus.io.config.SimpleConfigReader"))
+			if(classPath.equalsIgnoreCase("linus.io.config.io.SimpleConfigReader"))
 				return new SimpleConfigReader(this);
-			if(classPath.equalsIgnoreCase("linus.io.config.ComplexConfigReader"))
+			if(classPath.equalsIgnoreCase("linus.io.config.io.ComplexConfigReader"))
 				return new ComplexConfigReader(this);
-			if(classPath.equalsIgnoreCase("linus.io.config.SerializingConfigReader"))
+			if(classPath.equalsIgnoreCase("linus.io.config.io.SerializingConfigReader"))
 				return new SerializingConfigReader(this);
 		}
 
