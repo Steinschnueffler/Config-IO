@@ -125,14 +125,7 @@ public abstract class ConfigReader implements Closeable{
 			}
 	}
 
-	public ConfigHolder readAll() {
-		ConfigHolder ch = new ConfigHolder();
-		while(hasNext())
-			try {
-				ch.addConfig(next());
-			} catch (ConfigReadException | ReflectiveOperationException e) {
-				continue;
-			}
-		return ch;
+	public ConfigHolder readAll() throws ConfigReadException {
+		return ConfigHolder.loadFromReader(this);
 	}
 }

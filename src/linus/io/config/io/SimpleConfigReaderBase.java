@@ -23,7 +23,7 @@ public class SimpleConfigReaderBase extends ConfigReader{
 		if(lineBuffer == null) return null;
 		String line = lineBuffer;
 		ArrayList<String> lines = new ArrayList<>();
-		
+				
 		try {
 			//lehre Zeilen und comments überspringen
 			while(line.trim().length() == 0 || line.startsWith("#")){

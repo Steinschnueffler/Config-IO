@@ -63,7 +63,6 @@ public class ConfigFile extends File{
 		return new ComplexConfigWriter(this);
 	}
 
-
 	/**
 	 * this method returns a new {@link SimpleConfigReader} with the position
 	 * at the beginn of the file.
@@ -120,7 +119,7 @@ public class ConfigFile extends File{
 		while(s.hasNextLine()) {
 			String line = s.nextLine();
 			if(line.startsWith("%FittingReader")) {
-				String classPath = line.substring(line.indexOf(":"), line.length()).trim();
+				String classPath = line.substring(line.indexOf(":") + 1, line.length()).trim();
 				try {
 					ConfigReader cr = loadConfigReader(classPath);
 					s.close();
@@ -136,11 +135,11 @@ public class ConfigFile extends File{
 
 	private ConfigReader loadConfigReader(String classPath) throws ReflectiveOperationException, FileNotFoundException{
 		if(classPath.startsWith("linus.io.config")){
-			if(classPath.equals("linus.io.config.SimpleConfigReader"))
+			if(classPath.equalsIgnoreCase("linus.io.config.SimpleConfigReader"))
 				return new SimpleConfigReader(this);
-			if(classPath.equals("linus.io.config.ComplexConfigReader"))
+			if(classPath.equalsIgnoreCase("linus.io.config.ComplexConfigReader"))
 				return new ComplexConfigReader(this);
-			if(classPath.equals("linus.io.config.SerializingConfigReader"))
+			if(classPath.equalsIgnoreCase("linus.io.config.SerializingConfigReader"))
 				return new SerializingConfigReader(this);
 		}
 

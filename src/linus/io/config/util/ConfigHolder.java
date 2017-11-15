@@ -1,11 +1,15 @@
 package linus.io.config.util;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
 
 import linus.io.config.Config;
+import linus.io.config.exception.ConfigReadException;
+import linus.io.config.io.ConfigReader;
 
 public class ConfigHolder implements Serializable, Cloneable, Iterable<Config<?>>{
 	private static final long serialVersionUID = 1L;
@@ -121,4 +125,31 @@ public class ConfigHolder implements Serializable, Cloneable, Iterable<Config<?>
 	public String toString() {
 		return list.toString();
 	}
+
+	//static
+	
+	public static ConfigHolder loadFromeFile(String pathName) throws ConfigReadException {
+		return loadFromFile(new File(pathName));
+	}
+	
+	public static ConfigHolder loadFromFile(File f) throws ConfigReadException {
+		ConfigFile cf = new ConfigFile(f.getAbsolutePath());
+		try {
+			cf.createNewFile();
+			return loadFromReader(cf.getFittingReader());
+		} catch (IOException e) {
+			throw new ConfigReadException(e);
+		}
+	}
+	
+	public static ConfigHolder loadFromReader(ConfigReader reader) throws ConfigReadException {
+		ConfigHolder ch = new ConfigHolder();
+		while(reader.hasNext()){
+			try {
+				ch.addConfig(reader.next());
+			} catch (ReflectiveOperationException e) {}
+		}
+		return ch;
+	}
+
 }
