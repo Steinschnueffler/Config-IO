@@ -22,10 +22,6 @@ import linus.io.config.io.SimpleConfigReader;
  */
 public class ConfigFile{
 	
-	public static final char READER_INFO_START = '%';
-	public static final char READER_INFO_SEPARATOR = '=';
-	public static final String FITTING_READER_INFO = READER_INFO_START + "FittingReader " + READER_INFO_SEPARATOR;
-	
 	protected static final FileSystem FS = FileSystems.getDefault();
 	
 	protected Path path = null;
@@ -36,6 +32,10 @@ public class ConfigFile{
 	
 	public ConfigFile(URI uri) {
 		path = Paths.get(uri);
+	}
+	
+	public ConfigFile(Path p) {
+		this.path = p;
 	}
 	
 	public boolean createNewFile() throws IOException {

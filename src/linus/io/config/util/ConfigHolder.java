@@ -3,8 +3,10 @@ package linus.io.config.util;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Iterator;
 
 import linus.io.config.Config;
@@ -15,7 +17,7 @@ public class ConfigHolder implements Serializable, Cloneable, Iterable<Config<?>
 	private static final long serialVersionUID = 1L;
 
 	private ArrayList<Config<?>> list;
-	private Hashtable<String, Integer> table;
+	private HashMap<String, Integer> table;
 	
 	//Constructors
 	
@@ -29,7 +31,7 @@ public class ConfigHolder implements Serializable, Cloneable, Iterable<Config<?>
 	
 	public ConfigHolder(int initialCapacity) {
 		list = new ArrayList<>(initialCapacity);
-		table = new Hashtable<>(initialCapacity);
+		table = new HashMap<>(initialCapacity);
 	}
 	
 	public ConfigHolder(int initialCapacity, Config<?>... configs) {
@@ -129,11 +131,15 @@ public class ConfigHolder implements Serializable, Cloneable, Iterable<Config<?>
 	//static
 	
 	public static ConfigHolder loadFromeFile(String pathName) throws ConfigReadException {
-		return loadFromFile(new File(pathName));
+		return loadFromPath(Paths.get(pathName));
 	}
 	
 	public static ConfigHolder loadFromFile(File f) throws ConfigReadException {
-		ConfigFile cf = new ConfigFile(f.getAbsolutePath());
+		return loadFromPath(f.toPath());
+	}
+	
+	public static ConfigHolder loadFromPath(Path path) throws ConfigReadException {
+		ConfigFile cf = new ConfigFile(path);
 		try {
 			cf.createNewFile();
 			return loadFromReader(cf.getFittingReader());
