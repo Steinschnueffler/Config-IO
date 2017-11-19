@@ -12,20 +12,21 @@ import linus.io.config.util.ConfigHolder;
 public abstract class AbstractConfigReader implements ConfigReader{
 
 	protected BufferedReader reader;
-	protected Reader source;
+	protected Object source;
 	
 	protected Config<?> buffer = null;
 	protected String lineBuffer = null;
 	
-	public AbstractConfigReader(Reader in){
-		if(in.getClass().equals(BufferedReader.class))
-			reader = (BufferedReader) in;
-		else reader = new BufferedReader(in);
+	protected Exception lastException;
+	
+	public AbstractConfigReader(Reader in, Object source){
+		this.reader = in instanceof BufferedReader ? (BufferedReader) in : new BufferedReader(in);
 		
-		this.source = in;
+		this.source = source;
 		try {
 			buffer = firstConfig();
 		} catch (ConfigReadException e) {
+			lastException = e;
 			buffer = null;
 		}
 	}
@@ -47,7 +48,8 @@ public abstract class AbstractConfigReader implements ConfigReader{
 		return buffer != null;
 	}
 	
-	public Reader getSource() {
+	@Override
+	public Object getSource() {
 		return source;
 	}
 	
@@ -58,6 +60,5 @@ public abstract class AbstractConfigReader implements ConfigReader{
 	@Override
 	public void close() throws IOException {
 		if(reader != null) reader.close();
-		if(source != null) source.close();
 	} 
 }

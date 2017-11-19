@@ -8,14 +8,14 @@ import linus.io.config.Config;
 import linus.io.config.MultipleConfig;
 import linus.io.config.SingleConfig;
 import linus.io.config.exception.ConfigReadException;
+import linus.io.config.util.ConfigFile;
 
 public class SimpleConfigReaderBase extends AbstractConfigReader{
 
-	public SimpleConfigReaderBase(Reader in){
-		super(in);
+	public SimpleConfigReaderBase(Reader in, Object source){
+		super(in, source);
 	}
 	
-
 	@Override
 	protected Config<?> readNext() throws ConfigReadException {
 		
@@ -23,11 +23,7 @@ public class SimpleConfigReaderBase extends AbstractConfigReader{
 		if(lineBuffer == null) return null;
 		
 		//Line Buffer auf die erste Zeile setzten, die zu einer Config gehöhrt.
-		while(
-			  lineBuffer.startsWith(IOConstants.COMMENT_START)||
-			  lineBuffer.startsWith(IOConstants.READER_INFO_START)||
-			  lineBuffer.trim().length() == 0
-		) {
+		while(!lineBuffer.contains("" +Config.SEPARATOR)) {
 			try {
 				lineBuffer = reader.readLine().trim();
 			} catch (IOException e) {
@@ -61,7 +57,7 @@ public class SimpleConfigReaderBase extends AbstractConfigReader{
 			} catch (IOException e) {
 				throw new ConfigReadException(e);
 			}
-			if(!aktuelleLine.startsWith(IOConstants.COMMENT_START)) werte.add(aktuelleLine);
+			if(!aktuelleLine.startsWith(ConfigFile.COMMENT_START)) werte.add(aktuelleLine);
 		}while(!aktuelleLine.contains("" +Config.SEPARATOR));
 		
 		//da die Line zu einer neuen Config gehöhren zu scheint

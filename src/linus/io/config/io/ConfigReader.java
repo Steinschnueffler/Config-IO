@@ -11,4 +11,5 @@ public interface ConfigReader extends Closeable{
 	
 	public boolean hasNext();
 	
+	public Object getSource();
 }

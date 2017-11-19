@@ -11,7 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import linus.io.config.io.AbstractConfigReader;
-import linus.io.config.io.IOConstants;
+import linus.io.config.io.ConfigReader;
 import linus.io.config.io.SimpleConfigReader;
 
 /**
@@ -22,6 +22,13 @@ import linus.io.config.io.SimpleConfigReader;
  *
  */
 public class ConfigFile{
+	
+	public static final String READER_INFO_START = "%";
+	public static final char READER_INFO_SEPARATOR = '=';
+	public static final String FITTING_READER_INFO = READER_INFO_START +"FittingReader " +READER_INFO_SEPARATOR;
+	public static final char CLASS_PATH_START = '@';
+	public static final String CLASS_PATH_END = CLASS_PATH_START +"Finish";
+	public static final String COMMENT_START = "#";
 	
 	protected static final FileSystem FS = FileSystems.getDefault();
 	
@@ -53,17 +60,18 @@ public class ConfigFile{
 		return Files.exists(path);
 	}
 
-	public AbstractConfigReader getFittingReader() throws IOException {
+	@SuppressWarnings("unchecked")
+	public <E extends ConfigReader> E getFittingReader() throws IOException {
 		createNewFile();
 		BufferedReader br = Files.newBufferedReader(path);
 		while(!br.ready()) {
 			String line = br.readLine().trim();
-			if(line.startsWith(IOConstants.FITTING_READER_INFO)) {
-				AbstractConfigReader cr = loadReader(line.substring(line.indexOf(IOConstants.READER_INFO_SEPARATOR) + 1));
-				if(cr != null) return cr;
+			if(line.startsWith(FITTING_READER_INFO)) {
+				ConfigReader cr = loadReader(line.substring(line.indexOf(READER_INFO_SEPARATOR) + 1));
+				if(cr != null) return (E) cr;
 			}
 		}
-		return getSimpleReader();
+		return (E) getSimpleReader();
 	}
 
 	private AbstractConfigReader loadReader(String pathName) throws IOException {

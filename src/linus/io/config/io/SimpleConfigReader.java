@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -17,27 +19,25 @@ import linus.io.config.exception.ConfigReadException;
 import linus.io.config.util.ConfigHolder;
 
 public class SimpleConfigReader extends SimpleConfigReaderBase{
-
-	private Exception ex = null;
 	
 	public SimpleConfigReader(String pathName) {
 		this(Paths.get(pathName));
 	}
 	
 	public SimpleConfigReader(File f) {
-		this(f.toPath());
+		super(getReader(f), f);
 	}
 	
 	public SimpleConfigReader(InputStream in) {
-		super(new InputStreamReader(in));
+		super(new InputStreamReader(in), in);
 	}
 	
 	public SimpleConfigReader(FileDescriptor fd) {
-		this(new FileInputStream(fd));
+		super(new InputStreamReader(new FileInputStream(fd)), fd);
 	}
 	
 	public SimpleConfigReader(Path path){
-		super(getReader(path));
+		super(getReader(path), path);
 	}
 
 	private static BufferedReader getReader(Path p) {
@@ -48,18 +48,26 @@ public class SimpleConfigReader extends SimpleConfigReaderBase{
 		}
 	}
 	
+	private static BufferedReader getReader(File f) {
+		try {
+			return new BufferedReader(new FileReader(f));
+		} catch (FileNotFoundException e) {
+			return new BufferedReader(new StringReader(""));
+		}
+	}
+	
 	public boolean checkException() {
-		return ex != null;
+		return lastException != null;
 	}
 	
 	public Exception resetException() {
-		Exception temp = ex;
-		ex = null;
+		Exception temp = lastException;
+		lastException = null;
 		return temp;
 	}
 	
 	public Exception getException() {
-		return ex;
+		return lastException;
 	}
 	
 	@Override
@@ -67,7 +75,7 @@ public class SimpleConfigReader extends SimpleConfigReaderBase{
 		try {
 			return super.nextConfig();
 		} catch (ConfigReadException e) {
-			this.ex = e;
+			this.lastException = e;
 			return null;
 		}
 	}
@@ -77,7 +85,7 @@ public class SimpleConfigReader extends SimpleConfigReaderBase{
 		try {
 			return super.readAll();
 		} catch (ConfigReadException e) {
-			this.ex = e;
+			this.lastException = e;
 			return ConfigHolder.EMPTY_HOLDER;
 		}
 	}

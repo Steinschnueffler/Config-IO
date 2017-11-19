@@ -12,5 +12,9 @@ public interface ConfigWriter extends Closeable, Flushable{
 	
 	public void writeInfo(String info) throws ConfigWriteEexception;
 	
+	public void writeln() throws ConfigWriteEexception;
+	
 	public Object getSource();
+
+	public ConfigReader getFittingReader();
 }
