@@ -11,7 +11,7 @@ import java.util.Iterator;
 
 import linus.io.config.Config;
 import linus.io.config.exception.ConfigReadException;
-import linus.io.config.io.ConfigReader;
+import linus.io.config.io.AbstractConfigReader;
 
 public class ConfigHolder implements Serializable, Cloneable, Iterable<Config<?>>{
 	private static final long serialVersionUID = 1L;
@@ -150,7 +150,7 @@ public class ConfigHolder implements Serializable, Cloneable, Iterable<Config<?>
 		}
 	}
 	
-	public static ConfigHolder loadFromReader(ConfigReader reader) throws ConfigReadException {
+	public static ConfigHolder loadFromReader(AbstractConfigReader reader) throws ConfigReadException {
 		ConfigHolder ch = new ConfigHolder();
 		while(reader.hasNext()){
 			ch.addConfig(reader.nextConfig());

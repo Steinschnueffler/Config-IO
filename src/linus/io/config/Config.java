@@ -12,7 +12,7 @@ import linus.io.config.exception.GeneratedConfigException;
 import linus.io.config.exception.InvalidConfigException;
 import linus.io.config.io.ComplexConfigReader;
 import linus.io.config.io.ComplexConfigWriter;
-import linus.io.config.io.ConfigReader;
+import linus.io.config.io.AbstractConfigReader;
 import linus.io.config.io.ConfigWriter;
 import linus.io.config.io.SerializableConfigData;
 import linus.io.config.io.SerializingConfigWriter;
@@ -23,7 +23,7 @@ import linus.io.config.util.ConfigHolder;
 
 /**
  * This abstract class is the root of all Configs and it or any extend of it can
- * be written by {@link ConfigWriter}s and readed by {@link ConfigReader}s <br>
+ * be written by {@link ConfigWriter}s and readed by {@link AbstractConfigReader}s <br>
  * It should be used to make own Configs with own way of writing and reading.
  * The Classes wich extends from this and should be readed by ConfigReader
  * <b>MUST</b> be default Constructable because oft the use of reflections to
@@ -35,7 +35,7 @@ import linus.io.config.util.ConfigHolder;
  *            - The type of the value of the Config
  * @see SingleConfig
  * @see MultipleConfig
- * @see ConfigReader
+ * @see AbstractConfigReader
  * @see ConfigWriter
  * @see ConfigComparator
  * @see ConfigFile
@@ -476,7 +476,7 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	}
 
 	/**
-	 * This method is used by {@link ConfigReader} to read this Config. Each String
+	 * This method is used by {@link AbstractConfigReader} to read this Config. Each String
 	 * in the given Array represents a line in the File. Using this method should be
 	 * equal as initializing this class with a Constructor.
 	 *

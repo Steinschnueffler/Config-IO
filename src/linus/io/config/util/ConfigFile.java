@@ -10,7 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import linus.io.config.io.ConfigReader;
+import linus.io.config.io.AbstractConfigReader;
 import linus.io.config.io.IOConstants;
 import linus.io.config.io.SimpleConfigReader;
 
@@ -53,20 +53,20 @@ public class ConfigFile{
 		return Files.exists(path);
 	}
 
-	public ConfigReader getFittingReader() throws IOException {
+	public AbstractConfigReader getFittingReader() throws IOException {
 		createNewFile();
 		BufferedReader br = Files.newBufferedReader(path);
 		while(!br.ready()) {
 			String line = br.readLine().trim();
 			if(line.startsWith(IOConstants.FITTING_READER_INFO)) {
-				ConfigReader cr = loadReader(line.substring(line.indexOf(IOConstants.READER_INFO_SEPARATOR) + 1));
+				AbstractConfigReader cr = loadReader(line.substring(line.indexOf(IOConstants.READER_INFO_SEPARATOR) + 1));
 				if(cr != null) return cr;
 			}
 		}
 		return getSimpleReader();
 	}
 
-	private ConfigReader loadReader(String pathName) throws IOException {
+	private AbstractConfigReader loadReader(String pathName) throws IOException {
 		if(pathName.equalsIgnoreCase("linus.io.config.io.SimpleConfigReader"))
 			return getSimpleReader();
 		return null;

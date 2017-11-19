@@ -12,7 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import linus.io.config.Config;
+import linus.io.config.ConfigBase;
 import linus.io.config.exception.ConfigReadException;
 import linus.io.config.util.ConfigHolder;
 
@@ -63,7 +63,7 @@ public class SimpleConfigReader extends SimpleConfigReaderBase{
 	}
 	
 	@Override
-	public Config<?> nextConfig(){
+	public <E extends ConfigBase> E nextConfig(){
 		try {
 			return super.nextConfig();
 		} catch (ConfigReadException e) {

@@ -1,15 +1,15 @@
 package linus.io.config.exception;
 
-import linus.io.config.io.ConfigReader;
+import linus.io.config.io.AbstractConfigReader;
 
 /**
- * This {@link Exception} marks that a {@link ConfigReader} is invalid or
+ * This {@link Exception} marks that a {@link AbstractConfigReader} is invalid or
  * unsuported. A detail Exception can be get over ConfigReader.createException().
  *
  * @author Linus Dierheimer
  * @since java 1.4
  * @version 1.0
- * @see ConfigReader
+ * @see AbstractConfigReader
  *
  */
 public class InvalidConfigReaderException extends ConfigOperationException{

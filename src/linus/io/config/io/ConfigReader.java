@@ -1,52 +1,14 @@
 package linus.io.config.io;
 
-import java.io.BufferedReader;
-import java.io.Reader;
+import java.io.Closeable;
 
-import linus.io.config.Config;
+import linus.io.config.ConfigBase;
 import linus.io.config.exception.ConfigReadException;
-import linus.io.config.util.ConfigHolder;
 
-public abstract class ConfigReader {
+public interface ConfigReader extends Closeable{
 
-	protected BufferedReader reader;
-	protected Reader source;
+	public <E extends ConfigBase> E nextConfig() throws ConfigReadException;
 	
-	protected Config<?> buffer = null;
-	protected String lineBuffer = null;
+	public boolean hasNext();
 	
-	public ConfigReader(Reader in){
-		if(in.getClass().equals(BufferedReader.class))
-			reader = (BufferedReader) in;
-		else reader = new BufferedReader(in);
-		
-		this.source = in;
-		try {
-			buffer = firstConfig();
-		} catch (ConfigReadException e) {
-			buffer = null;
-		}
-	}
-	
-	protected abstract Config<?> firstConfig() throws ConfigReadException;
-	
-	public Config<?> nextConfig() throws ConfigReadException{
-		Config<?> cfg = buffer;
-		buffer = readNext();
-		return cfg;
-	}
-	
-	protected abstract Config<?> readNext() throws ConfigReadException;
-
-	public boolean hasNext() {
-		return buffer != null;
-	}
-	
-	public Reader getSource() {
-		return source;
-	}
-	
-	public ConfigHolder readAll() throws ConfigReadException {
-		return ConfigHolder.loadFromReader(this);
-	}
 }

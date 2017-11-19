@@ -9,7 +9,7 @@ import linus.io.config.MultipleConfig;
 import linus.io.config.SingleConfig;
 import linus.io.config.exception.ConfigReadException;
 
-public class SimpleConfigReaderBase extends ConfigReader{
+public class SimpleConfigReaderBase extends AbstractConfigReader{
 
 	public SimpleConfigReaderBase(Reader in){
 		super(in);
@@ -69,7 +69,6 @@ public class SimpleConfigReaderBase extends ConfigReader{
 		
 		return MultipleConfig.getMultipleConfig(werte.toArray(new String[werte.size()]));
 	}
-
 
 	@Override
 	protected Config<?> firstConfig() throws ConfigReadException {
