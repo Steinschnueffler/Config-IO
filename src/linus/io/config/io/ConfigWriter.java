@@ -16,5 +16,5 @@ public interface ConfigWriter extends Closeable, Flushable{
 	
 	public Object getSource();
 
-	public ConfigReader getFittingReader();
+	public Class<? extends ConfigReader> getFittingReader();
 }

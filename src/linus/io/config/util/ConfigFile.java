@@ -47,9 +47,9 @@ public class ConfigFile{
 	}
 	
 	public boolean createNewFile() throws IOException {
-		boolean newFile = exists();
+		if(Files.exists(path)) return false;
 		path = Files.createFile(path);
-		return !newFile;
+		return true;
 	}
 	
 	public boolean delete() throws IOException {
