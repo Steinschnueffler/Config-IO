@@ -16,6 +16,8 @@ import linus.io.config.io.ConfigReader;
 public class ConfigHolder implements Serializable, Cloneable, Iterable<Config<?>>{
 	private static final long serialVersionUID = 1L;
 
+	public static final ConfigHolder EMPTY_HOLDER = new ConfigHolder(0);
+	
 	private ArrayList<Config<?>> list;
 	private HashMap<String, Integer> table;
 	
@@ -151,7 +153,7 @@ public class ConfigHolder implements Serializable, Cloneable, Iterable<Config<?>
 	public static ConfigHolder loadFromReader(ConfigReader reader) throws ConfigReadException {
 		ConfigHolder ch = new ConfigHolder();
 		while(reader.hasNext()){
-			ch.addConfig(reader.next());
+			ch.addConfig(reader.nextConfig());
 		}
 		return ch;
 	}

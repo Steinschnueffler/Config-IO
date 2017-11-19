@@ -11,6 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import linus.io.config.io.ConfigReader;
+import linus.io.config.io.IOConstants;
 import linus.io.config.io.SimpleConfigReader;
 
 /**
@@ -57,8 +58,8 @@ public class ConfigFile{
 		BufferedReader br = Files.newBufferedReader(path);
 		while(!br.ready()) {
 			String line = br.readLine().trim();
-			if(line.startsWith(FITTING_READER_INFO)) {
-				ConfigReader cr = loadReader(line.substring(line.indexOf(READER_INFO_SEPARATOR) + 1));
+			if(line.startsWith(IOConstants.FITTING_READER_INFO)) {
+				ConfigReader cr = loadReader(line.substring(line.indexOf(IOConstants.READER_INFO_SEPARATOR) + 1));
 				if(cr != null) return cr;
 			}
 		}

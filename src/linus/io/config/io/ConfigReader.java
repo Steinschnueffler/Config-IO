@@ -15,14 +15,20 @@ public abstract class ConfigReader {
 	protected Config<?> buffer = null;
 	protected String lineBuffer = null;
 	
-	public ConfigReader(Reader in) throws ConfigReadException {
+	public ConfigReader(Reader in){
 		if(in.getClass().equals(BufferedReader.class))
 			reader = (BufferedReader) in;
 		else reader = new BufferedReader(in);
 		
 		this.source = in;
-		buffer = readNext();
+		try {
+			buffer = firstConfig();
+		} catch (ConfigReadException e) {
+			buffer = null;
+		}
 	}
+	
+	protected abstract Config<?> firstConfig() throws ConfigReadException;
 	
 	public Config<?> nextConfig() throws ConfigReadException{
 		Config<?> cfg = buffer;

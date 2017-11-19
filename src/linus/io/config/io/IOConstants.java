@@ -4,7 +4,7 @@ public class IOConstants {
 
 	private IOConstants() {}
 	
-	public static final char READER_INFO_START = '%';
+	public static final String READER_INFO_START = "%";
 	public static final char READER_INFO_SEPARATOR = '=';
 	public static final String FITTING_READER_INFO =
 			READER_INFO_START+
@@ -14,5 +14,6 @@ public class IOConstants {
 	public static final String CLASS_PATH_END =
 			CLASS_PATH_START+
 			"Finish";
+	public static final String COMMENT_START = "#";
 
 }
