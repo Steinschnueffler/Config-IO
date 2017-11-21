@@ -289,7 +289,7 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 		final String[] ownComments = getComments();
 		final String otherName = other.getName();
 		final Object otherValue = other.getValue();
-		final String[] otherComments = other.comments;
+		final String[] otherComments = other.getComments();
 
 		if (ownName == null) {
 			if (otherName != null)
@@ -546,9 +546,9 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 		if (name == null)
 			return new Config<>(Config.DEFAULT_NAME, value) {
 			};
-		if (value.getClass().isArray()) {
+		if (value.getClass().isArray())
 			return MultipleConfig.getMultipleConfig(write());
-		} else
+		else
 			return SingleConfig.getSingleConfig(getName(), getValueAsString());
 	}
 
