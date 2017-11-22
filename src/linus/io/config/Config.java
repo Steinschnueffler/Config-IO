@@ -788,10 +788,7 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 *             if a IOException occures
 	 */
 	public void writeTo(final OutputStream out) throws IOException {
-		String[] lines;
-		synchronized (this) {
-			lines = write();
-		}
+		String[] lines = write();
 		for (final String s : lines)
 			out.write(s.getBytes());
 	}
@@ -808,10 +805,7 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 *             if a IOException occures
 	 */
 	public void writeTo(final Writer writer) throws IOException {
-		String[] lines;
-		synchronized (this) {
-			lines = write();
-		}
+		String[] lines = write();
 		for (final String s : lines)
 			writer.write(s);
 	}

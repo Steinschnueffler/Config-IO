@@ -6,7 +6,6 @@ import linus.io.config.configs.SingleDoubleConfig;
 import linus.io.config.configs.SingleIntConfig;
 import linus.io.config.configs.SingleLongConfig;
 import linus.io.config.configs.SingleStringConfig;
-import linus.io.config.io.SerializableConfigData;
 
 public abstract class SingleConfig<E> extends Config<E>{
 	public SingleConfig() {}
@@ -48,13 +47,6 @@ public abstract class SingleConfig<E> extends Config<E>{
 			SEPARATOR+
 			" "+
 			getValue().toString();
-	}
-
-	@Override
-	public Config<E> read(SerializableConfigData<E> data) {
-		this.name = data.name;
-		this.value = data.value;
-		return this;
 	}
 	
 	@Override
