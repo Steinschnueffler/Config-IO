@@ -1,8 +1,9 @@
 package linus.io.config.configs;
 
+import linus.io.config.PrimitiveConfig;
 import linus.io.config.SingleConfig;
-import linus.io.config.io.SerializableConfigData;
 
+@PrimitiveConfig("char")
 public class SingleCharConfig extends SingleConfig<Character>{
 	public SingleCharConfig() {}
 
@@ -18,12 +19,6 @@ public class SingleCharConfig extends SingleConfig<Character>{
 	public SingleCharConfig read(String[] lines) {
 		name = lines[0].substring(0, lines[0].indexOf(SEPARATOR)).trim();
 		value = lines[0].substring(lines[0].indexOf(SEPARATOR) + 1, lines[0].length()).charAt(0);
-		return this;
-	}
-	
-	@Override
-	public SingleCharConfig read(SerializableConfigData<Character> data) {
-		super.read(data);
 		return this;
 	}
 

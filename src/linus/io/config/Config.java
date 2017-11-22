@@ -192,7 +192,8 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 *            the value of the Config
 	 */
 	public Config(final String name, final E value) {
-		setValues(name, value);
+		this.name = name;
+		this.value = value;
 	}
 
 	/**
@@ -420,6 +421,28 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	}
 
 	/**
+	 * Returns the {@link PrimitiveConfig} of this Config if it has one, otherwise
+	 * null.
+	 * 
+	 * @return
+	 */
+	protected PrimitiveConfig getPrimConAnnotation() {
+		return getClass().getDeclaredAnnotation(PrimitiveConfig.class);
+	}
+
+	/**
+	 * If this Config is marked as Primitive, this Method returns the Value of
+	 * {@link PrimitiveConfig}. It is an String, for example "int" or "boolean".
+	 * Otherwise it returns null.
+	 *
+	 * @return the type of the primitive Config
+	 */
+	public String getPrimitiveType() {
+		final PrimitiveConfig pc = getPrimConAnnotation();
+		return pc == null ? null : pc.value();
+	}
+
+	/**
 	 * This method is for use after reading the class to get the Value. This can be
 	 * any Object of the class given by the generic parameter of this class
 	 *
@@ -500,6 +523,17 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 */
 	public boolean isEmpty() {
 		return hasValue() || hasName();
+	}
+
+	/**
+	 * Returns if this Config is marked to have a primitive Type via
+	 * {@link PrimitiveConfig}. This Annotation doesn't directly change anything in
+	 * the Config.
+	 *
+	 * @return true if this Config is marked as primitive
+	 */
+	public boolean isPrimitive() {
+		return getPrimConAnnotation() != null;
 	}
 
 	/**
@@ -788,7 +822,7 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 *             if a IOException occures
 	 */
 	public void writeTo(final OutputStream out) throws IOException {
-		String[] lines = write();
+		final String[] lines = write();
 		for (final String s : lines)
 			out.write(s.getBytes());
 	}
@@ -805,7 +839,7 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 *             if a IOException occures
 	 */
 	public void writeTo(final Writer writer) throws IOException {
-		String[] lines = write();
+		final String[] lines = write();
 		for (final String s : lines)
 			writer.write(s);
 	}

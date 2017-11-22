@@ -1,8 +1,9 @@
 package linus.io.config.configs;
 
+import linus.io.config.PrimitiveConfig;
 import linus.io.config.SingleConfig;
-import linus.io.config.io.SerializableConfigData;
 
+@PrimitiveConfig("int")
 public class SingleIntConfig extends SingleConfig<Integer>{
 	public SingleIntConfig() {}
 
@@ -17,12 +18,6 @@ public class SingleIntConfig extends SingleConfig<Integer>{
 		return this;
 	}
 	
-	@Override
-	public SingleIntConfig read(SerializableConfigData<Integer> data) {
-		super.read(data);
-		return this;
-	}
-
 	public int getPrimitiveValue(){
 		return value == null ? 0 : value;
 	}

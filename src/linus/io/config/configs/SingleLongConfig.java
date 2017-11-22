@@ -1,8 +1,9 @@
 package linus.io.config.configs;
 
+import linus.io.config.PrimitiveConfig;
 import linus.io.config.SingleConfig;
-import linus.io.config.io.SerializableConfigData;
 
+@PrimitiveConfig("long")
 public class SingleLongConfig extends SingleConfig<Long>{
 	public SingleLongConfig() {}
 
@@ -21,9 +22,4 @@ public class SingleLongConfig extends SingleConfig<Long>{
 		return this;
 	}
 	
-	@Override
-	public SingleLongConfig read(SerializableConfigData<Long> data) {
-		super.read(data);
-		return this;
-	}
 }

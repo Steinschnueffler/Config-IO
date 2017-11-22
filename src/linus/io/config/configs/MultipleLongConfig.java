@@ -1,7 +1,6 @@
 package linus.io.config.configs;
 
 import linus.io.config.MultipleConfig;
-import linus.io.config.io.SerializableConfigData;
 
 public class MultipleLongConfig extends MultipleConfig<Long>{
 	public MultipleLongConfig() {}
@@ -35,16 +34,6 @@ public class MultipleLongConfig extends MultipleConfig<Long>{
 		for(int i = 1; i < lines.length; i++){
 			primitive[i - 1] = Long.parseLong(lines[i].substring(lines[i].indexOf(VALUE_START) + 1, lines[i].length()).trim());
 			value[i - 1] = Long.valueOf(primitive[i - 1]);
-		}
-		return this;
-	}
-
-	@Override
-	public MultipleLongConfig read(SerializableConfigData<Long[]> data) {
-		super.read(data);
-		primitive = new long[value.length];
-		for(int i = 0; i < primitive.length; i++){
-			primitive[i] = value[i].longValue();
 		}
 		return this;
 	}

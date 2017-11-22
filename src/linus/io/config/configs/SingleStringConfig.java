@@ -1,7 +1,6 @@
 package linus.io.config.configs;
 
 import linus.io.config.SingleConfig;
-import linus.io.config.io.SerializableConfigData;
 
 public class SingleStringConfig extends SingleConfig<String>{
 	public SingleStringConfig() {}
@@ -18,12 +17,6 @@ public class SingleStringConfig extends SingleConfig<String>{
 		return this;
 	}
 	
-	@Override
-	public SingleStringConfig read(SerializableConfigData<String> data) {
-		super.read(data);
-		return this;
-	}
-
 	@Override
 	public SingleStringConfig toStringConfig() {
 		try {

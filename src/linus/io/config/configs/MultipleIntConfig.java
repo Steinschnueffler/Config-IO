@@ -1,7 +1,6 @@
 package linus.io.config.configs;
 
 import linus.io.config.MultipleConfig;
-import linus.io.config.io.SerializableConfigData;
 
 public class MultipleIntConfig extends MultipleConfig<Integer>{
 	public MultipleIntConfig() {}
@@ -39,14 +38,14 @@ public class MultipleIntConfig extends MultipleConfig<Integer>{
 		return this;
 	}
 
-	@Override
-	public MultipleIntConfig read(SerializableConfigData<Integer[]> data) {
-		super.read(data);
-		primitive = new int[value.length];
-		for(int i = 0; i < primitive.length; i++){
-			primitive[i] = value[i].intValue();
-		}
-		return this;
-	}
+//	@Override
+//	public MultipleIntConfig read(SerializableConfigData<Integer[]> data) {
+//		super.read(data);
+//		primitive = new int[value.length];
+//		for(int i = 0; i < primitive.length; i++){
+//			primitive[i] = value[i].intValue();
+//		}
+//		return this;
+//	}
 
 }

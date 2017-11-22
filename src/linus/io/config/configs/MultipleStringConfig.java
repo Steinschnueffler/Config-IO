@@ -1,7 +1,6 @@
 package linus.io.config.configs;
 
 import linus.io.config.MultipleConfig;
-import linus.io.config.io.SerializableConfigData;
 
 public class MultipleStringConfig extends MultipleConfig<String>{
 	public MultipleStringConfig() {}
@@ -22,12 +21,6 @@ public class MultipleStringConfig extends MultipleConfig<String>{
 		for(int i = 1; i < lines.length; i++){
 			value[i - 1] = lines[i].substring(lines[i].indexOf(VALUE_START) + 1, lines[i].length()).trim();
 		}
-		return this;
-	}
-
-	@Override
-	public MultipleStringConfig read(SerializableConfigData<String[]> data) {
-		super.read(data);
 		return this;
 	}
 	

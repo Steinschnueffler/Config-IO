@@ -2,7 +2,6 @@ package linus.io.config.configs;
 
 import linus.io.config.Config;
 import linus.io.config.MultipleConfig;
-import linus.io.config.io.SerializableConfigData;
 
 public class MultipleBooleanConfig extends MultipleConfig<Boolean>{
 	public MultipleBooleanConfig() {}
@@ -36,16 +35,6 @@ public class MultipleBooleanConfig extends MultipleConfig<Boolean>{
 		for(int i = 1; i < lines.length; i++){
 			primitive[i - 1] = Boolean.parseBoolean(lines[i].substring(lines[i].indexOf(VALUE_START) + 1, lines[i].length()).trim());
 			value[i - 1] = Boolean.valueOf(primitive[i - 1]);
-		}
-		return this;
-	}
-
-	@Override
-	public MultipleConfig<Boolean> read(SerializableConfigData<Boolean[]> data) {
-		super.read(data);
-		primitive = new boolean[value.length];
-		for(int i = 0; i < value.length; i++){
-			primitive[i] = value[i].booleanValue();
 		}
 		return this;
 	}

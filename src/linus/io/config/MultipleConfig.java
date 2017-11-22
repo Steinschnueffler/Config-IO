@@ -8,7 +8,6 @@ import linus.io.config.configs.MultipleDoubleConfig;
 import linus.io.config.configs.MultipleIntConfig;
 import linus.io.config.configs.MultipleLongConfig;
 import linus.io.config.configs.MultipleStringConfig;
-import linus.io.config.io.SerializableConfigData;
 
 public abstract class MultipleConfig<E> extends Config<E[]> implements Iterable<E> {
 	
@@ -124,13 +123,6 @@ public abstract class MultipleConfig<E> extends Config<E[]> implements Iterable<
 	@Override
 	public Config<?> normalize() {
 		return getConfig(writeSimple());
-	}
-
-	@Override
-	public MultipleConfig<E> read(SerializableConfigData<E[]> data) {
-		this.name = data.name;
-		this.value = data.value;
-		return this;
 	}
 
 	@Override

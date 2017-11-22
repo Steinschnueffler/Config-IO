@@ -1,7 +1,6 @@
 package linus.io.config.configs;
 
 import linus.io.config.MultipleConfig;
-import linus.io.config.io.SerializableConfigData;
 
 public class MultipleCharConfig extends MultipleConfig<Character>{
 	public MultipleCharConfig() {}
@@ -35,16 +34,6 @@ public class MultipleCharConfig extends MultipleConfig<Character>{
 		for(int i = 1; i < lines.length; i++){
 			primitive[i - 1] = lines[i].substring(lines[i].indexOf(VALUE_START) + 1, lines[i].length()).trim().charAt(0);
 			value[i - 1] = Character.valueOf(primitive[i - 1]);
-		}
-		return this;
-	}
-
-	@Override
-	public MultipleCharConfig read(SerializableConfigData<Character[]> data) {
-		super.read(data);
-		primitive = new char[value.length];
-		for(int i = 0; i < primitive.length; i++){
-			primitive[i] = value[i].charValue();
 		}
 		return this;
 	}
