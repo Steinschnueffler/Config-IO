@@ -1,9 +1,7 @@
 package linus.io.config.configs;
 
-import linus.io.config.PrimitiveConfig;
 import linus.io.config.SingleConfig;
 
-@PrimitiveConfig("double")
 public class SingleDoubleConfig extends SingleConfig<Double>{
 	public SingleDoubleConfig() {}
 

@@ -1,8 +1,6 @@
 package linus.io.config.exception;
 
-import java.io.IOException;
-
-public class ConfigReadException extends IOException {
+public class ConfigReadException extends ConfigIOException {
 	private static final long serialVersionUID = 1L;
 	
 	public ConfigReadException(Throwable cause) {

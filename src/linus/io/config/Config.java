@@ -8,9 +8,11 @@ import java.util.Arrays;
 
 import linus.io.config.configs.MultipleStringConfig;
 import linus.io.config.configs.SingleStringConfig;
+import linus.io.config.exception.ConfigOperationException;
 import linus.io.config.exception.ConfigWriteEexception;
 import linus.io.config.exception.GeneratedConfigException;
 import linus.io.config.exception.InvalidConfigException;
+import linus.io.config.exception.UnmodifiableConfigException;
 import linus.io.config.io.AbstractConfigReader;
 import linus.io.config.io.ConfigWriter;
 import linus.io.config.util.ConfigComparator;
@@ -41,7 +43,8 @@ import linus.io.config.util.ConfigHolder;
  * @since java 1.5 (because of the use of generic)
  *
  */
-public abstract class Config<E> extends ConfigBase implements Cloneable, Comparable<Config<?>>, Readable {
+@ConfigProperty()
+public class Config<E> extends ConfigBase implements Cloneable, Comparable<Config<?>>, Readable {
 
 	// static
 
@@ -50,6 +53,9 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 */
 	public static final String[] DEFAULT_COMMENTS = {};
 
+	public static final Config<Object> DEFAULT_CONFIG = new Config<>();
+
+	
 	/**
 	 * This is the default name of a Config, which it will have if it wasn't set. It
 	 * is implemented by "unknown_name".
@@ -67,18 +73,7 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 * {@link #DEFAULT_VALUE}. It's write method will return a String array with the
 	 * length of 0 and the read Method does nothing except of returning itself.
 	 */
-	public static final Config<Object> EMPTY_CONFIG = new Config<>() {
-
-		@Override
-		public Config<Object> read(final String[] lines) {
-			return this;
-		}
-
-		@Override
-		public String[] write() {
-			return super.write();
-		}
-	};
+	public static final Config<Object> EMPTY_CONFIG = new Config<>().unmodifiable();
 
 	/**
 	 * This char is the standart Separator for Name and Value. It is used by all
@@ -118,6 +113,20 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	protected String name = Config.DEFAULT_NAME;
 
 	/**
+	 * This Field is the actual {@link ConfigProperty}, containing all static
+	 * informations of the class.
+	 */
+	protected ConfigProperty property = getClass().getAnnotation(ConfigProperty.class);
+
+	/**
+	 * Saves if the Config is unmodifiable, with standart false. If it is true, all
+	 * methods that would change something will throw a
+	 * {@link ConfigOperationException}. It can be tested with
+	 * {@link #isUnmodifiable()}
+	 */
+	protected final boolean unmodifiable;
+
+	/**
 	 * The Value of this Config. If this field is null, the Config handles as it
 	 * does't has any Value. This will happen for example by calling the default
 	 * Constructor. Calling the {@link #read(String[])} method should change the
@@ -132,6 +141,7 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 * value of null
 	 */
 	public Config() {
+		unmodifiable = false;
 	}
 
 	/**
@@ -142,7 +152,10 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 *            the Config which values should be copied.
 	 */
 	public Config(final Config<E> cfg) {
-		setValues(cfg);
+		unmodifiable = false;
+		this.value = cfg.value;
+		this.name = cfg.name;
+		this.comments = cfg.comments;
 	}
 
 	/**
@@ -153,7 +166,10 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 * @param data
 	 */
 	public Config(final ConfigData<E> data) {
-		read(data);
+		unmodifiable = false;
+		this.value = data.value;
+		this.name = data.name;
+		this.comments = data.comment;
 	}
 
 	/**
@@ -167,7 +183,8 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 *            the value of the Config
 	 */
 	public Config(final E value) {
-		setValue(value);
+		unmodifiable = false;
+		this.value = value;
 	}
 
 	/**
@@ -177,7 +194,15 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 *            the name of the Config
 	 */
 	public Config(final String name) {
-		setName(name);
+		unmodifiable = false;
+		this.name = name;
+	}
+
+	public Config(final String name, final E value, final boolean unmodifiable, final String... comments) {
+		this.name = name;
+		this.value = value;
+		this.unmodifiable = unmodifiable;
+		this.comments = comments;
 	}
 
 	/**
@@ -191,9 +216,8 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 * @param value
 	 *            the value of the Config
 	 */
-	public Config(final String name, final E value) {
-		this.name = name;
-		this.value = value;
+	public Config(final String name, final E value, final String... comments) {
+		this(name, value, false, comments);
 	}
 
 	/**
@@ -376,6 +400,10 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 		}
 	}
 
+	public ConfigProperty getConfigProperty() {
+		return property != null ? property : EMPTY_CONFIG.property;
+	}
+
 	/**
 	 * Returns the actual {@link ConfigType}, directed tested at calling this
 	 * method, so it can change while handling with this Config. If value is null,
@@ -415,31 +443,10 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 * @return the Name of the Config
 	 */
 	public String getName() {
+		if(name == null) return null;
 		synchronized (name) {
 			return name;
 		}
-	}
-
-	/**
-	 * Returns the {@link PrimitiveConfig} of this Config if it has one, otherwise
-	 * null.
-	 * 
-	 * @return
-	 */
-	protected PrimitiveConfig getPrimConAnnotation() {
-		return getClass().getDeclaredAnnotation(PrimitiveConfig.class);
-	}
-
-	/**
-	 * If this Config is marked as Primitive, this Method returns the Value of
-	 * {@link PrimitiveConfig}. It is an String, for example "int" or "boolean".
-	 * Otherwise it returns null.
-	 *
-	 * @return the type of the primitive Config
-	 */
-	public String getPrimitiveType() {
-		final PrimitiveConfig pc = getPrimConAnnotation();
-		return pc == null ? null : pc.value();
 	}
 
 	/**
@@ -449,6 +456,7 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 * @return the Value of this Config
 	 */
 	public E getValue() {
+		if(value == null) return null;
 		synchronized (value) {
 			return value;
 		}
@@ -526,14 +534,25 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	}
 
 	/**
-	 * Returns if this Config is marked to have a primitive Type via
-	 * {@link PrimitiveConfig}. This Annotation doesn't directly change anything in
-	 * the Config.
+	 * Testes if this Config is unmodifiable. This means, that if it is true, no
+	 * value can be changed.
 	 *
-	 * @return true if this Config is marked as primitive
+	 * @return true if this Config is unmodifiable.
 	 */
-	public boolean isPrimitive() {
-		return getPrimConAnnotation() != null;
+	public boolean isUnmodifiable() {
+		return unmodifiable;
+	}
+
+	/**
+	 *
+	 * Returns a modfiable version of this Config
+	 *
+	 * @return
+	 */
+	public Config<E> modifiable() {
+		if (!isUnmodifiable())
+			return this;
+		return new Config<>(getName(), getValue(), false);
 	}
 
 	/**
@@ -641,6 +660,10 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 * @return
 	 */
 	public Config<E> setComments(final String... comments) {
+		if(unmodifiable) 
+			throw new UnmodifiableConfigException(
+				"Can't change the comments of the unmodifiable Config " +
+				toString());
 		synchronized (this.comments) {
 			this.comments = comments;
 		}
@@ -655,6 +678,10 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 * @return itself
 	 */
 	public Config<E> setName(final String name) {
+		if(unmodifiable) 
+		throw new UnmodifiableConfigException(
+			"Can't change the name of the unmodifiable Config: " +
+			toString());
 		synchronized (this.name) {
 			this.name = name;
 		}
@@ -669,6 +696,14 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 * @return itself
 	 */
 	public Config<E> setValue(final E value) {
+		if(unmodifiable) 
+			throw new UnmodifiableConfigException(
+				"Can't change the value of the unmodifiable Config " +
+				toString());
+		if(this.value == null) {
+			this.value = value;
+			return this;
+		}
 		synchronized (this.value) {
 			this.value = value;
 		}
@@ -754,6 +789,18 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 	 */
 	public Config<? extends Object> toStringConfig() {
 		return new SingleStringConfig(getName(), getValueAsString());
+	}
+
+	/**
+	 *
+	 * Returns an unmodifiable version of this Config.
+	 *
+	 * @return
+	 */
+	public Config<E> unmodifiable() {
+		if (isUnmodifiable())
+			return this;
+		return new Config<>(getName(), getValue(), true);
 	}
 
 	/**
@@ -843,5 +890,4 @@ public abstract class Config<E> extends ConfigBase implements Cloneable, Compara
 		for (final String s : lines)
 			writer.write(s);
 	}
-
 }

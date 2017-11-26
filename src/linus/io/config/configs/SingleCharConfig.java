@@ -1,9 +1,7 @@
 package linus.io.config.configs;
 
-import linus.io.config.PrimitiveConfig;
 import linus.io.config.SingleConfig;
 
-@PrimitiveConfig("char")
 public class SingleCharConfig extends SingleConfig<Character>{
 	public SingleCharConfig() {}
 

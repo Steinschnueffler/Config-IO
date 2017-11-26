@@ -1,9 +1,10 @@
 package linus.io.config.configs;
 
-import linus.io.config.PrimitiveConfig;
+import linus.io.config.ConfigProperty;
+import linus.io.config.ConfigType;
 import linus.io.config.SingleConfig;
 
-@PrimitiveConfig("int")
+@ConfigProperty(primitive = true, primitiveValue = "int", defaultConfigType = ConfigType.Single)
 public class SingleIntConfig extends SingleConfig<Integer>{
 	public SingleIntConfig() {}
 
