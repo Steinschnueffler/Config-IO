@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import java.io.Writer;
 import java.nio.CharBuffer;
 import java.util.Arrays;
+import java.util.List;
 
 import linus.io.config.configs.MultipleStringConfig;
 import linus.io.config.configs.SingleStringConfig;
@@ -15,7 +16,7 @@ import linus.io.config.exception.InvalidConfigException;
 import linus.io.config.exception.UnmodifiableConfigException;
 import linus.io.config.io.AbstractConfigReader;
 import linus.io.config.io.ConfigWriter;
-import linus.io.config.util.ConfigComparator;
+import linus.io.config.util.ConfigComparators;
 import linus.io.config.util.ConfigData;
 import linus.io.config.util.ConfigFile;
 import linus.io.config.util.ConfigHolder;
@@ -53,14 +54,23 @@ public class Config<E> extends ConfigBase implements Cloneable, Comparable<Confi
 	 */
 	public static final String[] DEFAULT_COMMENTS = {};
 
+	/**
+	 * This Field is the standart Config with no setted values.
+	 */
 	public static final Config<Object> DEFAULT_CONFIG = new Config<>();
 
-	
 	/**
 	 * This is the default name of a Config, which it will have if it wasn't set. It
 	 * is implemented by "unknown_name".
 	 */
 	public static final String DEFAULT_NAME = "unknown_name";
+
+	/**
+	 * This Field is the {@link ConfigProperty} with default values. Configs that
+	 * are directly Instances of {@link Config} will have it, if a Constructor
+	 * without it is used.
+	 */
+	public static final ConfigProperty DEFAULT_PROPERTY = DEFAULT_CONFIG.getConfigProperty();
 
 	/**
 	 * This is the default Value of a Config, which it will have if it wasn't set.
@@ -80,6 +90,13 @@ public class Config<E> extends ConfigBase implements Cloneable, Comparable<Confi
 	 * Standart Config Implementations.
 	 */
 	public static final char SEPARATOR = '=';
+
+	/**
+	 * This String is just the {@link #SEPARATOR} with a whitespace before and after
+	 * it.
+	 */
+	public static final String WHITESPACE_SEPARATOR = new StringBuilder(3).append(' ').append(SEPARATOR).append(' ')
+			.toString();
 
 	/**
 	 * Trys to return the right Config out of the readed lines. returns null if
@@ -106,6 +123,13 @@ public class Config<E> extends ConfigBase implements Cloneable, Comparable<Confi
 	protected String[] comments = Config.DEFAULT_COMMENTS;
 
 	/**
+	 * Will be lock if any operation with the comments is active, so multiple
+	 * Threads can work with it. The Lock isn't the comments self, because it might
+	 * be null.
+	 */
+	protected transient final Object commentsLock = new Object();
+
+	/**
 	 * The Name value of a Config. If a Config is Constucted with a default
 	 * Constructor it will be the String "unknown_name". Calling the
 	 * {@link #read(String[])} method should change the value.
@@ -113,10 +137,16 @@ public class Config<E> extends ConfigBase implements Cloneable, Comparable<Confi
 	protected String name = Config.DEFAULT_NAME;
 
 	/**
+	 * Will be lock if any operation with the name is active, so multiple Threads
+	 * can work with it. The Lock isn't the name self, because it might be null.
+	 */
+	protected transient final Object nameLock = new Object();
+
+	/**
 	 * This Field is the actual {@link ConfigProperty}, containing all static
 	 * informations of the class.
 	 */
-	protected ConfigProperty property = getClass().getAnnotation(ConfigProperty.class);
+	protected final ConfigProperty property;
 
 	/**
 	 * Saves if the Config is unmodifiable, with standart false. If it is true, all
@@ -137,84 +167,71 @@ public class Config<E> extends ConfigBase implements Cloneable, Comparable<Confi
 	protected E value = (E) Config.DEFAULT_VALUE;
 
 	/**
+	 * Will be lock if any operation with the value is active, so multiple Threads
+	 * can work with it. The Lock isn't the value self, because it might be null.
+	 */
+	protected transient final Object valueLock = new Object();
+
+	/**
 	 * Creates a standart abstract Config with the name of "unknown_name" and a
 	 * value of null
 	 */
 	public Config() {
 		unmodifiable = false;
+		property = getClass().getAnnotation(ConfigProperty.class);
 	}
 
 	/**
-	 * Constructs a Config with the same name and value like them of the given
-	 * Config.
 	 *
-	 * @param cfg
-	 *            the Config which values should be copied.
-	 */
-	public Config(final Config<E> cfg) {
-		unmodifiable = false;
-		this.value = cfg.value;
-		this.name = cfg.name;
-		this.comments = cfg.comments;
-	}
-
-	/**
-	 * Creates a new Config with the values of the given {@link ConfigData}. Using
-	 * this Constructor is equal to new Config(data.toConfig()), but maybe a bit
-	 * faster, because of using the {@link #read(ConfigData)} method.
-	 *
-	 * @param data
-	 */
-	public Config(final ConfigData<E> data) {
-		unmodifiable = false;
-		this.value = data.value;
-		this.name = data.name;
-		this.comments = data.comment;
-	}
-
-	/**
-	 * Creates a new Config with the given Value and a Name of "unknown_name". If
-	 * the Value is a String the Constructor actually sets the Name and not the
-	 * value. To provide this the Constructor {@link #Config(String, Object)} can be
-	 * called with the wanted value and the {@link #DEFAULT_NAME} :
-	 * {@code Config(Config.DEFAULT_NAME, "your Name");}.
-	 *
-	 * @param value
-	 *            the value of the Config
-	 */
-	public Config(final E value) {
-		unmodifiable = false;
-		this.value = value;
-	}
-
-	/**
-	 * Creates a new Config with the given Name and a value of null.
+	 * Creates a new Config, with all values.
 	 *
 	 * @param name
 	 *            the name of the Config
+	 * @param value
+	 *            the value of the Config
+	 * @param unmodifiable
+	 *            the modifiability of the Config
+	 * @param comments
+	 *            the comments of the Config
 	 */
-	public Config(final String name) {
-		unmodifiable = false;
+	public Config(final String name, final E value, final boolean unmodifiable, final ConfigProperty property,
+			final String... comments) {
 		this.name = name;
+		this.value = value;
+		this.unmodifiable = unmodifiable;
+		this.comments = comments;
+		this.property = property;
 	}
 
+	/**
+	 * Constructs a new Config.
+	 *
+	 * @param name
+	 *            the name of the Config
+	 * @param value
+	 *            the Value of the Config
+	 * @param unmodifiable
+	 *            the unmodifiability of the Config
+	 * @param comments
+	 *            the Comments of the Config
+	 */
 	public Config(final String name, final E value, final boolean unmodifiable, final String... comments) {
 		this.name = name;
 		this.value = value;
 		this.unmodifiable = unmodifiable;
 		this.comments = comments;
+		this.property = getClass().getAnnotation(ConfigProperty.class);
 	}
 
 	/**
-	 * Constructs a Config like the default Constructor, it only sets the Value of
-	 * {@link #name}
-	 *
-	 * to the given String.
+	 * Creates a new Config with the given Name and value with optional coments
 	 *
 	 * @param name
-	 *            the Name of the Config
+	 *            the name of the Config
 	 * @param value
-	 *            the value of the Config
+	 *            the Value of the Config
+	 * @param comments
+	 *            the optional Comments of the Config
 	 */
 	public Config(final String name, final E value, final String... comments) {
 		this(name, value, false, comments);
@@ -266,15 +283,89 @@ public class Config<E> extends ConfigBase implements Cloneable, Comparable<Confi
 	 */
 	@Override
 	public int compareTo(final Config<?> o) {
-		Config<E> cfg;
-		try {
-			cfg = clone();
-		} catch (final CloneNotSupportedException e) {
-			synchronized (this) {
-				return ConfigComparator.compareStatic(this, o);
-			}
-		}
-		return ConfigComparator.compareStatic(cfg, o);
+		return ConfigComparators.ALL_COMPARATOR.compare(this, o);
+	}
+
+	/**
+	 * Copys the comments of the given Config and uses it as own one. This method is
+	 * equal to {@code setComments(cfg.getComments))}.
+	 *
+	 * @throws UnmodifiableConfigException
+	 *             if this Config is unmodifiable
+	 *
+	 * @param cfg
+	 *            the Config from that should be copied
+	 */
+	public Config<E> copyComments(final Config<?> cfg) {
+		return setComments(cfg.getComments());
+	}
+
+	/**
+	 *
+	 * Copys all values that are missing (not setted) values of the given Config and
+	 * sets its own one to it. If a value of this Config isn't setted and this value
+	 * of the given Config isn't also setted, it will stay unsetted.
+	 *
+	 * @throws UnmodifiableConfigException
+	 *             if this Config is unmodifiable
+	 *
+	 * @param cfg
+	 *            The Config from that the missing values should be copied.
+	 *
+	 * @return
+	 */
+	public Config<E> copyMissingValues(final Config<E> cfg) {
+		if (!hasName())
+			copyName(cfg);
+		if (!hasValue())
+			setValue(cfg.getValue());
+		if (!hasComments())
+			setComments(cfg.getComments());
+		return this;
+	}
+
+	/**
+	 * Copys the name of the given Config and uses it as own one. This method is
+	 * equal to {@code setName(cfg.getName))}.
+	 *
+	 * @throws UnmodifiableConfigException
+	 *             if this Config is unmodifiable
+	 *
+	 * @param cfg
+	 *            the Config from that should be copied
+	 */
+	public Config<E> copyName(final Config<?> cfg) {
+		return setName(cfg.getName());
+	}
+
+	/**
+	 * Copys the value of the given Config and uses it as own one. This method is
+	 * equal to {@code setValue(cfg.getValue))}.
+	 *
+	 * @throws UnmodifiableConfigException
+	 *             if this Config is unmodifiable
+	 *
+	 * @param cfg
+	 *            the Config from that should be copied
+	 */
+	public Config<E> copyValue(final Config<?> cfg) {
+		return setName(cfg.getName());
+	}
+
+	/**
+	 * Copys the value and the of the given Config and sets the own ones to it.
+	 *
+	 * @throws UnmodifiableConfigException
+	 *             if this Config is unmodifiable
+	 * @param cfg
+	 *            the Config that should be copied.
+	 * @return itself
+	 */
+	public Config<E> copyValues(final Config<E> cfg) {
+		copyName(cfg);
+		copyValue(cfg);
+		copyComments(cfg);
+		return this;
 	}
 
 	/**
@@ -328,7 +419,7 @@ public class Config<E> extends ConfigBase implements Cloneable, Comparable<Confi
 		} else if (!ownValue.equals(otherValue))
 			return false;
 
-		if (!Arrays.deepEquals(ownComments, otherComments))
+		if (!Arrays.equals(ownComments, otherComments))
 			return false;
 
 		return true;
@@ -396,10 +487,33 @@ public class Config<E> extends ConfigBase implements Cloneable, Comparable<Confi
 	 */
 	public String[] getComments() {
 		synchronized (comments) {
+			return comments.clone();
+		}
+	}
+
+	/**
+	 * Returns the Comments as a not-save-String-Array, so if you change something
+	 * in it, the comments of this Config will be changed to.
+	 *
+	 * @throws UnmodifiableConfigException
+	 *             if this Config is unmodifiable
+	 *
+	 * @return a modifiable String Array of the comments
+	 */
+	public String[] getCommentsModifiable() {
+		if (unmodifiable)
+			throw new UnmodifiableConfigException("Can't change the comments of the unmodifiable Config " + toString());
+		synchronized (commentsLock) {
 			return comments;
 		}
 	}
 
+	/**
+	 * Returns the {@link ConfigProperty} of this Config, so static informations of
+	 * the class can be get.
+	 *
+	 * @return the ConfigProperty of this Config
+	 */
 	public ConfigProperty getConfigProperty() {
 		return property != null ? property : EMPTY_CONFIG.property;
 	}
@@ -414,11 +528,13 @@ public class Config<E> extends ConfigBase implements Cloneable, Comparable<Confi
 	 * @return the actual ConfigStat
 	 */
 	public ConfigStat getConfigStat() {
-		if (isEmpty())
+		final boolean hasName = hasName();
+		final boolean hasValue = hasValue();
+		if (!hasName && !hasValue)
 			return ConfigStat.Empty;
-		if (!hasName())
+		if (!hasName)
 			return ConfigStat.Value;
-		if (!hasValue())
+		if (!hasValue)
 			return ConfigStat.Name;
 		return ConfigStat.Normal;
 	}
@@ -443,8 +559,7 @@ public class Config<E> extends ConfigBase implements Cloneable, Comparable<Confi
 	 * @return the Name of the Config
 	 */
 	public String getName() {
-		if(name == null) return null;
-		synchronized (name) {
+		synchronized (nameLock) {
 			return name;
 		}
 	}
@@ -456,8 +571,7 @@ public class Config<E> extends ConfigBase implements Cloneable, Comparable<Confi
 	 * @return the Value of this Config
 	 */
 	public E getValue() {
-		if(value == null) return null;
-		synchronized (value) {
+		synchronized (valueLock) {
 			return value;
 		}
 	}
@@ -552,7 +666,7 @@ public class Config<E> extends ConfigBase implements Cloneable, Comparable<Confi
 	public Config<E> modifiable() {
 		if (!isUnmodifiable())
 			return this;
-		return new Config<>(getName(), getValue(), false);
+		return new Config<>(getName(), getValue(), false, getConfigProperty(), getComments());
 	}
 
 	/**
@@ -594,10 +708,10 @@ public class Config<E> extends ConfigBase implements Cloneable, Comparable<Confi
 		final String name = getName();
 		final E value = getValue();
 		if (value == null)
-			return new Config<>(name, (E) Config.DEFAULT_VALUE) {
+			return new Config<>(name, (E) Config.DEFAULT_VALUE, unmodifiable, comments) {
 			};
 		if (name == null)
-			return new Config<>(Config.DEFAULT_NAME, value) {
+			return new Config<>(Config.DEFAULT_NAME, value, unmodifiable, comments) {
 			};
 		if (value.getClass().isArray())
 			return MultipleConfig.getMultipleConfig(write());
@@ -650,21 +764,22 @@ public class Config<E> extends ConfigBase implements Cloneable, Comparable<Confi
 			cfg = SingleConfig.getSingleConfig(lines[0]);
 		else
 			cfg = MultipleConfig.getMultipleConfig(lines);
-		return setValues((Config<E>) cfg);
+		return copyValues((Config<E>) cfg);
 	}
 
 	/**
 	 * Sets the comments to the given String Array and returns itself.
 	 *
+	 * @throws UnmodifiableConfigException
+	 *             if this Config is unmodifiable
 	 * @param comments
-	 * @return
+	 *            - the new Comments of the Config
+	 * @return itself
 	 */
 	public Config<E> setComments(final String... comments) {
-		if(unmodifiable) 
-			throw new UnmodifiableConfigException(
-				"Can't change the comments of the unmodifiable Config " +
-				toString());
-		synchronized (this.comments) {
+		if (unmodifiable)
+			throw new UnmodifiableConfigException("Can't change the comments of the unmodifiable Config " + toString());
+		synchronized (commentsLock) {
 			this.comments = comments;
 		}
 		return this;
@@ -673,16 +788,16 @@ public class Config<E> extends ConfigBase implements Cloneable, Comparable<Confi
 	/**
 	 * sets the value of the name to the given String.
 	 *
+	 * @throws UnmodifiableConfigException
+	 *             if this Config is unmodifiable
 	 * @param name
 	 *            the new Name of the Config
 	 * @return itself
 	 */
 	public Config<E> setName(final String name) {
-		if(unmodifiable) 
-		throw new UnmodifiableConfigException(
-			"Can't change the name of the unmodifiable Config: " +
-			toString());
-		synchronized (this.name) {
+		if (unmodifiable)
+			throw new UnmodifiableConfigException("Can't change the name of the unmodifiable Config: " + toString());
+		synchronized (nameLock) {
 			this.name = name;
 		}
 		return this;
@@ -691,68 +806,46 @@ public class Config<E> extends ConfigBase implements Cloneable, Comparable<Confi
 	/**
 	 * sets the value to the given Object.
 	 *
+	 * @throws UnmodifiableConfigException
+	 *             if this Config is unmodifiable
 	 * @param value
 	 *            the new Value of the Config
 	 * @return itself
 	 */
 	public Config<E> setValue(final E value) {
-		if(unmodifiable) 
-			throw new UnmodifiableConfigException(
-				"Can't change the value of the unmodifiable Config " +
-				toString());
-		if(this.value == null) {
-			this.value = value;
-			return this;
-		}
-		synchronized (this.value) {
+		if (unmodifiable)
+			throw new UnmodifiableConfigException("Can't change the value of the unmodifiable Config " + toString());
+		synchronized (valueLock) {
 			this.value = value;
 		}
-		return this;
-	}
-
-	/**
-	 * Copys the value and the of the given Config and sets the own ones to it.
-	 *
-	 * @param cfg
-	 *            the Config thet should be copied.
-	 * @return itself
-	 */
-	public Config<E> setValues(final Config<E> cfg) {
-		setValues(cfg.getName(), cfg.getValue());
 		return this;
 	}
 
 	/**
 	 * Sets the name and the value tot given name and value.
 	 *
+	 * @throws UnmodifiableConfigException
+	 *             if this Config is unmodifiable
 	 * @param name
 	 *            the new Name of the Config
 	 * @param value
 	 *            the new Value of the Config
 	 * @return itself
 	 */
-	public Config<E> setValues(final String name, final E value) {
+	public Config<E> setValues(final String name, final E value, final String... comments) {
 		setName(name);
 		setValue(value);
+		setComments(comments);
 		return this;
 	}
 
 	/**
-	 * Sets the name, the value and the Comments to the given values and returns
-	 * itself.
-	 *
-	 * @param name
-	 *            the new Name
-	 * @param value
-	 *            the new Value
-	 * @param comments
-	 *            the new Comments
-	 * @return itself
+	 * Returns a simple toString() without the comments
+	 * 
+	 * @return
 	 */
-	public Config<E> setValues(final String name, final E value, final String... comments) {
-		setComments(comments);
-		setValues(name, value);
-		return this;
+	public String simpleToString() {
+		return new StringBuilder(getName()).append(WHITESPACE_SEPARATOR).append(getValueAsString()).toString();
 	}
 
 	/**
@@ -775,7 +868,10 @@ public class Config<E> extends ConfigBase implements Cloneable, Comparable<Confi
 	 */
 	@Override
 	public String toString() {
-		return getName() + " " + Config.SEPARATOR + " " + getValueAsString();
+		final StringBuilder sb = new StringBuilder();
+		for (final String s : getComments())
+			sb.append('#').append(s).append(", ");
+		return sb.append(getName()).append(WHITESPACE_SEPARATOR).append(getValueAsString()).toString();
 	}
 
 	/**
@@ -800,7 +896,7 @@ public class Config<E> extends ConfigBase implements Cloneable, Comparable<Confi
 	public Config<E> unmodifiable() {
 		if (isUnmodifiable())
 			return this;
-		return new Config<>(getName(), getValue(), true);
+		return new Config<>(getName(), getValue(), true, getConfigProperty(), getComments());
 	}
 
 	/**
@@ -823,13 +919,37 @@ public class Config<E> extends ConfigBase implements Cloneable, Comparable<Confi
 	 * @return an array of String that should be written
 	 */
 	public String[] write() {
+
 		final String[] comments = getComments();
 		final String name = getName();
 		final E value = getValue();
 
-		final String[] all = Arrays.copyOf(comments, comments.length + 1);
-		all[all.length - 1] = name + " " + Config.SEPARATOR + " " + value;
-		return all;
+		String[] res;
+
+		if (value.getClass().isArray()) {
+			final Object[] arr = (Object[]) value;
+			res = new String[comments.length + 1 + arr.length];
+			final int at = comments.length;
+			res[at] = new StringBuilder(name).append(WHITESPACE_SEPARATOR).toString();
+			for (int i = 0; i < arr.length; i++) {
+				final String str = String.valueOf(arr[i]);
+				res[at + 1 + i] = str;
+			}
+		} else if (value instanceof List) {
+			final List<?> list = (List<?>) value;
+			res = new String[comments.length + 1 + list.size()];
+			final int at = comments.length;
+			res[at] = new StringBuilder(name).append(WHITESPACE_SEPARATOR).toString();
+			for (int i = 0; i < list.size(); i++) {
+				final String str = String.valueOf(list.get(i));
+				res[at + 1 + i] = str;
+			}
+		} else {
+			res = Arrays.copyOf(comments, comments.length + 1);
+			res[res.length - 1] = simpleToString();
+		}
+
+		return res;
 
 	}
 
@@ -870,8 +990,10 @@ public class Config<E> extends ConfigBase implements Cloneable, Comparable<Confi
 	 */
 	public void writeTo(final OutputStream out) throws IOException {
 		final String[] lines = write();
-		for (final String s : lines)
+		for (final String s : lines) {
 			out.write(s.getBytes());
+			out.write('\n');
+		}
 	}
 
 	/**
@@ -889,5 +1011,14 @@ public class Config<E> extends ConfigBase implements Cloneable, Comparable<Confi
 		final String[] lines = write();
 		for (final String s : lines)
 			writer.write(s);
+	}
+
+	public void print() {
+		for(String s : write())
+			System.out.println(s);
+	}
+	
+	public void printSimple() {
+		System.out.println(simpleToString());
 	}
 }

@@ -1,15 +1,15 @@
 package test;
 
-import linus.io.config.Config;
+import linus.io.config.util.ConfigHolder;
 
 public class Test {
 
 	private Test() {}
 
 	public static void main(String[] args) throws Exception{
-		Config<String> cfg = new Config<String>("Name", "Wert", true);
-		Config<String> other = new Config<String>().unmodifiable();
-		System.out.println(other.modifiable().setValues(cfg));
+		ConfigHolder ch = ConfigHolder.systemPropertys();
+		String user = ch.getValue("user.name");
+		System.out.println(user);
 	}
 
 }

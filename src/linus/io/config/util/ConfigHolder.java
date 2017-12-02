@@ -6,8 +6,12 @@ import java.io.Serializable;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Properties;
 
 import linus.io.config.Config;
 import linus.io.config.exception.ConfigReadException;
@@ -40,6 +44,14 @@ public class ConfigHolder implements Serializable, Cloneable, Iterable<Config<?>
 		this(initialCapacity);
 		for(Config<?> cfg : configs)
 			addConfig(cfg);
+	}
+	
+	//Config Operations
+	
+	@SuppressWarnings("unchecked")
+	public <E> E getValue(String name) {
+		Config<?> cfg = getConfig(name);
+		return cfg == null ? null : (E) cfg.getValue();
 	}
 	
 	//list
@@ -109,6 +121,15 @@ public class ConfigHolder implements Serializable, Cloneable, Iterable<Config<?>
 		return (Config<?>[]) list.toArray();
 	}
 	
+	public void sort(Comparator<Config<?>> comp) {
+		list.sort(comp);
+		table.clear();
+		for(int i = 0; i < list.size(); i++) {
+			Config<?> cfg = list.get(i);
+			table.put(cfg.getName(),  i);
+		}
+	}
+	
 	//Override
 	
 	@Override
@@ -158,4 +179,21 @@ public class ConfigHolder implements Serializable, Cloneable, Iterable<Config<?>
 		return ch;
 	}
 
+	private static final ConfigHolder systemPropertys = loadSystemPropertys();
+	
+	private static ConfigHolder loadSystemPropertys() {
+		Map<String, String> map = System.getenv();
+		Properties props = System.getProperties();
+		ConfigHolder ch = new ConfigHolder(props.size() + map.size());
+		for(Entry<String, String> entry : map.entrySet())
+			ch.addConfig(new Config<String>(entry.getKey(), entry.getValue()));
+		for(Entry<Object, Object> entry : props.entrySet())
+			ch.addConfig(new Config<Object>(entry.getKey().toString(), entry.getValue()));
+			
+		return ch;
+	}
+	
+	public static ConfigHolder systemPropertys() {
+		return systemPropertys;
+	}
 }

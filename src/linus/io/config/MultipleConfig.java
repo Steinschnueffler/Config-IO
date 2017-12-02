@@ -83,12 +83,12 @@ public abstract class MultipleConfig<E> extends Config<E[]> implements Iterable<
 	public MultipleConfig() {}
 
 	public MultipleConfig(String name) {
-		super(name);
+		setName(name);
 	}
 
 	@SafeVarargs
 	public MultipleConfig(String name, E... value) {
-		super(name, value);
+		setValue(value);
 	}
 
 	@Override

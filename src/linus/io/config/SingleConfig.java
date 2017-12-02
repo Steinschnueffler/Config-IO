@@ -10,12 +10,13 @@ import linus.io.config.configs.SingleStringConfig;
 public abstract class SingleConfig<E> extends Config<E>{
 	public SingleConfig() {}
 
+	@SuppressWarnings("unchecked")
 	public SingleConfig(String name) {
-		super(name);
+		super(name, (E) DEFAULT_VALUE, false, DEFAULT_COMMENTS);
 	}
 
 	public SingleConfig(String name, E value){
-		super(name, value);
+		super(name, value, false, DEFAULT_COMMENTS);
 	}
 
 	@Override
