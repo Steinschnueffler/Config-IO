@@ -15,6 +15,7 @@ import java.util.Properties;
 
 import linus.io.config.Config;
 import linus.io.config.exception.ConfigReadException;
+import linus.io.config.exception.UnmodifiableConfigHolderException;
 import linus.io.config.io.AbstractConfigReader;
 
 public class ConfigHolder implements Serializable, Cloneable, Iterable<Config<?>>{
@@ -25,25 +26,30 @@ public class ConfigHolder implements Serializable, Cloneable, Iterable<Config<?>
 	private ArrayList<Config<?>> list;
 	private HashMap<String, Integer> table;
 	
-	//Constructors
+	private final boolean modifiable;
 	
-	public ConfigHolder() {
-		this(16);
-	}
+	//Constructors
 	
 	public ConfigHolder(Config<?>... configs) {
 		this(16, configs);
 	}
 	
-	public ConfigHolder(int initialCapacity) {
-		list = new ArrayList<>(initialCapacity);
-		table = new HashMap<>(initialCapacity);
+	public ConfigHolder(int initialCapacity, Config<?>... configs) {
+		this(initialCapacity, false, configs);
 	}
 	
-	public ConfigHolder(int initialCapacity, Config<?>... configs) {
-		this(initialCapacity);
+	public ConfigHolder(int initialCapacity, boolean modifiable, Config<?>... configs) {
+		this.modifiable = modifiable;
+		list = new ArrayList<>(initialCapacity);
+		table = new HashMap<>(initialCapacity);
 		for(Config<?> cfg : configs)
 			addConfig(cfg);
+	}
+	
+	private ConfigHolder(HashMap<String, Integer> map, ArrayList<Config<?>> list, boolean modifiable) {
+		this.table = map;
+		this.list = list;
+		this.modifiable = modifiable;
 	}
 	
 	//Config Operations
@@ -57,11 +63,13 @@ public class ConfigHolder implements Serializable, Cloneable, Iterable<Config<?>
 	//list
 	
 	public void addConfig(Config<?> cfg) {
+		checkModifiable();
 		table.put(cfg.getName(), list.size());
 		list.add(cfg);
 	}
 	
 	public Config<?> removeConfig(String name) {
+		checkModifiable();
 		Integer index = table.get(name);
 		if(index == null)
 			return null;
@@ -71,6 +79,7 @@ public class ConfigHolder implements Serializable, Cloneable, Iterable<Config<?>
 	}
 	
 	public Config<?> removeConfig(Config<?> cfg) {
+		checkModifiable();
 		String name = cfg.getName();
 		if(table.containsKey(name)) return removeConfig(name);
 		for(int i = 0; i < list.size(); i++) {
@@ -82,15 +91,19 @@ public class ConfigHolder implements Serializable, Cloneable, Iterable<Config<?>
 	}
 	
 	public Config<?> removeConfig(int index){
+		checkModifiable();
 		return removeConfig(list.get(index));
+	}
+	
+	private void checkModifiable() {
+		if(!modifiable) throw new UnmodifiableConfigHolderException();
 	}
 	
 	//standart collection
 	
 	public Config<?> getConfig(String name){
 		Integer index = table.get(name);
-		if(index == null) return null;
-		return list.get(index);
+		return index == null ? null : list.get(index.intValue());
 	}
 	
 	public Config<?> getConfig(int index){
@@ -121,17 +134,23 @@ public class ConfigHolder implements Serializable, Cloneable, Iterable<Config<?>
 		return (Config<?>[]) list.toArray();
 	}
 	
-	public void sort(Comparator<Config<?>> comp) {
+	public ConfigHolder sort(Comparator<Config<?>> comp) {
+		if(!modifiable) return modifiable().sort(comp);
 		list.sort(comp);
 		table.clear();
 		for(int i = 0; i < list.size(); i++) {
 			Config<?> cfg = list.get(i);
 			table.put(cfg.getName(),  i);
 		}
+		return this;
 	}
 	
 	//Override
 	
+	public ConfigHolder modifiable() {
+		return new ConfigHolder(table, list, true);
+	}
+
 	@Override
 	public Iterator<Config<?>> iterator() {
 		return list.iterator();
